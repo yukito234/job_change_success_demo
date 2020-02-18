@@ -1,0 +1,21 @@
+{
+  "name": "job_change_success_demo",
+  "version": "1.0.0",
+  "description": "My legendary Nuxt.js project",
+  "author": "yukito",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "core-js": "^2.6.11",
+    "firebase": "^7.8.2",
+    "nuxt": "^2.0.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/dotenv": "^1.4.1"
+  }
+}
