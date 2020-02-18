@@ -1,51 +1,42 @@
 <template>
-  <div>
+  <div class="educational-background-container">
     <h3>学歴</h3>
-    体験記事の投稿者の学歴を選択してください。
-    <!--<select v-model="$store.state.articleAddition.age">-->
+    体験記事の投稿者の学歴を選択してください。   
     <select v-model="educationalBackground">
       <option disabled value="">選択してください</option>
       <option value="高卒">高卒</option>
       <option value="高専卒">高専卒</option>
       <option value="大卒">大卒</option>
       <option value="大学院卒">大学院卒</option>      
-    </select>
-    <!--<div>{{ url }}</div>-->
+    </select>   
   </div>
 </template>
 
 <script>
 /* eslint-disable */
-
-export default {
-  //name: 'Signin',
+export default { 
   data () {
-    return {     
-      //url: '',
+    return {         
       
     }
   },  
   methods: {
   },
   computed:{
-    educationalBackground:{
-        /**/
+    educationalBackground:{        
         get:function(){
             return this.$store.state.articleAddition.educationalBackground;
-        },
-        
+        },        
         set:function(educationalBackgroundData){
             this.$store.commit('articleAddition/changeEducationalBackground', educationalBackgroundData);
-        },
-        
+        },        
     },
-  }
-    /*
-    urlChanged(){
-        this.$emit('url-input', this.url);
-    }
-    */
-
-  
+  } 
 }
 </script>
+
+<style>
+.educational-background-container {
+  margin: 10px;  
+}
+</style>

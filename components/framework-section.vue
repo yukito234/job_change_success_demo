@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="framework-container">
     <h3>フレームワーク</h3>
     フレームワークを選択してください。
     <label>
@@ -24,44 +24,35 @@
       <input type="checkbox" v-model="framework" value="Ruby on Rails">Ruby on Rails
     </label>    
       <input type="checkbox" v-model="framework" value="その他">その他
-    </label>
-    
-    <!--<div>{{ url }}</div>-->
+    </label>        
   </div>
 </template>
 
 <script>
 /* eslint-disable */
-
 export default {
-  //name: 'Signin',
   data () {
-    return {     
-      //url: '',
+    return {          
       
     }
   },  
   methods: {
   },
   computed:{
-    framework:{
-        /**/
+    framework:{        
         get:function(){
             return this.$store.state.articleAddition.framework;
-        },
-        
+        },        
         set:function(frameworkData){
             this.$store.commit('articleAddition/changeFramework', frameworkData);
-        },
-        
+        },        
     },
-  }
-    /*
-    urlChanged(){
-        this.$emit('url-input', this.url);
-    }
-    */
-
-  
+  } 
 }
 </script>
+
+<style>
+.framework-container {
+  margin: 10px;  
+}
+</style>

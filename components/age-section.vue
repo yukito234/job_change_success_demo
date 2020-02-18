@@ -1,8 +1,7 @@
 <template>
-  <div>
+  <div class="age-section-container">
     <h3>年齢</h3>
-    体験記事の投稿者の年齢を選択してください。
-    <!--<select v-model="$store.state.articleAddition.age">-->
+    <span>体験記事の投稿者の年齢を選択してください。</span>   
     <select v-model="age">
       <option disabled value="">選択してください</option>
       <option value="10代">10代</option>
@@ -14,43 +13,35 @@
       <option value="40代後半">40代後半</option>
       <option value="50代">50代</option>
       <option value="60代以降">60代以降</option>
-    </select>
-    <!--<div>{{ url }}</div>-->
+    </select>    
   </div>
 </template>
 
 <script>
 /* eslint-disable */
-
-export default {
-  //name: 'Signin',
+export default {  
   data () {
-    return {     
-      //url: '',
-      
+    return {
+
     }
   },  
   methods: {
   },
   computed:{
-    age:{
-        /**/
+    age:{        
         get:function(){
             return this.$store.state.articleAddition.age;
-        },
-        
-        set:function(ageData){
+        },        
+        set:function( ageData ){
             this.$store.commit('articleAddition/changeAge', ageData);
-        },
-        
+        },        
     },
   }
-    /*
-    urlChanged(){
-        this.$emit('url-input', this.url);
-    }
-    */
-
-  
 }
 </script>
+
+<style>
+.age-section-container {
+  margin: 10px;  
+}
+</style>

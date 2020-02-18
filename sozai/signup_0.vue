@@ -8,14 +8,17 @@
     パスワード：<input type="password" v-model="password">
     <br>
     <button v-on:click="signUp">新規登録</button>
-    <br>    
+    <br>
+    <!--<router-link to="/signin">ログインはこちらから</router-link>-->
   </div>
 </template>
 
 <script>
 /* eslint-disable */
+
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
+//import db from '../firebase_config'
 
 export default {  
   name: 'Signup',
@@ -36,10 +39,18 @@ export default {
           })          
 
           db.collection("users").add({
-              name: this.userName,                            
+              name: this.userName,              
+              
           })
           .then(() => {
-            alert("登録完了");            
+            alert("登録完了");
+            /*
+            firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+            .then(() => {
+              alert('ログイン成功');
+              //this.$router.push('/');
+            })
+            */
           })          
           .catch(function(error) {
              alert(error.message)
@@ -54,7 +65,11 @@ export default {
 </script>
 
 <style>
+
 .signup-container {
-  margin: 20px;  
+  margin: 20px;
+
+  
 }
+
 </style>

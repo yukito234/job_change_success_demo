@@ -1,53 +1,43 @@
 <template>
-  <div>
+  <div class="company-container">
     <h3>転職先</h3>
-    転職先を選択してください。
-    <!--<select v-model="$store.state.articleAddition.age">-->
+    転職先を選択してください。    
     <select v-model="company">
       <option disabled value="">選択してください</option>
       <option value="自社開発">自社開発</option>
       <option value="受託">受託</option>
       <option value="SIer">SIer</option>
       <option value="SES">SES</option>
-      <option value="その他">その他</option>
-           
-    </select>
-    <!--<div>{{ url }}</div>-->
+      <option value="その他">その他</option>           
+    </select>    
   </div>
 </template>
 
 <script>
 /* eslint-disable */
-
-export default {
-  //name: 'Signin',
+export default {  
   data () {
-    return {     
-      //url: '',
+    return {           
       
     }
   },  
   methods: {
   },
   computed:{
-    company:{
-        /**/
+    company:{        
         get:function(){
             return this.$store.state.articleAddition.company;
-        },
-        
+        },        
         set:function(companyData){
             this.$store.commit('articleAddition/changeCompany', companyData);
-        },
-        
+        },        
     },
-  }
-    /*
-    urlChanged(){
-        this.$emit('url-input', this.url);
-    }
-    */
-
-  
+  }     
 }
 </script>
+
+<style>
+.company-container {
+  margin: 10px;  
+}
+</style>

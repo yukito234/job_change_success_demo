@@ -10,8 +10,9 @@
     <language-section></language-section>
     <framework-section></framework-section>
     <company-section></company-section>
+
   
-    <!--登録前に送信内容をチェック-->
+    <!--<div>{{ $store.state.articleAddition.company }}</div>-->
     <div>{{ $store.state.articleAddition.url }}</div>
     <div>{{ $store.state.articleAddition.title }}</div>
     <div>{{ $store.state.articleAddition.age }}</div>
@@ -52,16 +53,38 @@ export default {
     'school-presence-section': SchoolPresenceSection,
     'language-section': LanguageSection,
     'framework-section': FrameworkSection,
-    'company-section': CompanySection,   
+    'company-section': CompanySection,
+
+    /*    
+    
+    
+    'company': Company,
+    */
   },
   data () {
     return {     
-
+      //url: '',
+      //checkData:{},
     }
   }, 
   methods: {
-    registerArticle(){        
-        //firebaseに体験記データを追加
+    registerArticle(){
+        /*
+        this.checkData ={
+            url: this.$store.state.articleAddition.url,              
+            title: this.$store.state.articleAddition.title,
+            age: this.$store.state.articleAddition.age,
+            educational_background: this.$store.state.articleAddition.educationalBackground,
+            study_term: this.$store.state.articleAddition.studyTerm,
+            school_presence: this.$store.state.articleAddition.schoolPresence,
+            language: this.$store.state.articleAddition.language.join(","),
+            framework: this.$store.state.articleAddition.framework.join(","),
+            company: this.$store.state.articleAddition.company,
+
+        };
+        */
+
+        /**/
         db.collection("experience_articles").add({
             url: this.$store.state.articleAddition.url,              
             title: this.$store.state.articleAddition.title,
@@ -75,13 +98,26 @@ export default {
         })
         .then(() => {
             alert("記事の登録完了");
-            //入力欄の初期化
-            this.$store.commit('articleAddition/initState');            
+            this.$store.commit('articleAddition/initState');
+            
         })          
         .catch(function(error) {
             alert(error.message)
-        });       
-    },    
+        });
+        
+
+
+    },
+    /*
+    urlChange(inputUrl){
+        this.url = inputUrl;
+
+    },
+    */
+
   },
+
+
+
 }
 </script>

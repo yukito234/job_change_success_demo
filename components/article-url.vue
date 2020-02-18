@@ -1,19 +1,15 @@
 <template>
-  <div>
+  <div class="article-url-container">
     <h3>記事URL</h3>
-    参考になった体験記事のURLを入力してください。<input type="text" v-model="url">    
-    <!--<div>{{ url }}</div>-->
+    参考になった体験記事のURLを入力してください。<input type="text" v-model="url">        
   </div>
 </template>
 
 <script>
 /* eslint-disable */
-
-export default {
-  //name: 'Signin',
+export default {  
   data () {
-    return {     
-      //url: '',
+    return {          
       
     }
   },  
@@ -28,13 +24,12 @@ export default {
             this.$store.commit('articleAddition/changeUrl', urlData);
         },
     },
-  }
-    /*
-    urlChanged(){
-        this.$emit('url-input', this.url);
-    }
-    */
-
-  
+  }    
 }
 </script>
+
+<style>
+.article-url-container {
+  margin: 10px;  
+}
+</style>

@@ -1,19 +1,15 @@
 <template>
-  <div>
+  <div class="article-title-container">
     <h3>記事タイトル</h3>
-    上の記事のタイトルを入力してください。<input type="text" v-model="title">    
-    
+    上の記事のタイトルを入力してください。<input type="text" v-model="title">        
   </div>
 </template>
 
 <script>
 /* eslint-disable */
-
-export default {
-  //name: 'Signin',
+export default {  
   data () {
-    return {     
-      
+    return {           
       
     }
   },  
@@ -28,13 +24,12 @@ export default {
             this.$store.commit('articleAddition/changeTitle', titleData);
         },
     },
-  }
-    /*
-    urlChanged(){
-        this.$emit('url-input', this.url);
-    }
-    */
-
-  
+  }      
 }
 </script>
+
+<style>
+.article-title-container {
+  margin: 10px;  
+}
+</style>

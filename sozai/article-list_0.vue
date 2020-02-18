@@ -14,7 +14,8 @@
           <th>転職先</th>
         </tr>
       </thead>
-      <tbody>                
+      <tbody>        
+        <!--<tr v-for="element in allArticles" v-bind:key="element.url">  -->
         <tr v-for="element in $store.state.allArticles" v-bind:key="element.url">
           <td>
             <a v-bind:href="element.url">{{ element.title }}</a>
@@ -40,28 +41,62 @@ import db from '../plugins/firebase_config'
 export default {
   date(){
     return {
+      //allArticles: [],
+      /*
+      ここで、allArticlesを定義すると、以下のエラーが出る
+      vue.runtime.esm.js?2b0e:619 [Vue warn]: Property or method "allArticles" is not defined on the instance but referenced during render. Make sure that this property is reactive, either in the data option, or for class-based components, by initializing the property. See: https://vuejs.org/v2/guide/reactivity.html#Declaring-Reactive-Properties.
+
+      ここで定義したallArticlesは、あくまでこのコンポーネントでのみ保持されるデータとなる
+      親要素のindex.vueでallArticlesは認識できない
+      よってindex.jsにてstateにallArticlesを定義する
+
+      */
 
     }
   },
   created:function(){ 
-    //firebaseから記事データ一覧を取得
+
     db.collection("experience_articles").get()
       .then((querySnapshot)=>{        
+
         querySnapshot.forEach((doc)=>{
-          const data = doc.data();          
+          const data = doc.data();
+          //console.log(data);
+
+          //const stockArray = [];
+          //stockArray.push(data);
+          //console.log(stockArray);
+          //this.allArticles.push(data);
           this.$store.dispatch('allArticlesGetAction', data);
-        });        
+          
+                   
+        
+        });
+        console.log(this.$store.state.allArticles);
       })
       .catch(function(error) {
           alert(error.message)
       });
+
+
   },
+
+
+
+
+
+
 }
+
 
 </script>
 
 <style>
+
 .article-list-container {
-  margin: 20px;  
+  margin: 20px;
+
+  
 }
+
 </style>

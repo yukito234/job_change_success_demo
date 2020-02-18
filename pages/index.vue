@@ -3,21 +3,17 @@
     <h1>未経験からwebエンジニアを目指す人のための情報サイト</h1>
     <article-list></article-list>
     <signup></signup>
-    <signin></signin>     
-      
-    
+    <signin></signin>               
   </div>
 </template>
 
 <script>
-//import Logo from '~/components/Logo.vue'
 import Signup from '~/components/signup.vue'
 import Signin from '~/components/signin.vue'
 import ArticleList from '~/components/article-list.vue'
 
 export default {
-  components: {
-    //Logo,
+  components: {    
     Signup,
     Signin,
     'article-list': ArticleList,

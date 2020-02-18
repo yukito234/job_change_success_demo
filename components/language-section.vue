@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="language-container">
     <h3>プログラミング言語</h3>
     プログラミング言語を選択してください。
     <label>
@@ -54,3 +54,13 @@ export default {
   
 }
 </script>
+
+<style>
+
+.language-container {
+  margin: 10px;
+
+  
+}
+
+</style>
