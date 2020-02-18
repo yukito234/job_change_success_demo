@@ -2,8 +2,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-export const state = () => ({
-	//url : "test",
+export const state = () => ({	
 	url : "",
 	title: "",
 	age: "",
@@ -15,14 +14,8 @@ export const state = () => ({
 	company: "",
 })
 	
-export const actions = {
-		
-	/*
-	nameSetAction(context, name){
-		context.commit('nameSet', name);
-	}
-	*/
-
+export const actions = {	
+	
 }
 
 export const mutations ={
@@ -37,66 +30,42 @@ export const mutations ={
 		state.framework = [];
 		state.company = "";
 
-
 	},
-	changeUrl(state, urlData){
-		//state.url = urlData + 'x';
+	changeUrl(state, urlData){		
 		state.url = urlData ;
 		
 	},
-	changeTitle(state, titleData){
-		
+	changeTitle(state, titleData){		
 		state.title = titleData ;
 		
 	},
-	changeAge(state, ageData){
-		
+	changeAge(state, ageData){		
 		state.age = ageData ;
 		
 	},
-	changeEducationalBackground(state, educationalBackgroundData){
-		
+	changeEducationalBackground(state, educationalBackgroundData){		
 		state.educationalBackground = educationalBackgroundData ;
 		
 	},
-	changeStudyTerm(state, studyTermData){
-		
+	changeStudyTerm(state, studyTermData){		
 		state.studyTerm = studyTermData ;
 		
 	},
-	changeSchoolPresence(state, schoolPresenceData){
-		
+	changeSchoolPresence(state, schoolPresenceData){		
 		state.schoolPresence = schoolPresenceData ;
 		
 	},	
-	changeLanguage(state, languageData){
-		//let languageDataJoined = languageData.join(",");
-		//state.language = languageDataJoined ;
+	changeLanguage(state, languageData){		
 		state.language = languageData;
 		
 	},
-	changeFramework(state, frameworkData){
-		
+	changeFramework(state, frameworkData){		
 		state.framework = frameworkData ;
 		
 	},
-	changeCompany(state, companyData){
-		
+	changeCompany(state, companyData){		
 		state.company = companyData ;
 		
 	},
-	/*
-	nameSet(state, name){
-
-		state.currentUserName = name;
-
-		
-	},
-	nameInit(state){
-		state.currentUserName = "";
-
-
-	},
-	*/
-}
 	
+}	
