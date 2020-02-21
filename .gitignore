@@ -90,4 +90,5 @@ sw.*
 *.swp
 
 # trush files
-sozai
+sozai/
+pages/test-page.vue

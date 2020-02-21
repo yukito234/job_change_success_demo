@@ -17,6 +17,19 @@ export default {
   components: {    
     'article-registration': ArticleRegistration,    
   },
+  head(){
+    return {
+      title:'testTitle',            
+      meta: { requiresAuth: true },
+      /*
+      meta: [
+        { hid: 'description', name: 'description', content: 'description'},
+        { requiresAuth: true },
+      ],
+      */     
+    }
+
+  },
   data () {
     return {            
     }
