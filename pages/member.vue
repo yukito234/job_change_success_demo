@@ -13,22 +13,17 @@ import db from '../plugins/firebase_config'
 import ArticleRegistration from '~/components/article-registration.vue'
 
 export default {
+  middleware: 'authenticated',
+  //middleware: 'currentUserName',
   name: 'Member',
   components: {    
     'article-registration': ArticleRegistration,    
   },
   head(){
     return {
-      title:'testTitle',            
-      meta: { requiresAuth: true },
-      /*
-      meta: [
-        { hid: 'description', name: 'description', content: 'description'},
-        { requiresAuth: true },
-      ],
-      */     
+      title:'会員ページ',            
+              
     }
-
   },
   data () {
     return {            
@@ -37,9 +32,10 @@ export default {
   computed:{
     loginUserName(){
       return this.$store.state.currentUserName;       
+      //return this.$store.state.authenticated; 
     },
   },
-  created:function(){           
+  created:function(){
   },  
   methods: {
     signOut() {           

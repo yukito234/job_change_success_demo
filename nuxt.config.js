@@ -29,7 +29,7 @@ export default {
   */
   plugins: [
     '~/plugins/firebase_config.js',
-    '~/plugins/nav-guard.js',
+    //'~/plugins/nav-guard.js',
   ],
   /*
   ** Nuxt.js dev-modules

@@ -1,6 +1,6 @@
 <template>
   <div >
-    <h1>未経験からwebエンジニアを目指す人のための情報サイト</h1>
+    <h1>未経験からwebエンジニアを目指す人のための情報サイト</h1>    
     <article-list></article-list>
     <signup></signup>
     <signin></signin>               
