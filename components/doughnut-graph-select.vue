@@ -1,0 +1,49 @@
+<template>
+	<div>
+		<select v-model="graphSelection">		  
+		  <option value="age">年齢</option>
+		  <option value="educational_background">学歴</option>
+		  <option value="study_term">勉強期間</option>
+		  <option value="school_presence">スクール</option>
+		  <option value="company">転職先</option>
+		
+		</select>   
+		<span>{{graphChange}}</span>
+	</div>
+</template>
+
+<script>
+/* eslint-disable */
+export default {  
+  data () {
+    return {
+    	graphSelection: 'age',
+
+    }
+  },  
+  methods: {
+  },
+  computed:{
+  	graphChange(){ 				
+  		return this.graphSelection;
+
+  	},
+    
+  },
+  watch:{
+  	graphChange:function(){
+  		console.log("graphChange called in watch");
+  		
+  		//storeのgraphTypeを切り替える
+  		this.$store.dispatch('graphTypeChangeAction', this.graphSelection);
+  		//選択されたgraphTypeのデータを集計
+  		this.$store.dispatch('itemCountAction', this.graphSelection);
+  		//円グラフの描画に必要なラベル、データ、配色を用意する
+  		this.$store.dispatch('createLabelQuantityColorAction');
+  		//再描画の準備が整ったことを、親のindex.vueに知らせる
+  		this.$emit('graphChangeNotice');
+
+  	}
+  },
+}
+</script>

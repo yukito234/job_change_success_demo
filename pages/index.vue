@@ -1,6 +1,10 @@
 <template>
   <div >
-    <h1>未経験からwebエンジニアを目指す人のための情報サイト</h1>    
+    <h1>未経験からwebエンジニアを目指す人のための情報サイト</h1>        
+    <p>test0@t.com</p>
+    <p>testtest0</p>    
+    <doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>       
+    <doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
     <article-list></article-list>
     <signup></signup>
     <signin></signin>               
@@ -8,20 +12,82 @@
 </template>
 
 <script>
+import firebase from 'firebase'
+import db from '../plugins/firebase_config'
 import Signup from '~/components/signup.vue'
 import Signin from '~/components/signin.vue'
 import ArticleList from '~/components/article-list.vue'
+import DoughnutGraph from '~/components/doughnut.vue'
+import DoughnutGraphSelect from '~/components/doughnut-graph-select.vue'
 
 export default {
   components: {    
     Signup,
     Signin,
     'article-list': ArticleList,
+    'doughnut-graph': DoughnutGraph,
+    'doughnut-graph-select': DoughnutGraphSelect,
+  },
+  data () {
+    return {
+      datacollection: null,
+      
+    }
+  },    
+  mounted () {    
+    db.collection("experience_articles").get()
+      .then((querySnapshot)=>{        
+        querySnapshot.forEach((doc)=>{
+          const data = doc.data();                    
+          //グラフ描画に必要な全データを取得
+          this.$store.dispatch('allArticlesForGraphGetAction', data);          
+
+        });        
+        //グラフ項目のデータを集計
+        this.$store.dispatch('itemCountAction', this.$store.state.graphType);        
+        //グラフのラベル、データ、カラーの配列を準備
+        this.$store.dispatch('createLabelQuantityColorAction');
+        //描画用オブジェクトに必要データを格納
+        this.datacollection = {                           
+          labels: this.$store.state.graphLabels,          
+          datasets: [
+            {                          
+              data: this.$store.state.graphQuantity,                          
+              backgroundColor: this.$store.state.graphColor,              
+            }
+          ]                    
+        }        
+         
+      })
+      .catch(function(error) {
+          alert(error.message)
+      });
+  },
+  methods: {
+    //グラフタイプの切替時の再描画
+    redrawGraph(){            
+      this.datacollection = {                      
+        labels: this.$store.state.graphLabels,        
+        datasets: [
+          {                        
+            data: this.$store.state.graphQuantity,                        
+            backgroundColor: this.$store.state.graphColor,            
+          }
+        ]               
+      }                 
+    },    
   }
 }
 </script>
 
 <style>
+
+.small {
+    max-width: 300px;
+    margin:  20px 10px auto;
+    border:1px solid;
+  }
+
 .container {
   margin: 0 auto;
   min-height: 100vh;

@@ -49,8 +49,11 @@ export default {
       .then((querySnapshot)=>{        
         querySnapshot.forEach((doc)=>{
           const data = doc.data();          
-          this.$store.dispatch('allArticlesGetAction', data);
-        });        
+          //体験記の一覧データを取得
+          this.$store.dispatch('allArticlesGetAction', data);          
+
+        });
+                
       })
       .catch(function(error) {
           alert(error.message)

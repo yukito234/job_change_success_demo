@@ -30,6 +30,7 @@ export default {
   plugins: [
     '~/plugins/firebase_config.js',
     //'~/plugins/nav-guard.js',
+    '~/plugins/vue-chartjs.js',
   ],
   /*
   ** Nuxt.js dev-modules
