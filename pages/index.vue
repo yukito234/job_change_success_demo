@@ -3,6 +3,7 @@
     <h1>未経験からwebエンジニアを目指す人のための情報サイト</h1>        
     <p>test0@t.com</p>
     <p>testtest0</p>    
+    <qiita-search></qiita-search>
     <doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>       
     <doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
     <article-list></article-list>
@@ -19,6 +20,8 @@ import Signin from '~/components/signin.vue'
 import ArticleList from '~/components/article-list.vue'
 import DoughnutGraph from '~/components/doughnut.vue'
 import DoughnutGraphSelect from '~/components/doughnut-graph-select.vue'
+import QiitaSearch from '~/components/qiita-search.vue'
+
 
 export default {
   components: {    
@@ -27,6 +30,8 @@ export default {
     'article-list': ArticleList,
     'doughnut-graph': DoughnutGraph,
     'doughnut-graph-select': DoughnutGraphSelect,
+    'qiita-search': QiitaSearch,
+
   },
   data () {
     return {

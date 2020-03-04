@@ -23,6 +23,7 @@ export default {
   ** Global CSS
   */
   css: [
+    'element-ui/lib/theme-chalk/index.css',
   ],
   /*
   ** Plugins to load before mounting the App
@@ -31,7 +32,14 @@ export default {
     '~/plugins/firebase_config.js',
     //'~/plugins/nav-guard.js',
     '~/plugins/vue-chartjs.js',
+    '~/plugins/axios.js',
+    '~/plugins/element-ui.js',
+
   ],
+  env: {
+    //.envにおいて、すでに定義してあるので、以下は不要
+    //QIITA_TOKEN: process.env.QIITA_TOKEN
+  },
   /*
   ** Nuxt.js dev-modules
   */
@@ -42,6 +50,7 @@ export default {
   */
   modules: [
   '@nuxtjs/dotenv',
+  '@nuxtjs/axios',
   ],
   /*
   ** Build configuration
