@@ -26,7 +26,9 @@ export default {
     signIn() {
       firebase.auth().signInWithEmailAndPassword(this.email, this.password)
       .then(() => {        
-        this.$store.dispatch('nameSetAction', firebase.auth().currentUser.displayName);        
+        this.$store.dispatch('nameSetAction', firebase.auth().currentUser.displayName);                   
+        this.$store.dispatch('persistedParameter/changeUserIdPersistedAction', firebase.auth().currentUser.uid);       
+                
         alert('ログイン成功');        
         this.$router.push('/member');        
       })

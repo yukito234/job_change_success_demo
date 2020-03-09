@@ -10,7 +10,7 @@ export const state = () => ({
 	graphQuantity:[],
 	graphColor:[],
 	graphItemData:{},
-	graphType: "age",	
+	graphType: "age",		
 
 })
 	
@@ -34,6 +34,7 @@ export const actions = {
 		context.commit('graphTypeChange', graphType);
 
 	},	
+	
 }
 
 export const mutations ={
@@ -98,4 +99,5 @@ export const mutations ={
 			state.graphColor.push(colorPalette[i]);
 		}
 	},
+	
 }

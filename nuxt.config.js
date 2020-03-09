@@ -34,6 +34,7 @@ export default {
     '~/plugins/vue-chartjs.js',
     '~/plugins/axios.js',
     '~/plugins/element-ui.js',
+    { src: '~plugins/localStorage', ssr: false },
 
   ],
   env: {

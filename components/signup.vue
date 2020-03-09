@@ -39,7 +39,13 @@ export default {
               name: this.userName,                            
           })
           .then(() => {
-            alert("登録完了");            
+            alert("登録完了");
+            //ユーザ名やメールアドレスなどの入力欄の値を空にする 
+            //this.userName='';
+            //this.email='';
+            this.password='';
+            //メンバーページに飛ばす場合は、signin.vueのsignIn()メソッドの処理が必要          
+                     
           })          
           .catch(function(error) {
              alert(error.message)

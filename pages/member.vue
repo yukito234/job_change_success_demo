@@ -1,8 +1,10 @@
 <template>
   <div class="member-container">    
     <span>{{loginUserName}}さん、ようこそ！！</span>            
-    <button v-on:click="signOut">ログアウト</button>
-    <article-registration></article-registration>    
+    <button v-on:click="signOut">ログアウト</button>   
+    <br>
+    <nuxt-link to="/dashboard">ダッシュボードに移動する</nuxt-link>
+    <users-list></users-list>   
   </div>
 </template>
 
@@ -10,14 +12,13 @@
 /* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
-import ArticleRegistration from '~/components/article-registration.vue'
+import UsersList from '~/components/users-list.vue'
 
 export default {
-  middleware: 'authenticated',
-  //middleware: 'currentUserName',
+  middleware: 'authenticated', 
   name: 'Member',
-  components: {    
-    'article-registration': ArticleRegistration,    
+  components: {        
+    'users-list': UsersList,    
   },
   head(){
     return {
@@ -31,8 +32,7 @@ export default {
   },
   computed:{
     loginUserName(){
-      return this.$store.state.currentUserName;       
-      //return this.$store.state.authenticated; 
+      return this.$store.state.currentUserName;            
     },
   },
   created:function(){
@@ -40,10 +40,16 @@ export default {
   methods: {
     signOut() {           
       this.$store.commit('nameInit');
+      //１つのパソコンを複数のユーザーが使用するため、ログイン後にisEmptyをリセットする
+      this.$store.commit('persistedParameter/changeIsEmpty',true);
       firebase.auth().signOut().then(() => {
         this.$router.push('/')
       })
-    },    
+    }, 
+    goToDashboard(){
+      this.$router.push('/dashboard');
+
+    } ,  
   }
 }
 </script>
