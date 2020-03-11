@@ -22,8 +22,7 @@ export default {
   components: {    
      'article-registration': ArticleRegistration,    
      'profile-registration': ProfileRegistration,
-  },
-  
+  },  
   data () {
     return {            
     }

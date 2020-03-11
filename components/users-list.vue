@@ -6,7 +6,8 @@
         <tr>
           <th>ニックネーム</th>
           <th>画像</th>
-          <th>自己紹介</th>                    
+          <th>自己紹介</th>
+          <th>個別ページへのリンク</th>                    
         </tr>        
       </thead>
       <tbody>                
@@ -19,6 +20,10 @@
           </td>
           <td>
             {{ element.self_introduction }}
+          </td>
+          <td>
+            <!--<nuxt-link to="/${element.nick_name}">{{ element.nick_name }}の個別ページに移動する</nuxt-link>-->
+            <nuxt-link v-bind:to="{ path: `/${element.nick_name}` }">{{ element.nick_name }}の個別ページに移動する</nuxt-link>
           </td>                    
         </tr>
       </tbody>

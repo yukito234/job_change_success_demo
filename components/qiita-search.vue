@@ -31,8 +31,7 @@
     </label>
 
 		<p>チェックを入れたキーワード:{{ suggestKeywords }}</p>
-    <input type="text" v-model="searchBox" >  
-    <!--<input type="text" v-model="searchBox2" >-->
+    <input type="text" v-model="searchBox" >      
 
     <button type="button" v-on:click="doSearch">検索する</button>
     <p>検索ボックスの内容:{{ searchBoxContent }}</p>
@@ -48,29 +47,52 @@
     <table border="1">
       <thead>
         <tr>
+          <th>ストック</th>
+          <th>isStock</th>
           <th>更新日</th>
           <th>記事タイトル</th>
           <th>いいね数</th>                    
         </tr>        
       </thead>
       <tbody>                
-        <tr v-for="element in allArticleDataForDisplay" v-bind:key="element.url">
+        <tr v-for="element in allArticleDataForDisplay" v-bind:key="element.id">
           <td>
-            {{ element.updated_at.slice(0,10) }}</a>
+            <input type="checkbox" v-on:click="stockCheck(element)" v-model="element.isStock">                    
+            
+          </td>
+          <td>
+            {{element.isStock}}            
+            
+          </td>
+          <td>
+            {{ element.updated_at.slice(0,10) }}
           </td>
           <td>
             <a v-bind:href="element.url">{{ element.title }}</a>
           </td>
           <td>
-            {{ element.likes_count }}</a>
+            {{ element.likes_count }}
           </td>                    
         </tr>
       </tbody>
     </table>
+    <br> 
+    <button type="button" v-on:click="doStock">記事をストックする</button>
+    <br>        
     <div>
       <el-pagination background layout="prev, pager, next" v-bind:total="allArticleData.length" v-bind:page-size="10" @current-change="onchange">
       </el-pagination>
     </div>
+    <p>以下の記事がストックされています</p>
+    <!---->
+    <ul >
+      <li v-for="item in $store.getters['persistedParameter/getStockedArticles']" :key="item.id">
+        <a v-bind:href="item.url">{{ item.title }}</a>
+        
+      </li>
+    </ul>
+    
+    <button type="button" v-on:click="deleteStock">ストック用配列を空にする</button>
 	</div>
 </template>
 
@@ -89,25 +111,17 @@ export default {
       sortType: "relationSort",
       allArticleDataSorted: [],//並べ替え後のデータ格納用
       pageNum: 1,//ページネーションの現在ページ
+      allArticleDataStocked: [],//isStockプロパティを含むQiitaから取得した全データ      
 
     }
   },  
-  watch:{    
+  watch:{        
     suggestKeywords:function(){      
-      this.searchBox = this.suggestKeywords.join(" ");
-      //console.log("this.searchBox:");
-      //console.log(this.searchBox);
+      this.searchBox = this.suggestKeywords.join(" ");    
     },
-    searchBox( val ){
-      //console.log("val:");
-      //console.log(val);
-      this.searchBoxContent = val;
-      //console.log("this.searchBoxContent:");
-      //console.log(this.searchBoxContent);
-      
-      this.searchBoxContentArray = this.searchBoxContent.split(/\s+/);        
-      //console.log("this.searchBoxContentArray:");
-      //console.log(this.searchBoxContentArray);
+    searchBox( val ){      
+      this.searchBoxContent = val;            
+      this.searchBoxContentArray = this.searchBoxContent.split(/\s+/);              
     },
     sortChange:function(){
       console.log("sortChange called in watch");    
@@ -143,16 +157,51 @@ export default {
     }
     
   },
-  computed:{
+  computed:{    
     sortChange(){        
       return this.sortType;
 
     },          
   },
   methods: {   
-    onchange( page ){
-      //console.log("page in onchange");
-      //console.log(page);
+    
+    deleteStock(){
+      this.$store.commit('persistedParameter/deleteStockedArticles');      
+
+    },
+    doStock(){
+      for(let i=0; i<this.allArticleDataSorted.length; i++){       
+        if(this.allArticleDataSorted[i].isStock){         
+
+          //this.allArticleDataSorted[i]のコピーをとり、コピーを渡すようにした          
+          let changeData = Object.assign({},this.allArticleDataSorted[i]);                   
+          this.$store.commit('persistedParameter/changeStockedArticles',changeData);
+
+          this.allArticleDataSorted[i].isStock = false;
+          //配列要素の変更をリアクティブシステムに知らせる
+          this.allArticleDataSorted.splice();
+        }        
+        
+      }          
+    },
+    stockCheck(element){
+      if(!element.isStock){
+        for(let i=0; i<this.allArticleDataSorted.length; i++){
+          if(this.allArticleDataSorted[i].id === element.id){
+            this.allArticleDataSorted[i].isStock = true;                                  
+            
+          }
+        }
+      } else{
+        for(let i=0; i<this.allArticleDataSorted.length; i++){
+          if(this.allArticleDataSorted[i].id === element.id){
+            this.allArticleDataSorted[i].isStock = false;
+            
+          }
+        }
+      }      
+    },
+    onchange( page ){    
       this.pageNum = page;
       let data = this.getRangeByPage(page);
 
@@ -161,11 +210,11 @@ export default {
       for(let j=0; j<data.length; j++){
         this.allArticleDataForDisplay.push(data[j]);
       } 
+     
     },
     getRangeByPage( page ){
        //1ページの表示数
-       const SIZE = 10;
-       //return this.allArticleData.slice((page - 1) * SIZE, (page - 1) * SIZE + SIZE);
+       const SIZE = 10;       
        return this.allArticleDataSorted.slice((page - 1) * SIZE, (page - 1) * SIZE + SIZE);
     },
     async doSearch(){
@@ -173,6 +222,8 @@ export default {
       this.allArticleData.splice(-this.allArticleData.length);
       this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);
       this.allArticleDataForDisplay.splice(-this.allArticleDataForDisplay.length);
+      this.allArticleDataStocked.splice(-this.allArticleDataStocked.length);
+      
 
       let urlParameter ='';
       let url ='';      
@@ -195,40 +246,37 @@ export default {
           urlParameter = urlParameter + "title:" + this.searchBoxContentArray[i] + "+";
         }        
       }      
-      //console.log("urlParameter=");
-      //console.log(urlParameter);
-
+      
       url = "https://qiita.com/api/v2/items?query=" + urlParameter;      
-      //console.log("url=");
-      //console.log(url);      
-     
+      
+      let resultAddedIsStock=[];
+
       for(let i=0; i<pageMax; i++){
         url = "https://qiita.com/api/v2/items?query=" + urlParameter + `&page=${i+1}&per_page=100`;
-        let result = await this.$axios.$get(url);
-        //console.log("result=");
-        //console.log(result);
-
+        let result = await this.$axios.$get(url);       
         if(result===[]){
           break;
         }
-        for(let j=0; j<result.length; j++){
-          this.allArticleData.push(result[j]);
-          this.allArticleDataSorted.push(result[j]);
+
+        for(let j=0; j<result.length; j++){         
+          //isStockプロパティを付与した配列を作成
+          resultAddedIsStock[j] = result[j];
+          resultAddedIsStock[j].isStock = false;
+
+          this.allArticleDataStocked.push(resultAddedIsStock[j]);
+          this.allArticleData.push(resultAddedIsStock[j]);
+          this.allArticleDataSorted.push(resultAddedIsStock[j]);
         }        
       }                
-
-      //console.log("this.allArticleData[0]=");
-      //console.log(this.allArticleData[0]);
-      //{…}
+      console.log("this.allArticleDataSorted");
+      console.log(this.allArticleDataSorted);
 
       let dataPage1 = this.getRangeByPage(1);
-      //console.log("dataPage1=");
-      //console.log(dataPage1);
+      
       for(let j=0; j<dataPage1.length; j++){
         this.allArticleDataForDisplay.push(dataPage1[j]);      
       }  
-      //console.log("this.allArticleDataForDisplay=");
-      //console.log(this.allArticleDataForDisplay);      
+           
     },
   },   
 }

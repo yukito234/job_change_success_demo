@@ -13,7 +13,6 @@
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
 import UsersList from '~/components/users-list.vue'
-
 export default {
   middleware: 'authenticated', 
   name: 'Member',
