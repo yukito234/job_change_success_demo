@@ -3,6 +3,7 @@
     <h1>未経験からwebエンジニアを目指す人のための情報サイト</h1>        
     <p>test0@t.com</p>
     <p>testtest0</p>    
+    <google-search></google-search>
     <qiita-search></qiita-search>
     <doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>       
     <doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
@@ -21,6 +22,7 @@ import ArticleList from '~/components/article-list.vue'
 import DoughnutGraph from '~/components/doughnut.vue'
 import DoughnutGraphSelect from '~/components/doughnut-graph-select.vue'
 import QiitaSearch from '~/components/qiita-search.vue'
+import GoogleSearch from '~/components/google-search.vue'
 
 
 export default {
@@ -31,6 +33,7 @@ export default {
     'doughnut-graph': DoughnutGraph,
     'doughnut-graph-select': DoughnutGraphSelect,
     'qiita-search': QiitaSearch,
+    'google-search': GoogleSearch,
 
   },
   data () {

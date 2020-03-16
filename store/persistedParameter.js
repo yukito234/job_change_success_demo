@@ -6,6 +6,7 @@ export const state = () => ({
 	isEmpty : true,	
 	userIdPersisted: "",
 	stockedArticles: [],
+	usedAPI:"",
 	
 })
 
@@ -17,6 +18,11 @@ export const getters = {
 }
 
 export const mutations ={	
+	changeUsedAPI(state, name){
+		state.usedAPI=name;
+		console.log("state.usedAPI");
+		console.log(state.usedAPI);
+	},
 	changeIsEmpty(state, flag){		
 		state.isEmpty = flag ;
 		

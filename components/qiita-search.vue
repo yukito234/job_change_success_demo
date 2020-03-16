@@ -224,6 +224,8 @@ export default {
       this.allArticleDataForDisplay.splice(-this.allArticleDataForDisplay.length);
       this.allArticleDataStocked.splice(-this.allArticleDataStocked.length);
       
+      //qiitaのAPIを利用することをaxiosに伝える
+      this.$store.commit("persistedParameter/changeUsedAPI","qiita");
 
       let urlParameter ='';
       let url ='';      
@@ -245,8 +247,7 @@ export default {
         } else{
           urlParameter = urlParameter + "title:" + this.searchBoxContentArray[i] + "+";
         }        
-      }      
-      
+      }            
       url = "https://qiita.com/api/v2/items?query=" + urlParameter;      
       
       let resultAddedIsStock=[];

@@ -1,10 +1,8 @@
-export default function({ $axios }){
-	$axios.onRequest(( config ) => {		
-		//console.log("process.env.QIITA_TOKEN in axios.js");
-		//console.log(process.env.QIITA_TOKEN);
-		if( process.env.QIITA_TOKEN ){			
+export default function({ $axios, store }){
+	$axios.onRequest(( config ) => {				
+		if( process.env.QIITA_TOKEN && store.state.persistedParameter.usedAPI === "qiita"){					
 			config.headers.common['Authorization'] = `Bearer ${process.env.QIITA_TOKEN}`;
-		}		
+		}
 		return config;
 	})
 }

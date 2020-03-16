@@ -23,7 +23,8 @@
           </td>
           <td>
             <!--<nuxt-link to="/${element.nick_name}">{{ element.nick_name }}の個別ページに移動する</nuxt-link>-->
-            <nuxt-link v-bind:to="{ path: `/${element.nick_name}` }">{{ element.nick_name }}の個別ページに移動する</nuxt-link>
+            <!--<nuxt-link v-bind:to="{ path: `/${element.nick_name}` }">{{ element.nick_name }}の個別ページに移動する</nuxt-link>-->
+            <nuxt-link v-bind:to="{ path: `/${element.user_id}` }">{{ element.nick_name }}の個別ページに移動する</nuxt-link>
           </td>                    
         </tr>
       </tbody>
