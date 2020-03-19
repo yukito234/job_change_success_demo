@@ -21,10 +21,8 @@
           <td>
             {{ element.self_introduction }}
           </td>
-          <td>
-            <!--<nuxt-link to="/${element.nick_name}">{{ element.nick_name }}の個別ページに移動する</nuxt-link>-->
-            <!--<nuxt-link v-bind:to="{ path: `/${element.nick_name}` }">{{ element.nick_name }}の個別ページに移動する</nuxt-link>-->
-            <nuxt-link v-bind:to="{ path: `/${element.user_id}` }">{{ element.nick_name }}の個別ページに移動する</nuxt-link>
+          <td>                        
+            <nuxt-link v-on:click.native="setUserData(element)" v-bind:to="{ path: `/id` }">{{ element.nick_name }}の個別ページに移動する</nuxt-link>
           </td>                    
         </tr>
       </tbody>
@@ -50,11 +48,12 @@ export default {
         querySnapshot.forEach((doc)=>{
           const data = doc.data();                                        
           this.allProfile.push(data);
+          //firebaseのプロフィールデータをブラウザ側に保存し、永続化
+          //this.$store.dispatch('allProfileInStoreSetAction',data);
+          this.$store.dispatch('persistedParameter/allProfilePersistedSetAction',data);
 
         });        
-        console.log("this.allProfile");
-        console.log(this.allProfile);        
-         
+                         
       })
       .catch(function(error) {
           alert(error.message)
@@ -66,7 +65,14 @@ export default {
   created:function(){
   },  
   methods: {
-    
+    setUserData(element){
+      console.log("element");
+      console.log(element);
+      //this.$store.commit('userDataSet',element);
+      //クリックされたプロフィールページのユーザ情報を保存
+      this.$store.commit('persistedParameter/userDataSet',element);
+
+    },
   }
 }
 </script>

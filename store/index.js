@@ -11,10 +11,23 @@ export const state = () => ({
 	graphColor:[],
 	graphItemData:{},
 	graphType: "age",		
-
+	//allProfileInStore:[],
 })
+
+export const getters = {
+	/*
+	getAllProfileInStore(state){		
+		return state.allProfileInStore;
+	},
+	*/
+}
 	
 export const actions = {		
+	/*
+	allProfileInStoreSetAction(context, data){		
+		context.commit('allProfileInStoreSet', data);
+	},
+	*/
 	nameSetAction(context, name){		
 		context.commit('nameSet', name);
 	},
@@ -33,12 +46,16 @@ export const actions = {
 	graphTypeChangeAction(context, graphType){
 		context.commit('graphTypeChange', graphType);
 
-	},	
-	
+	},		
 }
 
 export const mutations ={
+	/*
+	allProfileInStoreSet(state,data){
+		state.allProfileInStore.push(data);		
 
+	},
+	*/
 	nameSet(state, name){		
 		state.currentUserName = name;				
 	},

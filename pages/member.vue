@@ -48,7 +48,7 @@ export default {
     goToDashboard(){
       this.$router.push('/dashboard');
 
-    } ,  
+    },  
   }
 }
 </script>
