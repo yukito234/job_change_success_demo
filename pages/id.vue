@@ -1,5 +1,6 @@
 <template>
 	<div>
+    <global-navi></global-navi>
 		<nuxt-link to="/member">メンバーページに移動する</nuxt-link>				
     <h2>{{ $store.getters['persistedParameter/getUserData'].nick_name }}さんの個別ページです</h2>		
     <img :src="$store.getters['persistedParameter/getUserData'].image_url" class="profileimage">
@@ -72,9 +73,14 @@
 /* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
+import globalNavi from '~/components/global-navi.vue';
 
 export default {     
   middleware: 'authenticated', 
+  components:{
+    "global-navi": globalNavi,
+
+  },
   data () {
     return {            
      userInfo:"",

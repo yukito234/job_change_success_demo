@@ -28,9 +28,13 @@ export default {
       .then(() => {        
         this.$store.dispatch('nameSetAction', firebase.auth().currentUser.displayName);                   
         this.$store.dispatch('persistedParameter/changeUserIdPersistedAction', firebase.auth().currentUser.uid);       
+
+        this.$store.dispatch('persistedParameter/changeIsLoginUserAction', true);
+
                 
-        alert('ログイン成功');        
-        this.$router.push('/member');        
+        //alert('ログイン成功');        
+        this.$router.push('/member');
+        //this.$router.go({path: this.$router.currentRoute.path, force: true});        
       })
       .catch(error => {
         alert(error.message);

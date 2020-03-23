@@ -5,16 +5,21 @@ import Vuex from 'vuex'
 export const state = () => ({	
 	isEmpty : true,	
 	userIdPersisted: "",
+	//userIdPersisted: null,
 	stockedArticles: [],
 	usedAPI:"",	
 	commentData:"",//reply.vueに表示するコメント
 	allCommentData:[],//id.vueのコメント表の全データ
 	userData:"",//users-list.vueでセットされるプロフィールページユーザの情報
 	allProfilePersisted:[],//users-list.vueでセットされる全プロフィールページユーザの情報
+	isLoginUser:false,//ログアウト状態でfalse、ログイン状態でtrue
 
 })
 
-export const getters = {
+export const getters = {	
+	getIsLoginUser(state){		
+		return state.isLoginUser;
+	},
 	getAllProfilePersisted(state){		
 		return state.allProfilePersisted;
 	},
@@ -37,6 +42,16 @@ export const getters = {
 }
 
 export const mutations ={
+	changeIsLoginUser(state, flag){		
+		state.isLoginUser = flag ;
+		console.log("state.isLoginUser");
+		console.log(state.isLoginUser);
+		
+	},
+	userIdPersistedInit(state){
+		state.userIdPersisted = "";
+
+	},
 	allProfilePersistedSet(state,data){
 		state.allProfilePersisted.push(data);		
 
@@ -90,6 +105,9 @@ export const mutations ={
 }	
 
 export const actions = {
+	changeIsLoginUserAction(context, flag){		
+		context.commit('changeIsLoginUser', flag);
+	},
 	allProfilePersistedSetAction(context, data){		
 		context.commit('allProfilePersistedSet', data);
 	},

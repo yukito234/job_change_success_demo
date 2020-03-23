@@ -29,7 +29,6 @@
 	    <label>
 	      <input type="checkbox" v-model="suggestKeywords" value="バックエンド">バックエンド  
 	    </label>
-
 		<p>チェックを入れたキーワード:{{ suggestKeywords }}</p>
 		<br>
     	<select v-model="domain">

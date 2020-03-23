@@ -1,90 +1,25 @@
 <template>
   <div >
-    <h1>未経験からwebエンジニアを目指す人のための情報サイト</h1>        
-    <p>test0@t.com</p>
-    <p>testtest0</p>    
-    <google-search></google-search>
-    <qiita-search></qiita-search>
-    <doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>       
-    <doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
-    <article-list></article-list>
-    <signup></signup>
-    <signin></signin>               
+    <global-navi></global-navi>
+    <experience-search></experience-search>                  
   </div>
 </template>
 
 <script>
-import firebase from 'firebase'
-import db from '../plugins/firebase_config'
-import Signup from '~/components/signup.vue'
-import Signin from '~/components/signin.vue'
-import ArticleList from '~/components/article-list.vue'
-import DoughnutGraph from '~/components/doughnut.vue'
-import DoughnutGraphSelect from '~/components/doughnut-graph-select.vue'
-import QiitaSearch from '~/components/qiita-search.vue'
-import GoogleSearch from '~/components/google-search.vue'
-
+import ExperienceSearch from '~/components/experience-search.vue'
+import globalNavi from '~/components/global-navi.vue';
 
 export default {
-  components: {    
-    Signup,
-    Signin,
-    'article-list': ArticleList,
-    'doughnut-graph': DoughnutGraph,
-    'doughnut-graph-select': DoughnutGraphSelect,
-    'qiita-search': QiitaSearch,
-    'google-search': GoogleSearch,
+  components: {          
+    'experience-search': ExperienceSearch,
+    "global-navi": globalNavi,
 
   },
   data () {
-    return {
-      datacollection: null,
+    return {      
       
     }
-  },    
-  mounted () {    
-    db.collection("experience_articles").get()
-      .then((querySnapshot)=>{        
-        querySnapshot.forEach((doc)=>{
-          const data = doc.data();                    
-          //グラフ描画に必要な全データを取得
-          this.$store.dispatch('allArticlesForGraphGetAction', data);          
-
-        });        
-        //グラフ項目のデータを集計
-        this.$store.dispatch('itemCountAction', this.$store.state.graphType);        
-        //グラフのラベル、データ、カラーの配列を準備
-        this.$store.dispatch('createLabelQuantityColorAction');
-        //描画用オブジェクトに必要データを格納
-        this.datacollection = {                           
-          labels: this.$store.state.graphLabels,          
-          datasets: [
-            {                          
-              data: this.$store.state.graphQuantity,                          
-              backgroundColor: this.$store.state.graphColor,              
-            }
-          ]                    
-        }        
-         
-      })
-      .catch(function(error) {
-          alert(error.message)
-      });
-  },
-  methods: {
-    //グラフタイプの切替時の再描画
-    redrawGraph(){            
-      this.datacollection = {                      
-        labels: this.$store.state.graphLabels,        
-        datasets: [
-          {                        
-            data: this.$store.state.graphQuantity,                        
-            backgroundColor: this.$store.state.graphColor,            
-          }
-        ]               
-      }                 
-    },    
-  }
+  },     
 }
 </script>
 

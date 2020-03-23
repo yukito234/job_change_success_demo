@@ -1,10 +1,12 @@
 <template>
   <div>    
+    <global-navi></global-navi>
     <span>ここは、{{loginUserName}}さんのダッシュボードページです</span>            
-    <button v-on:click="signOut">ログアウト</button>   
-    <br>    
-    <nuxt-link to="/member">メンバーページに移動する</nuxt-link>
+    <br>
+    <br>      
     <profile-registration></profile-registration>
+    <br>
+    <br>
     <article-registration></article-registration> 
   </div>
 </template>
@@ -15,6 +17,7 @@ import firebase from 'firebase'
 import db from '../plugins/firebase_config'
 import ArticleRegistration from '~/components/article-registration.vue'
 import ProfileRegistration from '~/components/profile-registration.vue'
+import globalNavi from '~/components/global-navi.vue';
 
 export default {
   middleware: 'authenticated',  
@@ -22,6 +25,7 @@ export default {
   components: {    
      'article-registration': ArticleRegistration,    
      'profile-registration': ProfileRegistration,
+     "global-navi": globalNavi,
   },  
   data () {
     return {            
@@ -36,13 +40,7 @@ export default {
   created:function(){
   },  
   methods: {
-    signOut() {           
-      this.$store.commit('nameInit');
-      this.$store.commit('persistedParameter/changeIsEmpty',true);
-      firebase.auth().signOut().then(() => {
-        this.$router.push('/')
-      })
-    },    
+     
   }
 }
 </script>

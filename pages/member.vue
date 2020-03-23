@@ -1,9 +1,8 @@
 <template>
   <div class="member-container">    
-    <span>{{loginUserName}}さん、ようこそ！！</span>            
-    <button v-on:click="signOut">ログアウト</button>   
-    <br>
-    <nuxt-link to="/dashboard">ダッシュボードに移動する</nuxt-link>
+    <global-navi></global-navi>
+    <span>{{loginUserName}}さん、ようこそ！！</span>
+    <br>                
     <users-list></users-list>   
   </div>
 </template>
@@ -13,11 +12,14 @@
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
 import UsersList from '~/components/users-list.vue'
+import globalNavi from '~/components/global-navi.vue';
+
 export default {
   middleware: 'authenticated', 
   name: 'Member',
   components: {        
     'users-list': UsersList,    
+    "global-navi": globalNavi,
   },
   head(){
     return {
@@ -39,10 +41,15 @@ export default {
   methods: {
     signOut() {           
       this.$store.commit('nameInit');
+      this.$store.commit('persistedParameter/userIdPersistedInit');
+      this.$store.dispatch('persistedParameter/changeIsLoginUserAction',false);
+
       //１つのパソコンを複数のユーザーが使用するため、ログイン後にisEmptyをリセットする
-      this.$store.commit('persistedParameter/changeIsEmpty',true);
+      this.$store.commit('persistedParameter/changeIsEmpty',true);      
+
       firebase.auth().signOut().then(() => {
-        this.$router.push('/')
+        this.$router.push('/');
+        //this.$router.go({path: this.$router.currentRoute.path, force: true});
       })
     }, 
     goToDashboard(){

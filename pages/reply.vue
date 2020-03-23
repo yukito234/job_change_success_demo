@@ -1,5 +1,6 @@
 <template>
 	<div>		
+		<global-navi></global-navi>
 		<nuxt-link v-bind:to="{ path: `/id` }">個別ページに戻る</nuxt-link>
 		<br>
 		<h2>返信する</h2>
@@ -18,9 +19,14 @@
 /* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
+import globalNavi from '~/components/global-navi.vue';
 
 export default {  
 	//middleware: 'authenticated', 
+	components:{
+	    "global-navi": globalNavi,
+
+	 },
 	data () {
 		return {            			
 			replyComment: ">>" + this.$store.getters['persistedParameter/getCommentData'].comment,
