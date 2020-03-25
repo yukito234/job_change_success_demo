@@ -42,6 +42,7 @@ export const getters = {
 }
 
 export const mutations ={
+
 	changeIsLoginUser(state, flag){		
 		state.isLoginUser = flag ;
 		console.log("state.isLoginUser");
@@ -97,6 +98,25 @@ export const mutations ={
 			state.stockedArticles.push(element);
 		}
 		
+	},
+	deleteStockItems(state, stockDataArray){
+
+		console.log("state.stockedArticles before");
+		console.log(state.stockedArticles);		
+
+		//ストック記事保管用配列をいったん初期化する
+		state.stockedArticles.splice(-state.stockedArticles.length);
+
+		for(let i=0; i<stockDataArray.length; i++){
+			if( !stockDataArray[i].isStock ){
+				//削除しない要素をストック記事保管用配列に挿入する
+				state.stockedArticles.push(stockDataArray[i]);
+			} 
+		}		
+
+		console.log("state.stockedArticles after");
+		console.log(state.stockedArticles);
+
 	},
 	deleteStockedArticles(state, element){				
 		state.stockedArticles.splice(-state.stockedArticles.length);

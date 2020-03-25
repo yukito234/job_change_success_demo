@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div>		
 		<br>
 		<br>
     	<h2>体験記を探す</h2>    	
@@ -44,7 +44,7 @@
 	    <h3>step2.検索対象のドメインを選ぶ</h3>
 	    <p>検索したいサイトを選んでください。</p>
 	    <select v-model="domain">
-	      <option disabled value="">選択してください</option>
+	      <!--<option disabled value="">選択してください</option>-->
 	      <option value="qiita">qiita</option>
 	      <option value="hatenablog">hatenablog</option>
 	      <option value="note">note</option>
@@ -54,10 +54,11 @@
 	    <br>
 	    <h3>step3.検索を開始</h3>
 	    <p>検索したいキーワードを直接入力することもできます。</p>
-    	<input type="text" v-model="searchBox" >
+	    <!--入力された文字列の前後の空白を取り除いて検索する-->    	
+    	<input type="text" v-model.trim="searchBox" v-on:blur="doOnBlur()">
     	<button type="button" v-on:click="doSearch">検索する</button>
     	<br>
-    	<p>検索ボックスの内容:{{ searchBoxContent }}</p>
+    	<p>検索ボックスの内容(searchBoxContent):{{ searchBoxContent }}</p>
     	<br>
     	<br>
     	<div v-if="isOtherDomainSearchResultDisplay">
@@ -83,6 +84,8 @@
 
 		<div v-if="isQiitaSearchResultDisplay">
 			<div>
+			  <h3>検索結果: {{allArticleDataSorted.length}} 件のデータを取得しました</h3>
+			  <p>検索結果を並び替える</p>
 		      <select v-model="sortType">     
 		        <option value="relationSort">関連順</option>
 		        <option value="newSort">新着順</option>
@@ -96,28 +99,32 @@
 		    <table border="1">
 		      <thead>
 		        <tr>
-		          <th>ストック</th>
-		          <th>isStock</th>
+		          <th>ストック</th>		          
+		          <th>記事No</th>
 		          <th>更新日</th>
 		          <th>記事タイトル</th>
+		          <!--<th>本文(導入部)</th>-->
 		          <th>いいね数</th>                    
 		        </tr>        
 		      </thead>
 		      <tbody>                
 		        <tr v-for="element in allArticleDataForDisplay" v-bind:key="element.id">
+		          <td>		            
+		            <button type="button" v-on:click="addStockArray(element)">ストック</button>
+		          </td>		          
 		          <td>
-		            <input type="checkbox" v-on:click="stockCheck(element)" v-model="element.isStock">                    
-		            
-		          </td>
-		          <td>
-		            {{element.isStock}}            
+		            {{ element.articleNumber+1 }}            
 		            
 		          </td>
 		          <td>
 		            {{ element.updated_at.slice(0,10) }}
 		          </td>
 		          <td>
-		            <a v-bind:href="element.url">{{ element.title }}</a>
+		          	<a v-bind:href="element.url" >{{ element.title }}</a>
+		          </td>
+		          <td>
+		            <!--<button type="button" v-on:click="showBodyText(element)">表示</button>-->
+		            <!--{{ element.body }}-->
 		          </td>
 		          <td>
 		            {{ element.likes_count }}
@@ -125,8 +132,7 @@
 		        </tr>
 		      </tbody>
 		    </table>
-		    <br> 
-		    <button type="button" v-on:click="doStock">記事をストックする</button>
+		    <br> 		    
 		    <br> 
 		    <br>        
 		    <div>
@@ -136,16 +142,42 @@
 		    <br> 
 		    <br> 
 		    <p>以下の記事がストックされています</p>
-		    <!---->
+		    <table border="1">
+		      <thead>
+		        <tr>
+		          <th>削除選択<br>checkbox</th>
+		          <th>isStock</th>
+		          <th>記事タイトル</th>
+		        </tr>
+		  	  </thead>
+		  	  <tbody>		  	  	
+		  	  	<tr v-for="item in obtainStockedArticles" v-bind:key="item.id">	
+		  	  		<td>		            
+		            	<input type="checkbox" v-on:click="deleteCheck(item)" v-model="item.isStock">                    		            
+		          　</td>
+		  	  		<td>
+		            	{{item.isStock}}            		            
+		            </td>
+		            <td>
+		          		<a v-bind:href="item.url" >{{ item.title }}</a>
+		          	</td>
+		  	  	</tr>
+		  	  </tbody>
+		  	</table>
+		    <!--
 		    <ul >
 		      <li v-for="item in $store.getters['persistedParameter/getStockedArticles']" :key="item.id">
 		        <a v-bind:href="item.url">{{ item.title }}</a>
 		        
 		      </li>
 		    </ul>
+		    -->
 		    <br> 
-		    <br> 
-		    <button type="button" v-on:click="deleteStock">ストック用配列を空にする</button>
+		    <br> 		    
+		    <button type="button" v-on:click="deleteStock">ストック記事を全部削除する</button>
+			
+			<button type="button" v-on:click="deleteSelectedStock()">選択した記事をストックから削除する</button>
+			
 		</div>
 
     </div>
@@ -153,6 +185,7 @@
 
 <script>
 /* eslint-disable */
+import _ from 'lodash';
 
 export default {  
 	data () {
@@ -167,24 +200,42 @@ export default {
 	      allArticleDataSorted: [],//並べ替え後のデータ格納用
 	      pageNum: 1,//ページネーションの現在ページ
 	      allArticleDataStocked: [],//isStockプロパティを含むQiitaから取得した全データ 
-	      domain:"",
+	      //domain:"",
+	      domain:"qiita",
 	      isOtherDomainSearchResultDisplay: false,//検索結果の表示切り替え用
 	      isQiitaSearchResultDisplay:false,//検索結果の表示切り替え用。trueでqiitaの検索結果が表示される
+	      storedSearchKeywords:[],//検索ボックスの内容を一時保存する配列
+	      allStockedData:[],//永続化されたstockedArticles[]のコピー配列。データを削除する際の一時保存用
+	      //allStockedData:"",//永続化されたstockedArticles[]のコピー配列。データを削除する際の一時保存用
 	    }
 	},
 	watch:{           		
-		suggestKeywords:function(){//ok      
-	      this.searchBox = this.suggestKeywords.join(" ");    
+		suggestKeywords:function(){       	      
+	      //検索ボックスの内容は、フォーカスが外れる直前の検索ボックスの内容と、今選んだ検索ヒントキーワードを連結させる
+	      //ただし、どちらかの配列が空の場合は文字列の前後に空白が入らないように場合分けする
+	      if(this.storedSearchKeywords.length === 0){
+	      	this.searchBox =  this.suggestKeywords.join(" ");
+
+	      } else if(this.suggestKeywords.length === 0){
+	      	this.searchBox =  this.storedSearchKeywords.join(" ");
+	      } else{
+	      	this.searchBox =  this.storedSearchKeywords.join(" ") + " " + this.suggestKeywords.join(" ");
+	      }
+	      
+	      console.log("this.searchBox");
+	      console.log(this.searchBox);
+	      console.log("this.storedSearchKeywords");
+	      console.log(this.storedSearchKeywords);
 	    },
-	    searchBox( val ){//ok        
+	    searchBox( val ){ 
 	      this.searchBoxContent = val;
 	      this.searchBoxContentArray = this.searchBoxContent.split(/\s+/);             	      
 	    },
-	    sortChange:function(){//ok  
-	      console.log("sortChange called in watch");    
-	      //Qiitaのデータをソート用配列に格納する
-	      let dataStoredArray = this.allArticleDataSorted.slice(0, this.allArticleDataSorted.length);
-	      //ソートを実行
+	    sortChange:function(){ 	        
+	      //データをソートする前に、ディープコピーをとる    
+	      let dataStoredArray = _.cloneDeep(this.allArticleDataSorted);
+	      
+	      //ディープコピーでソートを実行
 	      if(this.sortType === "likeSort"){
 	        dataStoredArray.sort(likesSortFunc);
 
@@ -192,7 +243,7 @@ export default {
 	        dataStoredArray.sort(dateSortFunc);
 
 	      } else {
-	        dataStoredArray = this.allArticleData.slice(0, this.allArticleData.length);
+	      	dataStoredArray = _.cloneDeep(this.allArticleData);	        
 
 	      }      
 	      //ソート用の関数を定義
@@ -210,54 +261,102 @@ export default {
 	        this.allArticleDataSorted.push(dataStoredArray[j]);
 	      }       
 	      this.onchange(this.pageNum);
-	      //this.onchange(1);
+	      
 	    }
 	    
 	},
 	computed:{    
-	    sortChange(){//ok          
+	    sortChange(){      
 	      return this.sortType;
 
 	    },          
+	    obtainStockedArticles(){//checked      
+	    	//永続化された記事ストック用配列のデータを値渡しでコピーする
+	    	this.allStockedData = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);	    	
+
+			console.log("this.allStockedData");
+	    	console.log(this.allStockedData);
+	    	return this.allStockedData;
+	    },
 	},
 	methods:{
-		deleteStock(){//ok  
+		
+		doOnBlur(){
+			//検索ボックスの内容を一時保存するための配列を初期化する			
+			this.storedSearchKeywords.splice(-this.storedSearchKeywords.length);
+			//フォーカスが外れる直前の検索ボックスの内容を一時保存用の配列に格納する
+			for(let j=0; j<this.searchBoxContentArray.length; j++){
+		        this.storedSearchKeywords.push(this.searchBoxContentArray[j]);
+		    }
+		    console.log("this.storedSearchKeywords");
+			console.log(this.storedSearchKeywords);
+			//検索ボックスの内容を退避させたら、ヒントキーワードを格納する配列を空にする			
+			this.suggestKeywords.splice(-this.suggestKeywords.length);
+		},
+		/*
+		showBodyText(element){ //記事ボディの内容をチェックするためのメソッド
+			//alert(element.body);
+			console.log("element.body");
+			console.log(element.body);
+
+			console.log("element.rendered_body");
+			console.log(element.rendered_body);
+
+		},
+		*/
+		deleteStock(){
 	      this.$store.commit('persistedParameter/deleteStockedArticles');      
 
 	    },
-	    doStock(){//ok  
-	      for(let i=0; i<this.allArticleDataSorted.length; i++){       
-	        if(this.allArticleDataSorted[i].isStock){         
+	    addStockArray(element){
+	    	//押下された要素を特定する
+	    	for(let i=0; i<this.allArticleDataSorted.length; i++){
+	          if(this.allArticleDataSorted[i].id === element.id){	            
+	          	//押下された要素のディープコピーをとる
+	            let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
 
-	          //this.allArticleDataSorted[i]のコピーをとり、コピーを渡すようにした          
-	          let changeData = Object.assign({},this.allArticleDataSorted[i]);                   
-	          this.$store.commit('persistedParameter/changeStockedArticles',changeData);
-
-	          this.allArticleDataSorted[i].isStock = false;
-	          //配列要素の変更をリアクティブシステムに知らせる
-	          this.allArticleDataSorted.splice();
-	        }        
-	        
-	      }          
-	    },
-	    stockCheck(element){//ok  
-	      if(!element.isStock){
-	        for(let i=0; i<this.allArticleDataSorted.length; i++){
-	          if(this.allArticleDataSorted[i].id === element.id){
-	            this.allArticleDataSorted[i].isStock = true;                                  
+	            this.$store.commit('persistedParameter/changeStockedArticles',changeData);
 	            
 	          }
 	        }
-	      } else{
-	        for(let i=0; i<this.allArticleDataSorted.length; i++){
-	          if(this.allArticleDataSorted[i].id === element.id){
-	            this.allArticleDataSorted[i].isStock = false;
-	            
-	          }
-	        }
-	      }      
 	    },
-	    onchange( page ){//ok      
+	    	    
+	    deleteCheck(element){
+	    	//削除する要素を見つける
+	    	if(!element.isStock){
+		        for(let i=0; i<this.allStockedData.length; i++){
+		          if(this.allStockedData[i].id === element.id){
+		            this.allStockedData[i].isStock = true;                                  
+		            console.log(`this.allStockedData[${i}].isStock`);
+	    			console.log(this.allStockedData[i].isStock);
+		          }
+		        }
+		    } else{
+		        for(let i=0; i<this.allStockedData.length; i++){
+		          if(this.allStockedData[i].id === element.id){
+		            this.allStockedData[i].isStock = false;
+		            console.log(`this.allStockedData[${i}].isStock`);
+	    			console.log(this.allStockedData[i].isStock);
+		            
+		          }
+		        }
+		    }
+		    console.log("this.allStockedData");
+	        console.log(this.allStockedData);    
+
+	    },
+	    deleteSelectedStock(){    		    	
+
+	    	let data = _.cloneDeep(this.allStockedData);
+
+	    	console.log("data");
+	    	console.log(data);
+
+	    	this.$store.commit('persistedParameter/deleteStockItems',data);
+	    	
+	    },
+	   
+	    onchange( page ){     
 	      this.pageNum = page;
 	      let data = this.getRangeByPage(page);
 
@@ -268,10 +367,13 @@ export default {
 	      } 
 	     
 	    },
-	    getRangeByPage( page ){//ok  
+	    getRangeByPage( page ){
 	       //1ページの表示数
 	       const SIZE = 10;       
-	       return this.allArticleDataSorted.slice((page - 1) * SIZE, (page - 1) * SIZE + SIZE);
+	       const dataStoredArray = _.cloneDeep(this.allArticleDataSorted);	      
+
+	       return dataStoredArray.slice((page - 1) * SIZE, (page - 1) * SIZE + SIZE);
+	       
 	    },
 		async doSearch(){		
 			//すでに表示されている検索結果をクリアにする
@@ -316,6 +418,9 @@ export default {
 		      url = "https://qiita.com/api/v2/items?query=" + urlParameter;      
 		      
 		      let resultAddedIsStock=[];
+		      let resultAddedIsStock_1=[];
+		      let resultAddedIsStock_2=[];
+		      let resultAddedIsStock_3=[];
 
 		      for(let i=0; i<pageMax; i++){
 		        url = "https://qiita.com/api/v2/items?query=" + urlParameter + `&page=${i+1}&per_page=100`;
@@ -325,14 +430,38 @@ export default {
 		        }
 
 		        for(let j=0; j<result.length; j++){         
-		          //isStockプロパティを付与した配列を作成
-		          resultAddedIsStock[j] = result[j];
-		          resultAddedIsStock[j].isStock = false;
+		          //isStockプロパティを付与した配列を作成          	          		                
 
-		          this.allArticleDataStocked.push(resultAddedIsStock[j]);
-		          this.allArticleData.push(resultAddedIsStock[j]);
-		          this.allArticleDataSorted.push(resultAddedIsStock[j]);
-		        }        
+		          //qiitaから取得したデータをディープコピーする
+		          resultAddedIsStock_1[j] = _.cloneDeep(result[j]); 		          
+		          resultAddedIsStock_1[j].isStock = false;
+		          resultAddedIsStock_1[j].articleNumber = j;
+
+		          this.allArticleDataStocked.push(resultAddedIsStock_1[j]);		          
+		        }
+
+		        for(let j=0; j<result.length; j++){         
+		          //isStockプロパティを付与した配列を作成          	          		                
+
+		          //qiitaから取得したデータをディープコピーする
+		          resultAddedIsStock_2[j] = _.cloneDeep(result[j]); 		          
+		          resultAddedIsStock_2[j].isStock = false;
+		          resultAddedIsStock_2[j].articleNumber = j;
+
+		          this.allArticleData.push(resultAddedIsStock_2[j]);		          
+		        }
+
+		        for(let j=0; j<result.length; j++){         
+		          //isStockプロパティを付与した配列を作成          	          		                
+
+		          //qiitaから取得したデータをディープコピーする
+		          resultAddedIsStock_3[j] = _.cloneDeep(result[j]); 		          
+		          resultAddedIsStock_3[j].isStock = false;
+		          resultAddedIsStock_3[j].articleNumber = j;
+
+		          this.allArticleDataSorted.push(resultAddedIsStock_3[j]);		          
+		        }		        
+
 		      }                
 		      console.log("this.allArticleDataSorted");
 		      console.log(this.allArticleDataSorted);
