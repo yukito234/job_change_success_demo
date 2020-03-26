@@ -108,13 +108,16 @@
 		        </tr>        
 		      </thead>
 		      <tbody>                
-		        <tr v-for="element in allArticleDataForDisplay" v-bind:key="element.id">
+		        <tr v-for="(element,index) in allArticleDataForDisplay" v-bind:key="element.id">
 		          <td>		            
 		            <button type="button" v-on:click="addStockArray(element)">ストック</button>
 		          </td>		          
 		          <td>
-		            {{ element.articleNumber+1 }}            
-		            
+		            <!--
+		            	{{ element.articleNumber+1 }} 
+		            	{{ (index+1)+(pageNum-1)*10 }}
+		            -->           
+		            {{ (index+1)+(pageNum-1)*perPage }}
 		          </td>
 		          <td>
 		            {{ element.updated_at.slice(0,10) }}
@@ -122,10 +125,12 @@
 		          <td>
 		          	<a v-bind:href="element.url" >{{ element.title }}</a>
 		          </td>
+		          <!--
 		          <td>
-		            <!--<button type="button" v-on:click="showBodyText(element)">表示</button>-->
-		            <!--{{ element.body }}-->
+		            <button type="button" v-on:click="showBodyText(element)">表示</button>
+		            {{ element.body }}
 		          </td>
+		          -->
 		          <td>
 		            {{ element.likes_count }}
 		          </td>                    
@@ -136,11 +141,27 @@
 		    <br> 
 		    <br>        
 		    <div>
+		      <!--
 		      <el-pagination background layout="prev, pager, next" v-bind:total="allArticleData.length" v-bind:page-size="10" @current-change="onchange">
+		      </el-pagination>
+		  		-->
+		  	  <el-pagination background layout="prev, pager, next" v-bind:total="allArticleData.length" v-bind:page-size="getPerPage" @current-change="onchange">
 		      </el-pagination>
 		    </div>
 		    <br> 
 		    <br> 
+		    <p>1ページの表示件数を変更する</p>
+		    <p>表示件数を入力してください</p>
+		    <!--<input type="number" v-model.number="perPage">-->
+		    <input type="number" v-model.number="perPageOfUserInput">
+		    <button type="button" v-on:click="changePerPage()">表示件数を変更する</button>
+		    <br> 
+		    <button type="button" v-on:click="displayAllArticles()">全件表示する</button>
+		    <br>
+		    <br>
+		    <p>{{ perPage }}</p>		    
+		    <br> 
+		    <br>
 		    <p>以下の記事がストックされています</p>
 		    <table border="1">
 		      <thead>
@@ -190,6 +211,8 @@ import _ from 'lodash';
 export default {  
 	data () {
 	    return {
+	      perPage:10,//現在の表示数
+	      perPageOfUserInput:10,//ユーザが入力した表示数の一時保存用
 	      suggestKeywords: [], //キーワード候補の格納用
 	      allArticleData:[], //Qiitaから取得する全データの格納用
 	      searchBoxContent: "", 
@@ -266,6 +289,12 @@ export default {
 	    
 	},
 	computed:{    
+		getPerPage(){
+			console.log("this.perPage in computed");
+			console.log(this.perPage);
+			console.log(typeof this.perPage);			
+			return this.perPage;
+		},
 	    sortChange(){      
 	      return this.sortType;
 
@@ -280,7 +309,15 @@ export default {
 	    },
 	},
 	methods:{
-		
+
+		displayAllArticles(){
+			//1ページの表示数をqiita取得データ数とする
+			this.perPage = this.allArticleDataSorted.length;
+			console.log("this.perPage");
+	    	console.log(this.perPage);
+	    	this.onchange( 1 );
+
+		},
 		doOnBlur(){
 			//検索ボックスの内容を一時保存するための配列を初期化する			
 			this.storedSearchKeywords.splice(-this.storedSearchKeywords.length);
@@ -355,7 +392,24 @@ export default {
 	    	this.$store.commit('persistedParameter/deleteStockItems',data);
 	    	
 	    },
-	   
+	    changePerPage(){
+	    	//ユーザが入力した表示数を現在の表示数とする
+			this.perPage = this.perPageOfUserInput;
+			//表示数を変更した場合に、最後のページの番号を求める
+			let lastPage = Math.ceil(this.allArticleDataSorted.length/this.perPage);
+			console.log("lastPage");
+			console.log(lastPage);
+			//現在表示しているページが、表示数変更後に存在しなくなる場合は、最終ページを表示する
+			//それ以外の場合は、今のページを表示したまま、データだけ適切なものに変更する
+			if( this.pageNum > lastPage ){
+
+				this.onchange( lastPage );
+			} else {
+
+				this.onchange( this.pageNum );
+			}					
+
+		},	   
 	    onchange( page ){     
 	      this.pageNum = page;
 	      let data = this.getRangeByPage(page);
@@ -368,11 +422,10 @@ export default {
 	     
 	    },
 	    getRangeByPage( page ){
-	       //1ページの表示数
-	       const SIZE = 10;       
+	       //現在の1ページの表示数を切り出すサイズとする
+	       const SIZE = this.perPage;
 	       const dataStoredArray = _.cloneDeep(this.allArticleDataSorted);	      
-
-	       return dataStoredArray.slice((page - 1) * SIZE, (page - 1) * SIZE + SIZE);
+	       return dataStoredArray.slice((page - 1) * SIZE, (page - 1) * SIZE + SIZE);	       
 	       
 	    },
 		async doSearch(){		
