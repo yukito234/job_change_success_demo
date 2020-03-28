@@ -1,10 +1,11 @@
 <template>
-	<div>
+	<div>    
+    <p>グラフタイプを選択してください。</p>
 		<select v-model="graphSelection">		  
 		  <option value="age">年齢</option>
 		  <option value="educational_background">学歴</option>
 		  <option value="study_term">勉強期間</option>
-		  <option value="school_presence">スクール</option>
+		  <option value="school_presence">スクール有無</option>
 		  <option value="company">転職先</option>
 		
 		</select>   

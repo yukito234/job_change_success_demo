@@ -1,9 +1,11 @@
 <template>
   <div >
   	<global-navi></global-navi>
+    <h2>未経験から転職に成功した人のデータ</h2>
   	<doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>       
     <doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
     <article-list></article-list>
+
   </div>
 </template>
 
