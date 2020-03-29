@@ -4,9 +4,7 @@
     <h3>上のグラフのデータ一覧</h3>    
     <p>下表では、年齢・学歴、スクール有無、転職先の項目でフィルターできます。<br>また、勉強期間では昇順・降順で並び替えができます。</p>
     
-    <el-button @click="clearFilter">下表のフィルターをすべて解除する</el-button>
-    <el-button @click="displayMessage()">コンソールでテーブルのデータをチェック</el-button>
-    <el-button @click="sortFunctionCheck()">jsのsortの機能をチェック</el-button>
+    <el-button @click="clearFilter">下表のフィルターをすべて解除する</el-button>    
     <el-table 
       ref="filterTable"
       :data="tableData"       
@@ -40,20 +38,11 @@
         :filter-method="filterHandler"
         >
       </el-table-column>      
-      <!--
+    
       <el-table-column
         prop="study_term"
         label="勉強期間（ヶ月）"
-        :sort-method="sortChange()"
-        :sort-orders="['ascending', 'descending', null]"
-        sortable
-        >
-      </el-table-column>
-      -->
-      <el-table-column
-        prop="study_term"
-        label="勉強期間（ヶ月）"
-        :sort-method="sortChange()"
+        :sort-method="(a, b) => sortChange(a, b)"        
         sortable
         >
       </el-table-column>
@@ -75,6 +64,8 @@
     </el-table>    
     <br>
     <br>
+    <el-button @click="displayMessage()">コンソールでテーブルのデータをチェック</el-button>
+    <el-button @click="sortFunctionCheck()">jsのsortの機能をチェック</el-button>
     <br>
     <br>        
   </div>
@@ -106,8 +97,8 @@ export default {
           this.$store.dispatch('allArticlesGetAction', data);          
           this.tableData.push(dataForElementTable);
         });
-        console.log("this.tableData");
-        console.log(this.tableData);        
+        //console.log("this.tableData");
+        //console.log(this.tableData);        
                 
       })
       .catch(function(error) {
@@ -118,18 +109,23 @@ export default {
     sortFunctionCheck(){
       //jsのsortメソッドの動作を確認
       let primes = [7, 13, 2, 5, 19, 3, 11, 17];
-      /*
-      7 13->7, 13, 2, 5, 19, 3, 11, 17
+      //a,bの値と移動後の配列
+      /*      
+      7 13->7, 13,| 2, 5, 19, 3, 11, 17
+
       13 2->7 2 13 | 5  19, 3, 11, 17
       7 2-> 2 7 13
+
       7 5-> 2 5 7 13 | 19, 3, 11, 17
       2 5-> 2 5 7 13 | 19, 3, 11, 17
+      
       5 19 -> 2 5 19 7 13 | 3, 11, 17
       7 19 -> 2 5 7 19 13 | 3, 11, 17
       13 19 -> 2 5 7 13 19 | 3, 11, 17
+
       7 3 -> 2 5 3 7 13 19 | 11, 17
       */
-
+      
       primes.sort(function(b, a){
         if(a < b) {
           console.log("a < b");
@@ -147,6 +143,7 @@ export default {
           return 0;
         }
       });
+
       console.log("primes");
       console.log(primes);
 
@@ -164,37 +161,70 @@ export default {
     clearFilter() {
       this.$refs.filterTable.clearFilter();
     },
-    sortChange(){
-     
-      return function(a,b){
-       
-        if (a.study_term === '' && b.study_term === '') {
-          console.log(`a = ${a.study_term}, b= ${b.study_term}  both empty`);
-          return 0;//a と b を並び替えしない          
-        }
-        if (a.study_term === '') {
-          console.log(`a = ${a.study_term}, b= ${b.study_term} a is empty`);
-          return 1;//空の要素aをbの後方へ移動させる
-        }
-        if (b.study_term === '') {
-          console.log(`a = ${a.study_term}, b= ${b.study_term} b is empty`);
-          return -1;//a を b の前に並び替える          
-        }
-        //並び替えるデータ
-        //[6, "", 6, 4, "", 4, 2, 6, 8, 4, 3, "", 3, 4, 6, 4, 6, 6, 6]        
+    sortChange(a,b){           
+      //ユーザがクリックしたソートボタンの値(昇順or降順)を取得
+      let direction = this.$refs.filterTable.columns[4].order;
+      console.log("direction:");
+      console.log(direction);
 
+      if(direction === "ascending"){
+        console.log("into ascending section");
+        //並び替えるデータ           
+        //[6, "", 6, 4, "", 4, 2, 6, 8, 4, 3, "", 3, 4, 6, 4, 6, 6, 6]        
+        //b=6, a=""から並べ替えスタート
+
+        //空要素のソート
+        if (a.study_term === '' && b.study_term === '') {
+          //console.log(`a = ${a.study_term}, b= ${b.study_term}  both empty`);
+          //a と b を並び替えしない
+          return 0;          
+        }
+
+        if (a.study_term === '') {
+          //console.log(`a = ${a.study_term}, b= ${b.study_term} a is empty`);
+          //bを前方へ移動させる(b を a より小さい添字にソート)
+          return 1;
+        }
+
+        if (b.study_term === '') {
+          //console.log(`a = ${a.study_term}, b= ${b.study_term} b is empty`);
+          //aを前方へ移動させる (a を b より小さい添字にソート)     
+          return -1;    
+        }
+
+        //数字のソート
         if( Number(a.study_term) - Number(b.study_term) > 0 ){
-          console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+          //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+          //bを前方へ移動させる(b を a より小さい添字にソート)
           return 1;
         } else if (Number(a.study_term) - Number(b.study_term) <0){
-          console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+          //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+          //aを前方へ移動させる (a を b より小さい添字にソート)
           return -1;
-
         }        
-        console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+        //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
         return 0;
+
+      } else {        
+        console.log("into descending section");                        
+        if( Number(a.study_term) - Number(b.study_term) > 0 ){
+          //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+          return 1;
+        } else if (Number(a.study_term) - Number(b.study_term) <0){
+          //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+          return -1;
+        }        
+        //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+        return 0;
+      }              
+    }    
+    /*
+    sortChange(){     
+      return function(a,b){       
+        ...
       }
-    }   
+    }
+    */   
   },
 }
 
