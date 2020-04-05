@@ -1,28 +1,36 @@
 <template>
   <div>
-    <h2>体験記を追加する</h2>    
-    <article-url></article-url>
-    <article-title></article-title>
-    <age-section></age-section>
-    <educational-background-section></educational-background-section>
-    <study-term-section></study-term-section>
-    <school-presence-section></school-presence-section>
-    <language-section></language-section>
-    <framework-section></framework-section>
-    <company-section></company-section>
-  
-    <!--登録前に送信内容をチェック-->
-    <div>{{ $store.state.articleAddition.url }}</div>
-    <div>{{ $store.state.articleAddition.title }}</div>
-    <div>{{ $store.state.articleAddition.age }}</div>
-    <div>{{ $store.state.articleAddition.educationalBackground }}</div>
-    <div>{{ $store.state.articleAddition.studyTerm }}</div>
-    <div>{{ $store.state.articleAddition.schoolPresence }}</div>
-    <div>{{ $store.state.articleAddition.language.join(",") }}</div>
-    <div>{{ $store.state.articleAddition.framework.join(",") }}</div>
-    <div>{{ $store.state.articleAddition.company }}</div>
+    <h2>体験記の追加</h2>    
+    <br>
+    <br>
+    <button v-on:click="addExperience()">体験記を追加する</button>
+    <div v-if="editFlag">
+        <p>ここでは、転職成功者のデータが記載されている記事を追加することができます。<br>ここで登録された記事は、成功者グラフのデータとして採用されます。</p>
+        <article-url></article-url>
+        <article-title></article-title>
+        <age-section></age-section>
+        <educational-background-section></educational-background-section>
+        <study-term-section></study-term-section>
+        <school-presence-section></school-presence-section>
+        <language-section></language-section>
+        <framework-section></framework-section>
+        <company-section></company-section>    
+      
+        <!--登録前に送信内容をチェック-->
+        <div>{{ $store.state.articleAddition.url }}</div>
+        <div>{{ $store.state.articleAddition.title }}</div>
+        <div>{{ $store.state.articleAddition.age }}</div>
+        <div>{{ $store.state.articleAddition.educationalBackground }}</div>
+        <div>{{ $store.state.articleAddition.studyTerm }}</div>
+        <div>{{ $store.state.articleAddition.schoolPresence }}</div>
+        <div>{{ $store.state.articleAddition.language.join(",") }}</div>
+        <div>{{ $store.state.articleAddition.framework.join(",") }}</div>
+        <div>{{ $store.state.articleAddition.company }}</div>
 
-    <button v-on:click="registerArticle">記事を登録する</button>
+        <button v-on:click="registerArticle">記事を登録する</button>
+    </div>
+    <br>
+    <br>
   </div>
 </template>
 
@@ -55,11 +63,17 @@ export default {
     'company-section': CompanySection,   
   },
   data () {
-    return {     
+    return {
+        editFlag:false,     
 
     }
   }, 
   methods: {
+    addExperience(){
+        //体験記の追加ボタンが押されたときの挙動
+        this.editFlag = true;
+
+    },
     registerArticle(){        
         //firebaseに体験記データを追加
         db.collection("experience_articles").add({

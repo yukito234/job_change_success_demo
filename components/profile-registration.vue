@@ -6,33 +6,45 @@
 	    <h3>ニックネームを入力してください</h3>    
 	    <input type="text" v-model="nickName">  
 	    <br>
+      <br>
 	    <h3>画像をアップロードしてください</h3>
 	    <img :src="uploadedImage">
 	    <!--<img :src="downloadedImage">-->
 	    <br>
 	    <input type="file" accept="image/*" @change="onFileChange" >
 	    <br>
-	    <h3>自己紹介文を入力してください</h3>    
+      <br>
+	    <h3>自己紹介文を入力してください</h3>   
+      <br>
+      <br> 
 	    <textarea v-model="selfIntroduction"></textarea>
 	    <br>
+      <br>
 	    <button v-on:click="registerProfile">プロフィールを登録する</button>   	    	    
 	</div>
 	<div v-else>
 		<h2>プロフィールの編集</h2>
+    <br>
 		<button v-on:click="editProfile">プロフィールを編集する</button>
 
 	    <div v-if="editFlag">
-		    <h3>ニックネームを編集してください</h3>    
+		    <h3>ニックネームを編集してください</h3>
+        <br>    
+        <br>
 		    <input type="text" v-model="nickName">  
 		    <br>
+        <br>
 		    <h3>新たに画像をアップロードしてください</h3>
 		    <img :src="uploadedImage">		    
 		    <!--<img :src="downloadedImage">-->
 		    <br>
 		    <input type="file" accept="image/*" @change="onFileChange" >
 		    <br>
+        <br>
 		    <h3>自己紹介文を編集してください</h3>    
-		    <textarea v-model="selfIntroduction"></textarea>
+		    <br>
+        <br>
+        <textarea v-model="selfIntroduction"></textarea>
 		    <br>
 		    <button v-on:click="registerEditedProfile">編集したプロフィールを登録する</button>   		    		    
 		</div>
@@ -60,7 +72,8 @@ export default {
     }
   },
   mounted () {      	
-
+    //プロフィールの編集を効率よく行うために、
+    //すでにプロフィール情報がDBに登録されているなら取得して表示する
     db.collection("user_profile").get()
       .then((querySnapshot)=>{        
         querySnapshot.forEach((doc)=>{
@@ -96,12 +109,13 @@ export default {
 
   	},
   	registerEditedProfile(){  		  		  		
-  		
+  		//編集したプロフィールをDBに登録してアップデートする
   		db.collection("user_profile").doc(this.documentId)
         .update({                   
         	nick_name: this.nickName,              
         	image_url: this.downloadedImage,
-        	self_introduction: this.selfIntroduction,        	
+        	self_introduction: this.selfIntroduction,
+          user_name: this.$store.getters['persistedParameter/getNamePersisted']        	
 
         }).then(function() {
            alert("プロフィールの編集が完了しました");            
@@ -115,8 +129,11 @@ export default {
 
   	},
   	registerProfile(){
-  		
+  		//プロフィールの初回登録時の処理
+
   		const firestorage = firebase.storage();
+      //最初に画像をストレージに保存する
+      //ストレージへの保存に成功したら、DBに登録する
   		const uploadTask = firestorage        
         .ref(this.files[0].name)
         .put(this.files[0])
@@ -128,16 +145,12 @@ export default {
 	            nick_name: this.nickName,              
 	            image_url: this.downloadedImage,
 	            self_introduction: this.selfIntroduction,	            
-	            user_id: this.$store.state.persistedParameter.userIdPersisted
+	            user_id: this.$store.state.persistedParameter.userIdPersisted,
+              user_name: this.$store.getters['persistedParameter/getNamePersisted']
 	        })
 	        .then(() => {
 	            alert("プロフィールの登録完了");	            
-	            //登録用の入力ボックスの内容を空にする
-	            /*
-	            this.uploadedImage="";		    	
-		    	this.nickName="";
-		    	this.selfIntroduction="";
-		    	*/
+	           
 	            //リロードして、プロフィール編集の画面に切り替える
 	            this.$router.go({path: this.$router.currentRoute.path, force: true});	            
 	                      

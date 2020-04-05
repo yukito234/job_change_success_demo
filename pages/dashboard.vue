@@ -7,7 +7,11 @@
     <profile-registration></profile-registration>
     <br>
     <br>
+    <like-article-registration></like-article-registration>
+    <br>
+    <br>
     <article-registration></article-registration> 
+    
   </div>
 </template>
 
@@ -18,6 +22,7 @@ import db from '../plugins/firebase_config'
 import ArticleRegistration from '~/components/article-registration.vue'
 import ProfileRegistration from '~/components/profile-registration.vue'
 import globalNavi from '~/components/global-navi.vue';
+import LikeArticleRegistration from '~/components/like-article-registration.vue';
 
 export default {
   middleware: 'authenticated',  
@@ -26,9 +31,12 @@ export default {
      'article-registration': ArticleRegistration,    
      'profile-registration': ProfileRegistration,
      "global-navi": globalNavi,
+     "like-article-registration": LikeArticleRegistration,
+
   },  
   data () {
-    return {            
+    return {
+      //likeArticleCount:null,            
     }
   },
   computed:{
@@ -38,6 +46,38 @@ export default {
     },
   },
   created:function(){
+    db.collection("users").get()
+      .then((querySnapshot)=>{        
+        querySnapshot.forEach((doc)=>{
+          const data = _.cloneDeep(doc.data());
+          //ログインユーザのお気に入り記事の数を取得し、永続化させる
+          if(data.name === this.$store.state.currentUserName){
+            console.log("data.name");
+            console.log(data.name);
+            console.log("data.like_article_count");
+            console.log(data.like_article_count);
+            console.log("doc.id");
+            console.log(doc.id);
+
+            this.$store.dispatch('persistedParameter/likeArticleCountSetAction',data.like_article_count);            
+            this.$store.dispatch('persistedParameter/docIdForUpdatelikeArticleCountSetAction',doc.id);
+            this.$store.dispatch('persistedParameter/changeIsAdditionOfLikeArticleAction',data.like_article_count);
+
+            console.log("this.$store.getters['persistedParameter/getLikeArticleCount'] in dashboard");
+            console.log(this.$store.getters['persistedParameter/getLikeArticleCount']);
+
+            console.log("this.$store.getters['persistedParameter/getisAdditionOfLikeArticle'] in dashboard");
+            console.log(this.$store.getters['persistedParameter/getisAdditionOfLikeArticle']);
+
+          }
+
+        });
+
+      })
+      .catch(function(error) {
+          alert(error.message)
+      });
+    
   },  
   methods: {
      

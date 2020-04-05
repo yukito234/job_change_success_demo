@@ -36,13 +36,16 @@ export default {
           })          
 
           db.collection("users").add({
-              name: this.userName,                            
+              name: this.userName,
+              like_article_count:0,//お気に入り記事の登録数                            
           })
           .then(() => {
             alert("登録完了");
             //ユーザ名やメールアドレスなどの入力欄の値を空にする 
             //this.userName='';
             //this.email='';
+
+            //パスワードのみ空にして、ログインしてもらう
             this.password='';
             //メンバーページに飛ばす場合は、signin.vueのsignIn()メソッドの処理が必要          
                      

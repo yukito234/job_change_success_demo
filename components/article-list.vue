@@ -2,8 +2,12 @@
   <div class="article-list-container">        
     <!--<h2>未経験webエンジニア転職者の体験記の一覧</h2>-->
     <h3>上のグラフのデータ一覧</h3>    
-    <p>下表では、年齢・学歴、スクール有無、転職先の項目でフィルターできます。<br>また、勉強期間では昇順・降順で並び替えができます。</p>
-    
+    <p>下表では、年齢・学歴、スクール有無、転職先の項目でフィルターできます。
+      <br>気になる項目でフィルターをかけて表のデータを比較してみると新たな発見があるかもしれません。
+      <br>また、勉強期間では昇順・降順で並び替えができます。
+      <br>※空白はデータなしです。
+    </p>    
+
     <el-button @click="clearFilter">下表のフィルターをすべて解除する</el-button>    
     <el-table 
       ref="filterTable"
@@ -21,8 +25,17 @@
         <div slot-scope="{row}">
           <a v-bind:href="row.url">{{row.title}}</a>          
         </div>
-
       </el-table-column>
+    
+    <!--
+      <el-table-column        
+        label="記事タイトル"
+        >
+        <template v-slot:default="{row}">
+          <a v-bind:href="row.url">{{row.title}}</a>          
+        </template>
+      </el-table-column>
+    -->
       
       <el-table-column
         prop="age"
@@ -64,6 +77,7 @@
     </el-table>    
     <br>
     <br>
+    <!--以下２つのボタンはデバッグ用-->
     <el-button @click="displayMessage()">コンソールでテーブルのデータをチェック</el-button>
     <el-button @click="sortFunctionCheck()">jsのsortの機能をチェック</el-button>
     <br>
@@ -80,7 +94,7 @@ import _ from 'lodash';
 export default {
   data(){
     return {
-      tableData:[],
+      tableData:[],//表の描画用データ
 
     }
   },
@@ -94,7 +108,7 @@ export default {
           const dataForElementTable = _.cloneDeep(doc.data());          
          
           //体験記の一覧データを取得
-          this.$store.dispatch('allArticlesGetAction', data);          
+          //this.$store.dispatch('allArticlesGetAction', data);          
           this.tableData.push(dataForElementTable);
         });
         //console.log("this.tableData");
@@ -149,16 +163,19 @@ export default {
 
     },
     displayMessage(){      
+      //デバッグ用の機能
       console.log("this.$refs.filterTable");
       console.log(this.$refs.filterTable);
       console.log("this.$refs.filterTable.tableData");
       console.log(this.$refs.filterTable.tableData);
-    },
+    },    
     filterHandler(value, row, column) {
+      //テーブルのフィルター機能      
       const property = column['property'];
       return row[property] === value;
     },
     clearFilter() {
+      //フィルターを解除する
       this.$refs.filterTable.clearFilter();
     },
     sortChange(a,b){           
@@ -167,6 +184,7 @@ export default {
       console.log("direction:");
       console.log(direction);
 
+      //昇順
       if(direction === "ascending"){
         console.log("into ascending section");
         //並び替えるデータ           
@@ -205,6 +223,7 @@ export default {
         //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
         return 0;
 
+      //降順  
       } else {        
         console.log("into descending section");                        
         if( Number(a.study_term) - Number(b.study_term) > 0 ){

@@ -23,8 +23,7 @@ export default {
   },
   head(){
     return {
-      title:'会員ページ',            
-              
+      title:'会員ページ',                         
     }
   },
   data () {
@@ -32,19 +31,44 @@ export default {
     }
   },
   computed:{
-    loginUserName(){
+    loginUserName(){      
+      //ログインしたユーザのユーザ名を返す
       return this.$store.state.currentUserName;            
     },
   },
   created:function(){
+    //会員情報を取得
+    db.collection("users").get()
+      .then((querySnapshot)=>{        
+        querySnapshot.forEach((doc)=>{
+          const data = _.cloneDeep(doc.data());
+          //data.isChecked=false;
+          //data.documentId = doc.id;
+          this.$store.dispatch('persistedParameter/usersDataSetAction',data);
+          //this.allUsersData.push(data);                   
+          
+
+        });
+        console.log("this.$store.getters['persistedParameter/getUsersData']");
+        console.log(this.$store.getters['persistedParameter/getUsersData']);
+
+      })
+      .catch(function(error) {
+          alert(error.message)
+      });
   },  
   methods: {
     signOut() {           
+      //ユーザ名を初期化する
       this.$store.commit('nameInit');
+
+      //ユーザIDを初期化する
       this.$store.commit('persistedParameter/userIdPersistedInit');
+
+      //ログイン・ログアウトの状態を示すフラグを初期化する
       this.$store.dispatch('persistedParameter/changeIsLoginUserAction',false);
 
-      //１つのパソコンを複数のユーザーが使用するため、ログイン後にisEmptyをリセットする
+      //isLoginUserでログインかログアウトかの状態を把握できるので、おそらく以下は不要
       this.$store.commit('persistedParameter/changeIsEmpty',true);      
 
       firebase.auth().signOut().then(() => {

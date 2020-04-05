@@ -12,6 +12,7 @@ export const state = () => ({
 	graphItemData:{},
 	graphType: "age",		
 	//allProfileInStore:[],
+
 })
 
 export const getters = {
@@ -75,7 +76,7 @@ export const mutations ={
 		//グラフデータを格納するオブジェクトを初期化
 		state.graphItemData = {};						
 
-		//全グラフデータから選択されたグラフタイプの描画に必要なデータを取得する
+		//全グラフデータから選択されたグラフタイプにおいて、各項目のデータ数をカウントする
 		let key= "";	
 		for(let i=0; i < state.allArticlesForGraph.length; i++){
 			key = eval(`state.allArticlesForGraph[${i}].` + graphType + ";");			

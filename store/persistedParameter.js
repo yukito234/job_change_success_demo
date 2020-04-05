@@ -13,10 +13,30 @@ export const state = () => ({
 	userData:"",//users-list.vueでセットされるプロフィールページユーザの情報
 	allProfilePersisted:[],//users-list.vueでセットされる全プロフィールページユーザの情報
 	isLoginUser:false,//ログアウト状態でfalse、ログイン状態でtrue
+	likeArticleCount:null,//ログインユーザのお気に入り記事の個数
+	docIdForUpdatelikeArticleCount:"",//お気に入り記事の個数を更新する際に必要となるfirebaseのドキュメントID
+	isAdditionOfLikeArticle:true,//お気に入り記事の登録数が２記事以下のときtrue
+	usersData:[],//member.vueにてセットされるusersテーブルの全データ
+	namePersisted:"",//ログインユーザのユーザ名
 
 })
 
 export const getters = {	
+	getNamePersisted(state){		
+		return state.namePersisted;
+	},
+	getUsersData(state){		
+		return state.usersData;
+	},
+	getisAdditionOfLikeArticle(state){		
+		return state.isAdditionOfLikeArticle;
+	},
+	getDocIdForUpdatelikeArticleCount(state){		
+		return state.docIdForUpdatelikeArticleCount;
+	},
+	getLikeArticleCount(state){		
+		return state.likeArticleCount;
+	},
 	getIsLoginUser(state){		
 		return state.isLoginUser;
 	},
@@ -42,7 +62,20 @@ export const getters = {
 }
 
 export const mutations ={
-
+	changeIsAdditionOfLikeArticle(state, count){
+		if(count<3){
+			state.isAdditionOfLikeArticle=true;
+		}else{
+			state.isAdditionOfLikeArticle=false;
+		}
+		
+	},
+	docIdForUpdatelikeArticleCountSet(state, id){
+		state.docIdForUpdatelikeArticleCount=id;
+	},
+	likeArticleCountSet(state, count){
+		state.likeArticleCount=count;
+	},
 	changeIsLoginUser(state, flag){		
 		state.isLoginUser = flag ;
 		console.log("state.isLoginUser");
@@ -121,10 +154,19 @@ export const mutations ={
 	deleteStockedArticles(state, element){				
 		state.stockedArticles.splice(-state.stockedArticles.length);
 	},
+	usersDataSet(state, data){				
+		state.usersData.push(data);
+	},
+	namePersistedSet(state, name){				
+		state.namePersisted=name;
+	},
 	
 }	
 
 export const actions = {
+	changeIsAdditionOfLikeArticleAction(context, count){		
+		context.commit('changeIsAdditionOfLikeArticle', count);
+	},
 	changeIsLoginUserAction(context, flag){		
 		context.commit('changeIsLoginUser', flag);
 	},
@@ -141,5 +183,19 @@ export const actions = {
 	changeUserIdPersistedAction(context, id){		
 		context.commit('changeUserIdPersisted', id);
 	},
+	/**/
+	likeArticleCountSetAction(context, count){		
+		context.commit('likeArticleCountSet', count);
+	},
+	docIdForUpdatelikeArticleCountSetAction(context, id){		
+		context.commit('docIdForUpdatelikeArticleCountSet', id);
+	},
+	usersDataSetAction(context, data){		
+		context.commit('usersDataSet', data);
+	},
+	namePersistedSetAction(context, name){		
+		context.commit('namePersistedSet', name);
+	},
+	
 
 }

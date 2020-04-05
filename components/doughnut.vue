@@ -12,6 +12,7 @@ export default {
 
   watch:{
   	//グラフデータの更新を検知して、再描画
+    //グラフデータはsuccess-graph.vueから送られてくる
   	chartData:function(){ 		  		  		
   		this.updateGraph();
   	},
@@ -32,15 +33,15 @@ export default {
   	}
   },
   methods:{  	
-	updateGraph(){  		
-    //グラフタイプの切り替えをoptionに反映
-    //Vue.set(this.options.title, 'text', this.$store.state.graphType);
+	  updateGraph(){  		
+      //グラフタイプの切り替えをoptionに反映
+      //Vue.set(this.options.title, 'text', this.$store.state.graphType);
 
-    //textプロパティは初めから設定されているので、Vue.setを使わずとも以下の記述で更新できる
-    this.options.title.text = this.$store.state.graphType;
+      //textプロパティは初めから設定されているので、Vue.setを使わずとも以下の記述で更新できる
+      this.options.title.text = this.$store.state.graphType;
 
-    //再描画の実行
-  	this.renderChart(this.chartData ,this.options);
+      //再描画の実行
+    	this.renderChart(this.chartData ,this.options);
   	},
 
   },  

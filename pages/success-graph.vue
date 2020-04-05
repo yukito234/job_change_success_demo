@@ -2,10 +2,12 @@
   <div >
   	<global-navi></global-navi>
     <h2>未経験から転職に成功した人のデータ</h2>
+    <p>転職成功者のデータ（年齢・学歴・勉強期間・スクール有無・転職先）をまとめたので、
+      <br>あなたが気になる項目をチェックしてみてください。
+    </p>
   	<doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>       
     <doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
     <article-list></article-list>
-
   </div>
 </template>
 
@@ -33,18 +35,22 @@ export default {
     }
   },  
   mounted () {    
+    //グラフ描画に必要な全データを取得
     db.collection("experience_articles").get()
       .then((querySnapshot)=>{        
         querySnapshot.forEach((doc)=>{
           const data = doc.data();                    
-          //グラフ描画に必要な全データを取得
+          
           this.$store.dispatch('allArticlesForGraphGetAction', data);          
 
         });        
-        //グラフ項目のデータを集計
-        this.$store.dispatch('itemCountAction', this.$store.state.graphType);        
+        //グラフタイプ（初期はage）において、各項目のデータ数を取得
+        //例：２０代後・・・７人、３０代前半・・・５人
+        this.$store.dispatch('itemCountAction', this.$store.state.graphType);
+
         //グラフのラベル、データ、カラーの配列を準備
         this.$store.dispatch('createLabelQuantityColorAction');
+
         //描画用オブジェクトに必要データを格納
         this.datacollection = {                           
           labels: this.$store.state.graphLabels,          
@@ -75,8 +81,6 @@ export default {
       }                 
     },    
   }
-
-
 
 }	
 </script>

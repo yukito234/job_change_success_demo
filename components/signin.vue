@@ -13,6 +13,7 @@
 <script>
 /* eslint-disable */
 import firebase from 'firebase'
+import db from '../plugins/firebase_config'
 
 export default {
   name: 'Signin',
@@ -26,10 +27,13 @@ export default {
     signIn() {
       firebase.auth().signInWithEmailAndPassword(this.email, this.password)
       .then(() => {        
-        this.$store.dispatch('nameSetAction', firebase.auth().currentUser.displayName);                   
-        this.$store.dispatch('persistedParameter/changeUserIdPersistedAction', firebase.auth().currentUser.uid);       
+        this.$store.dispatch('nameSetAction', firebase.auth().currentUser.displayName);
 
-        this.$store.dispatch('persistedParameter/changeIsLoginUserAction', true);
+        this.$store.dispatch('persistedParameter/namePersistedSetAction', firebase.auth().currentUser.displayName);
+                           
+        this.$store.dispatch('persistedParameter/changeUserIdPersistedAction', firebase.auth().currentUser.uid);             
+
+        this.$store.dispatch('persistedParameter/changeIsLoginUserAction', true);        
 
                 
         //alert('ログイン成功');        

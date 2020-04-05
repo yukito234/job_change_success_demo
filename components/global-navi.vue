@@ -29,18 +29,25 @@ import db from '../plugins/firebase_config'
 export default {
   data () {
     return {
-      //ログアウト状態でfalse、ログイン状態でtrue
+      //ログイン時とログアウト時でグローバルに表示するメニューを切り替えるため
+      //ログアウト時:false、ログイン時:true      
       userFlag:this.$store.getters['persistedParameter/getIsLoginUser'],
       
     }
   },
   methods:{
     signOut() {           
+      //member.vueページに表示されているユーザ名を初期化する
+      //ユーザ名は永続化させておいた方がいいかも
       this.$store.commit('nameInit');
+
+      //ログインユーザを識別する場面で使う
       this.$store.commit('persistedParameter/userIdPersistedInit');      
+
+      //現在の状態がログインなのか、ログアウトなのかを知るため
       this.$store.dispatch('persistedParameter/changeIsLoginUserAction',false);
 
-      //１つのパソコンを複数のユーザーが使用するため、ログイン後にisEmptyをリセットする
+      //isEmptyをリセット
       this.$store.commit('persistedParameter/changeIsEmpty',true);      
 
       firebase.auth().signOut().then(() => {
