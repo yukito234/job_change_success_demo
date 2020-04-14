@@ -3,21 +3,26 @@
 		<global-navi></global-navi>		
 		
 		<h2>返信する</h2>
+		<b-overlay :show="show" rounded="sm">
+			<b-card >
+				<b-img :src="$store.getters['persistedParameter/getCommentData'].image_url" v-bind="mainProps" ></b-img>
+				<span>{{$store.getters['persistedParameter/getCommentData'].nick_name_from}}</span>
+		        <p>{{$store.getters['persistedParameter/getCommentData'].comment}}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+		        <span>{{$store.getters['persistedParameter/getCommentData'].createdAt}}</span>
+		    </b-card>
 
-		<p>以下の内容に対して返信します</p>					
-		<!--
-		<p>commentNumber:{{ $store.getters['persistedParameter/getCommentData'].commentNumber }}</p>
-		<p>commentId:{{ $store.getters['persistedParameter/getCommentData'].commentId }}</p>
-		-->
-		<p>投稿日時:{{ $store.getters['persistedParameter/getCommentData'].createdAt }}</p>
-		<p>投稿者ニックネーム:{{ $store.getters['persistedParameter/getCommentData'].nick_name_from }}</p>
-		<p>コメント:{{ $store.getters['persistedParameter/getCommentData'].comment }}</p>		
-		<textarea v-model="replyComment"></textarea>
-		<br>
-		<button v-on:click="doReply()">この内容で返信する</button>
-		<br>
-		<br>
-		<nuxt-link v-bind:to="{ path: `/id` }">戻る</nuxt-link>
+			<p>上のコメントに対して返信します。</p>
+			<b-form-textarea
+	            id="textarea"
+	            v-model="replyComment"
+	            placeholder="Enter something..."
+	            rows="3"
+	            max-rows="6"
+	        ></b-form-textarea>
+			<b-button v-on:click="doReply()" >この内容で返信する</b-button>					
+			
+			<nuxt-link v-bind:to="{ path: `/id` }">戻る</nuxt-link>
+		</b-overlay>
 	</div>
 </template>
 
@@ -35,13 +40,23 @@ export default {
 	},
 	data () {
 		return {            			
+			show:false,
 			//replyComment: ">>" + this.$store.getters['persistedParameter/getCommentData'].comment,
 			replyComment:"",
+			mainProps:{		        
+	        	width: 30,		        
+	        	block:false,
+	        },
 
 		}
 	},
+	created:function(){
+		console.log(this.$store.getters['persistedParameter/getCommentData']);
+
+	},
 	methods:{
-		doReply(){			
+		doReply(){
+			this.show=true;			
 	  		db.collection("user_comment").add({
 	  			user_id_from: this.$store.getters['persistedParameter/getCommentData'].user_id_to,	  			
 	  			user_id_to: this.$store.getters['persistedParameter/getCommentData'].user_id_from,	  			
@@ -51,6 +66,7 @@ export default {
 	        })
 	        .then(() => {
 	            alert("コメントの返信登録完了");
+	            this.show=false;
 	            //this.$router.go({path: this.$router.currentRoute.path, force: true});	       	                        
 	        })          
 	        .catch(function(error) {

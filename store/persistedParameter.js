@@ -18,10 +18,16 @@ export const state = () => ({
 	isAdditionOfLikeArticle:true,//お気に入り記事の登録数が２記事以下のときtrue
 	usersData:[],//member.vueにてセットされるusersテーブルの全データ
 	namePersisted:"",//ログインユーザのユーザ名
+	//isShowAll:false,	
 
 })
 
 export const getters = {	
+	/*
+	getIsShowAll(state){		
+		return state.isShowAll;
+	},
+	*/
 	getNamePersisted(state){		
 		return state.namePersisted;
 	},
@@ -62,6 +68,12 @@ export const getters = {
 }
 
 export const mutations ={
+	/*
+	changeIsShowAll(state, flag){
+		state.isShowAll=flag;
+	},
+	*/
+
 	changeIsAdditionOfLikeArticle(state, count){
 		if(count<3){
 			state.isAdditionOfLikeArticle=true;
@@ -132,12 +144,11 @@ export const mutations ={
 		}
 		
 	},
-	deleteStockItems(state, stockDataArray){
+	deleteSingleStockedArticle(state,stockDataArray){
 
 		console.log("state.stockedArticles before");
-		console.log(state.stockedArticles);		
+		console.log(state.stockedArticles);
 
-		//ストック記事保管用配列をいったん初期化する
 		state.stockedArticles.splice(-state.stockedArticles.length);
 
 		for(let i=0; i<stockDataArray.length; i++){
@@ -151,6 +162,7 @@ export const mutations ={
 		console.log(state.stockedArticles);
 
 	},
+	
 	deleteStockedArticles(state, element){				
 		state.stockedArticles.splice(-state.stockedArticles.length);
 	},
@@ -164,6 +176,11 @@ export const mutations ={
 }	
 
 export const actions = {
+	/*
+	changeIsShowAllAction(context, flag){		
+		context.commit('changeIsShowAll', flag);
+	},
+	*/
 	changeIsAdditionOfLikeArticleAction(context, count){		
 		context.commit('changeIsAdditionOfLikeArticle', count);
 	},
@@ -196,6 +213,5 @@ export const actions = {
 	namePersistedSetAction(context, name){		
 		context.commit('namePersistedSet', name);
 	},
-	
 
 }

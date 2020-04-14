@@ -1,7 +1,5 @@
 <template>
-	<div>		
-		<br>
-		<br>
+	<div>				
     	<h2>体験記を探す</h2>    	
     	<p>以下のstep1~step3の手順に従って検索をかけることで
     		<br>転職成功者の体験記を効率よく見つけることができます。ぜひ使ってみてください。
@@ -13,198 +11,149 @@
     		<br>キーワードが候補になければ、そのままstep2に進んでください。
     		<br>ここで選んだキーワードは下の検索ボックスに反映されます。
     	</p>
-    	<br>
-		<br>
-    	<label>
-      		<input type="checkbox" v-model="suggestKeywords" value="未経験">未経験  
-	    </label> 
-	    <label>
-      		<input type="checkbox" v-model="suggestKeywords" value="転職">転職  
-	    </label>
-	    <label>
-	    	<input type="checkbox" v-model="suggestKeywords" value="web">web  
-	    </label>
-	    <label>
-	    	<input type="checkbox" v-model="suggestKeywords" value="エンジニア">エンジニア  
-	    </label>
-	    <label>
-	      <input type="checkbox" v-model="suggestKeywords" value="成功">成功  
-	    </label>
-	    <br>
-	    <label>
-	      <input type="checkbox" v-model="suggestKeywords" value="体験">体験  
-	    </label>
-	    <label>
-	      <input type="checkbox" v-model="suggestKeywords" value="自社開発">自社開発  
-	    </label>
-	    <label>
-	      <input type="checkbox" v-model="suggestKeywords" value="フロントエンド">フロントエンド  
-	    </label>
-	    <label>
-	      <input type="checkbox" v-model="suggestKeywords" value="バックエンド">バックエンド  
-	    </label>
-	    <p>チェックを入れたキーワード:{{ suggestKeywords }}</p>
-	    <br>
-		<br>
+    	<b-form-group label="検索のヒント:">
+	      <b-form-checkbox-group	        
+	        v-model="suggestKeywords"
+	        :options="optionsOfsuggestKeywords"	        
+	      ></b-form-checkbox-group>
+	    </b-form-group>
+	    <p>チェックを入れたキーワード:{{suggestKeywords}}</p>
+
+    	
+	    
 	    <h3>step2.ドメインを選ぶ</h3>
 	    <p>検索したいドメインを選んでください。</p>
-	    <select v-model="domain">
-	      <!--<option disabled value="">選択してください</option>-->
-	      <option value="qiita">qiita</option>
-	      <option value="hatenablog">hatenablog</option>
-	      <option value="note">note</option>
-	      <option value="others">qiita,hatenablog,note以外</option>	      
-	    </select>  
+
+
+	    <b-form-select v-model="domain" :options="optionsOfDomain"></b-form-select>
 	    <p>検索対象のドメイン:{{ domain }}</p>
-	    <br>
+
+	   
+
+	    
 	    <h3>step3.検索を開始</h3>
 	    <p>step2で選んだドメインを対象に検索を行います。<br>ここでは検索したいキーワードを直接入力することもできます。<br>こちらの検索ボックスに入力されているキーワードをすべてタイトルに含む記事が表示されます。</p>
-	    <!--入力された文字列の前後の空白を取り除いて検索する-->    	
-    	<input type="text" v-model.trim="searchBox" v-on:blur="doOnBlur()">
-    	<button type="button" v-on:click="doSearch">検索する</button>
-    	<br>
-    	<p>検索ボックスの内容(searchBoxContent):{{ searchBoxContent }}</p>
-    	<br>
-    	<br>
-    	<div v-if="isOtherDomainSearchResultDisplay">
-	    	<table border="1">
-		      <thead>
-		        <tr>
-		          <th>記事</th>
-		          <!--<th>URL</th>-->	          
-		        </tr>
-		  	  </thead>
-		  	  <tbody>                
-	        	<tr v-for="element in allArticleData" v-bind:key="element.link">
-	          	  <td>
-	          	  	<a v-bind:href="element.link">{{ element.title }}</a>
-	          	  </td>
-	          	  <!--
-	          	  <td>
-	          	  	{{ element.link }}
-	          	  </td>
-	          	  -->
-	            </tr>
-	      	  </tbody>
-			</table>
-		</div>
+	    
 
-		<div v-if="isQiitaSearchResultDisplay">
-			<div>
-			  <h3>検索結果: {{allArticleDataSorted.length}} 件のデータを取得しました</h3>
-			  <p>検索結果を並び替える</p>
-		      <select v-model="sortType">     
-		        <option value="relationSort">関連順</option>
-		        <option value="newSort">新着順</option>
-		        <option value="likeSort">いいね順</option>
-		        
-		      </select>   
-		      <span>{{ sortChange }}</span>
-		    </div>
-		    <br>
-		    <br>
-		    <table border="1">
-		      <thead>
-		        <tr>
-		          <th>ストック</th>		          
-		          <th>記事No</th>
-		          <th>更新日</th>
-		          <th>記事タイトル</th>
-		          <!--<th>本文(導入部)</th>-->
-		          <th>いいね数</th>                    
-		        </tr>        
-		      </thead>
-		      <tbody>                
-		        <tr v-for="(element,index) in allArticleDataForDisplay" v-bind:key="element.id">
-		          <td>		            
-		            <button type="button" v-on:click="addStockArray(element)">ストック</button>
-		          </td>		          
-		          <td>
-		            <!--
-		            	{{ element.articleNumber+1 }} 
-		            	{{ (index+1)+(pageNum-1)*10 }}
-		            -->           
-		            {{ (index+1)+(pageNum-1)*perPage }}
-		          </td>
-		          <td>
-		            {{ element.updated_at.slice(0,10) }}
-		          </td>
-		          <td>
-		          	<a v-bind:href="element.url" >{{ element.title }}</a>
-		          </td>
-		          <!--
-		          <td>
-		            <button type="button" v-on:click="showBodyText(element)">表示</button>
-		            {{ element.body }}
-		          </td>
-		          -->
-		          <td>
-		            {{ element.likes_count }}
-		          </td>                    
-		        </tr>
-		      </tbody>
-		    </table>
-		    <br> 		    
-		    <br> 
-		    <br>        
-		    <div>
-		      <!--
-		      <el-pagination background layout="prev, pager, next" v-bind:total="allArticleData.length" v-bind:page-size="10" @current-change="onchange">
-		      </el-pagination>
-		  		-->
-		  	  <el-pagination background layout="prev, pager, next" v-bind:total="allArticleData.length" v-bind:page-size="getPerPage" @current-change="onchange">
-		      </el-pagination>
-		    </div>
-		    <br> 
-		    <br> 
-		    <p>1ページの表示件数を変更する</p>
-		    <p>表示件数を入力してください</p>
-		    <!--<input type="number" v-model.number="perPage">-->
-		    <input type="number" v-model.number="perPageOfUserInput">
-		    <button type="button" v-on:click="changePerPage()">表示件数を変更する</button>
-		    <br> 
-		    <button type="button" v-on:click="displayAllArticles()">全件表示する</button>
-		    <br>
-		    <br>
-		    <p>{{ perPage }}</p>		    
-		    <br> 
-		    <br>
-		    <p>以下の記事がストックされています</p>
-		    <table border="1">
-		      <thead>
-		        <tr>
-		          <th>削除選択<br>checkbox</th>
-		          <th>isStock</th>
-		          <th>記事タイトル</th>
-		        </tr>
-		  	  </thead>
-		  	  <tbody>		  	  	
-		  	  	<tr v-for="item in obtainStockedArticles" v-bind:key="item.id">	
-		  	  		<td>		            
-		            	<input type="checkbox" v-on:click="deleteCheck(item)" v-model="item.isStock">                    		            
-		          　</td>
-		  	  		<td>
-		            	{{item.isStock}}            		            
-		            </td>
-		            <td>
-		          		<a v-bind:href="item.url" >{{ item.title }}</a>
-		          	</td>
-		  	  	</tr>
-		  	  </tbody>
-		  	</table>
-		    <!--
-		    <ul >
-		      <li v-for="item in $store.getters['persistedParameter/getStockedArticles']" :key="item.id">
-		        <a v-bind:href="item.url">{{ item.title }}</a>
-		        
-		      </li>
-		    </ul>
-		    -->
-		    <br> 
-		    <br> 		    
-		    <button type="button" v-on:click="deleteStock">ストック記事を全部削除する</button>		
-			<button type="button" v-on:click="deleteSelectedStock()">選択した記事をストックから削除する</button>
-			
+	    <b-form-input v-model.trim="searchBox" v-on:blur="doOnBlur()" placeholder="検索ワードを直接入力できます"></b-form-input>
+	    <p>検索ボックスの内容(searchBoxContent):{{ searchBoxContent }}</p>
+
+	    
+    	
+
+    	<b-button variant="primary" v-bind:disabled="loading" v-on:click="doSearch">
+		    <b-spinner small v-show="loading"></b-spinner>
+		    <span v-show="loading">Loading...</span>
+		    <span v-show="!loading">検索する</span>
+		</b-button>
+
+
+    	<!--<b-spinner label="Loading..." v-show="loading"></b-spinner>-->
+
+    	<div  v-show="!loading">
+    		<!--
+    		<div  v-show="!loading">
+    		-->
+	    	<div v-if="isOtherDomainSearchResultDisplay">
+	    		<b-table 			      
+			      :items="allArticleData" 
+			      :fields="fieldsOfGoogleSearch"
+			      responsive="sm"			      			      
+			    >
+				    <template v-slot:cell(index)="data">
+			        	{{ data.index + 1 }}
+			        </template>
+				    <template v-slot:cell(titleLink)="data">
+				        <a v-bind:href="data.item.link">{{data.item.title}}</a>			        
+				    </template>
+
+				</b-table>
+
+				
+			</div>
+
+			<div v-if="isQiitaSearchResultDisplay">
+				<h3>検索結果: {{allArticleDataSorted.length}} 件のデータを取得しました</h3>
+				<b-pagination
+			      v-model="currentPage"
+			      :total-rows="rows"
+			      :per-page="perPageOfBootstrap"
+			      aria-controls="my-table"
+			    ></b-pagination>
+
+			    <p class="mt-3">Current Page: {{ currentPage }}</p>
+
+				<b-table
+				  id="my-table" 			      
+			      :items="allArticleDataSorted" 
+			      :per-page="perPageOfBootstrap"
+			      :current-page="currentPage"
+			      :fields="fieldsOfQiitaSearch"
+			      responsive="sm"
+			      :sort-compare="mySortCompare"
+			      
+	      		  
+	      		  :sort-direction="sortDirection"			      			      
+			    >
+			    <!--:sort-desc.sync="sortDesc" :sort-by.sync="sortBy"-->
+				    <template v-slot:cell(index)="data">
+			        	<!--{{ data.index + 1 }}-->
+			        	{{ (data.index+1)+(currentPage-1)*perPageOfBootstrap }}
+			        </template>
+			        <template v-slot:cell(updated)="data">
+			        	{{ data.item.updated_at.slice(0,10)}}
+			        </template>
+
+				    <template v-slot:cell(titleLink)="data">
+				        <a v-bind:href="data.item.url">{{data.item.title}}</a>			        
+				    </template>
+				    <template v-slot:cell(stockButton)="data">
+			        	<b-button variant="outline-primary" v-on:click="addStockArray(data.item)">ストック</b-button>
+			        </template>
+
+				</b-table>
+
+				
+			    
+
+			    <p>1ページの表示件数を変更する</p>
+			    <p>表示件数を入力してください</p>
+
+			    <b-form-input :type="number" v-model.number="perPageOfUserInput" placeholder="表示件数を入力"></b-form-input>
+			    <b-button variant="primary" v-on:click="changePerPage()">
+				    表示件数を変更する
+				</b-button>
+				 <b-button variant="primary" v-on:click="displayAllArticles()">
+				    全件表示する
+				</b-button>
+
+			    	    
+			    <p>{{ perPageOfBootstrap }}</p>
+			    
+			    <p>以下の記事がストックされています</p>
+
+			    <b-table 			      
+			      :items="obtainStockedArticles" 
+			      :fields="fieldsOfStockedArticles"
+			      responsive="sm"			      			      
+			    >
+			    	<template v-slot:cell(titleLink)="data">
+				        <a v-bind:href="data.item.url">{{data.item.title}}</a>			        
+				    </template>
+				    <template v-slot:cell(deleteButton)="data">
+			        	<b-button variant="outline-primary" v-on:click="deleteStockArray(data.item)">削除</b-button>
+			        </template>
+
+				</b-table>
+				<b-button variant="primary" v-on:click="deleteStock">
+				    ストック記事を全部削除する
+				</b-button>
+
+				
+
+			    
+				
+			</div>
 		</div>
 
     </div>
@@ -216,19 +165,93 @@ import _ from 'lodash';
 
 export default {  
 	data () {
-	    return {	      
-	      perPage:10,//現在の1ページあたりの記事表示数
+	    return {
+	      
+          fieldsOfStockedArticles:[
+          	{
+	          key:'titleLink',
+	          label:'記事タイトル',
+	        },
+	        {
+	          key:'deleteButton',
+	          label:'削除',
+	        },
+
+          ],
+          loading:false,
+	      currentPage: 1,
+	      perPageOfBootstrap: 8,
+	      fieldsOfQiitaSearch:[
+	      		
+	      		{
+		          key:'index',
+		          label:'',
+		        },
+		        {
+		          key:'updated',
+		          label:'更新日',
+		          sortable: true,
+		          sortDirection: 'asc'
+		        },
+	      				        
+		        {
+		          key:'titleLink',
+		          label:'記事タイトル',
+		        },
+		        {
+		          key:'likes_count',
+		          label:'いいね数',
+		          sortable: true,
+		          sortDirection: 'desc',
+		        },
+		        {
+		          key:'stockButton',
+		          label:'ストック',
+		        },
+		  ],
+	      fieldsOfGoogleSearch:[
+	      		{
+		          key:'index',
+		          label:'',
+		        },
+	      				        
+		        {
+		          key:'titleLink',
+		          label:'記事タイトル',
+		        },
+		  ],
+	      searchBoxOfBootstrap:"",
+	     
+	      optionsOfDomain:[
+	      	{ value: 'qiita', text: 'qiita' },
+	      	{ value: 'hatenablog', text: 'hatenablog' },
+	      	{ value: 'note', text: 'note' },
+	      	{ value: 'others', text: 'qiita,hatenablog,note以外' },
+
+	      ],	
+	      optionsOfsuggestKeywords:[
+		      { text: '未経験', value: '未経験' },
+	          { text: '転職', value: '転職' },
+	          { text: 'web', value: 'web' },
+	          { text: 'エンジニア', value: 'エンジニア' },
+	          { text: '成功', value: '成功' },
+	          { text: '体験', value: '体験' },
+	          { text: '自社開発', value: '自社開発' },
+	          { text: 'フロントエンド', value: 'フロントエンド' },
+	          { text: 'バックエンド ', value: 'バックエンド ' },
+
+	      ],
+	     
 	      perPageOfUserInput:10,//ユーザが入力した表示数の一時保存用
 	      suggestKeywords: [], //キーワード候補の格納用
 	      allArticleData:[], //QiitaやGoogleのAPIから取得する全検索結果データの格納用
 	      searchBoxContent: "", //検索ボックスの内容確認用(この変数は不要かも)
 	      searchBox:"", //検索ボックスの内容
 	      searchBoxContentArray:[],//検索ボックスの複合キーワードを分割して格納する配列
-	      allArticleDataForDisplay:[], //検索結果として表示する記事データ格納用
-	      sortType: "relationSort",//検索結果の表示方法
+	      
 	      allArticleDataSorted: [],//sortTypeに従って並べ替えられた後の記事データ格納用
-	      pageNum: 1,//ページネーションの現在ページ
-	      allArticleDataStocked: [],//isStockプロパティを含むQiitaから取得した全データ格納用(この変数は不要かも) 
+	      
+	      //allArticleDataStocked: [],//isStockプロパティを含むQiitaから取得した全データ格納用(この変数は不要かも) 
 	      
 	      domain:"qiita",//検索対象のドメイン（googleのAPIを用いない場合は不要）
 	      isOtherDomainSearchResultDisplay: false,//検索結果の表示切り替え用。qiita以外のドメインを検索する場合にtrueになる
@@ -274,58 +297,14 @@ export default {
 	      //検索ボックスの内容を空白で区切って、検索ワードを配列に格納する
 	      this.searchBoxContentArray = this.searchBoxContent.split(/\s+/);             	      
 	    },
-	    sortChange:function(){ 	        
-	      //データをソートする前に、ディープコピーをとる    
-	      let dataStoredArray = _.cloneDeep(this.allArticleDataSorted);
-	      
-	      //ディープコピーでソートを実行
-	      //いいね順
-	      if(this.sortType === "likeSort"){
-	        dataStoredArray.sort(likesSortFunc);
-
-	      //新着順  
-	      } else if(this.sortType === "newSort"){
-	        dataStoredArray.sort(dateSortFunc);
-
-	      //Qiitaからデータを取得したときのデフォルト状態（関連順）  
-	      } else {
-	      	dataStoredArray = _.cloneDeep(this.allArticleData);	        
-
-	      }      
-	      //ソート用の関数を定義
-	      function likesSortFunc(a,b){
-	        return b.likes_count - a.likes_count;
-	      }
-
-	      function dateSortFunc(a,b){
-	        return (a.updated_at < b.updated_at ? 1 : -1);
-	      }      
-
-	      //ソートしたデータをリアクティブな配列に格納
-	      //いったん初期化
-	      this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);
-	      for(let j=0; j<dataStoredArray.length; j++){
-	        this.allArticleDataSorted.push(dataStoredArray[j]);
-	      }       
-	      //現在ページの表示データを更新する
-	      this.onchange(this.pageNum);
-	      
-	    }
+	    
 	    
 	},
 	computed:{    
-		getPerPage(){
-			//現在のページ番号を返す
-			console.log("this.perPage in computed");
-			console.log(this.perPage);
-			console.log(typeof this.perPage);			
-			return this.perPage;
-		},
-	    sortChange(){
-	      //現在の記事表示順を返す      
-	      return this.sortType;
-
-	    },          
+		rows() {
+	        return this.allArticleDataSorted.length;
+	    },
+	   
 	    obtainStockedArticles(){ 
 	        //ユーザがストックしている記事データを返す
 	    	//永続化された記事ストック用配列のデータを値渡しでコピーする
@@ -337,15 +316,24 @@ export default {
 	    },
 	},
 	methods:{
+		mySortCompare(a, b, key, sortDesc){
+			if (key === 'updated') {
+							
 
+				return (a.updated_at < b.updated_at ? 1 : -1);
+
+				
+
+			} 
+
+		},
 		displayAllArticles(){
 			//全件表示ボタンがクリックされたとき、１ページ目に全データを表示させる
 
-			//1ページあたりの表示数をqiita取得の全データ数とする
-			this.perPage = this.allArticleDataSorted.length;
-			console.log("this.perPage");
-	    	console.log(this.perPage);
-	    	this.onchange( 1 );
+			//1ページあたりの表示数をqiita取得の全データ数とする			
+			this.perPageOfBootstrap = this.allArticleDataSorted.length;
+			
+			
 
 		},
 		doOnBlur(){
@@ -364,21 +352,28 @@ export default {
 			//検索ボックスの内容を退避させたら、ヒントキーワードを格納する配列を空にする			
 			this.suggestKeywords.splice(-this.suggestKeywords.length);
 		},
-		/*
-		//記事の本文の内容を確認するためのメソッド
-		showBodyText(element){ 
-			//alert(element.body);
-			console.log("element.body");
-			console.log(element.body);
-
-			console.log("element.rendered_body");
-			console.log(element.rendered_body);
-
-		},
-		*/
+		
 		deleteStock(){
 		  //ストック記事をすべて削除する	
 	      this.$store.commit('persistedParameter/deleteStockedArticles');      
+
+	    },
+	    deleteStockArray(element){
+
+	    	//押下された要素を特定する
+	    	for(let i=0; i<this.allStockedData.length; i++){
+	          if(this.allStockedData[i].id === element.id){
+	          	//削除する要素のフラグをtrueに変更
+	          	this.allStockedData[i].isStock = true;	          	
+	                                           
+	            console.log(`this.allStockedData[${i}]`);
+    			console.log(this.allStockedData[i]);
+    			
+	          }
+	        }
+	        let deleteData = _.cloneDeep(this.allStockedData);
+	        this.$store.commit('persistedParameter/deleteSingleStockedArticle',deleteData);
+	    	
 
 	    },
 	    addStockArray(element){
@@ -397,96 +392,22 @@ export default {
 	        }
 	    },
 	    	    
-	    deleteCheck(element){
-	    	//ストック記事の削除用チェックボックスがチェックされた場合の挙動
-
-	    	//チェックされた要素を見つけてトグルする   	
-	    	if(!element.isStock){
-		        for(let i=0; i<this.allStockedData.length; i++){
-		          if(this.allStockedData[i].id === element.id){
-		            this.allStockedData[i].isStock = true;                                  
-		            console.log(`this.allStockedData[${i}].isStock`);
-	    			console.log(this.allStockedData[i].isStock);
-		          }
-		        }
-		    } else{
-		        for(let i=0; i<this.allStockedData.length; i++){
-		          if(this.allStockedData[i].id === element.id){
-		            this.allStockedData[i].isStock = false;
-		            console.log(`this.allStockedData[${i}].isStock`);
-	    			console.log(this.allStockedData[i].isStock);
-		            
-		          }
-		        }
-		    }
-		    console.log("this.allStockedData");
-	        console.log(this.allStockedData);    
-
-	    },
-	    deleteSelectedStock(){    		    	
-	    	//記事の選択削除ボタンがクリックされた場合の挙動
-
-	    	let data = _.cloneDeep(this.allStockedData);
-	    	console.log("data");
-	    	console.log(data);
-
-	    	//永続化されたストック記事を削除する
-	    	this.$store.commit('persistedParameter/deleteStockItems',data);
-	    	
-	    },
+	    
+	   
 	    changePerPage(){
 	    	//ユーザによって、１ページあたりの記事表示数が変更された場合の挙動
 
-	    	//ユーザが入力した表示数を現在の表示数とする
-			this.perPage = this.perPageOfUserInput;
+	    	//ユーザが入力した表示数を現在の表示数とする		
+			this.perPageOfBootstrap = this.perPageOfUserInput;
 
-			//表示数を変更した場合に、最後のページの番号を求める
-			let lastPage = Math.ceil(this.allArticleDataSorted.length/this.perPage);
-			console.log("lastPage");
-			console.log(lastPage);
-
-			//現在表示しているページが、表示数変更後に存在しなくなる場合は、最終ページを表示する
-			//それ以外の場合は、今のページを表示したまま、データだけ適切なものに変更する
-			if( this.pageNum > lastPage ){
-
-				this.onchange( lastPage );
-			} else {
-
-				this.onchange( this.pageNum );
-			}					
+						
 
 		},	   
-	    onchange( page ){
-	      //ページネーションのページ番号ボタンがクリックされたときの挙動
-
-	      //クリックされたページ番号を現在ページとする
-	      this.pageNum = page;
-
-	      //現在ページの表示に必要なデータを取得する
-	      let data = this.getRangeByPage(page);
-
-	      //表示用配列の初期化
-	      this.allArticleDataForDisplay.splice(-this.allArticleDataForDisplay.length);
-
-	      //リアクティブな表示用配列に必要なデータを格納する
-	      for(let j=0; j<data.length; j++){
-	        this.allArticleDataForDisplay.push(data[j]);
-	      } 
-	     
-	    },
-	    getRangeByPage( page ){
-
-	       //現在の1ページの表示数を切り出すサイズとする
-	       const SIZE = this.perPage;
-
-	       //現在のリアクティブな全記事データのコピーをとる
-	       const dataStoredArray = _.cloneDeep(this.allArticleDataSorted);
-
-	       //全記事データから現在のページの表示に必要なデータのみを切り出して返す	      
-	       return dataStoredArray.slice((page - 1) * SIZE, (page - 1) * SIZE + SIZE);	       
-	       
-	    },
+		
 		async doSearch(){		
+			//loadingアニメーションの実行
+			this.loading = true;
+
 			//検索を実行する
 
 			//すでに表示されている検索結果をクリアにする
@@ -501,8 +422,8 @@ export default {
 	      	  //配列の初期化
 		      this.allArticleData.splice(-this.allArticleData.length);
 		      this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);
-		      this.allArticleDataForDisplay.splice(-this.allArticleDataForDisplay.length);
-		      this.allArticleDataStocked.splice(-this.allArticleDataStocked.length);
+		      //this.allArticleDataForDisplay.splice(-this.allArticleDataForDisplay.length);
+		      //this.allArticleDataStocked.splice(-this.allArticleDataStocked.length);
 		      
 		      //qiitaのAPIを利用することをaxios.jsに伝える
 		      //axios.jsでは、このusedAPIフラグにてどのAPIとやり取りをしているのかを判断し、
@@ -543,7 +464,7 @@ export default {
 		      //以下に４つの配列を用意しているのは、エラー解決のために使用したからである
 		      //今後４つのうち３つは削除予定
 		      let resultAddedIsStock=[];
-		      let resultAddedIsStock_1=[];
+		      //let resultAddedIsStock_1=[];
 		      let resultAddedIsStock_2=[];
 		      let resultAddedIsStock_3=[];
 
@@ -559,6 +480,7 @@ export default {
 		        }
 
 		        //以下３種類の配列に同じ検索結果を格納しているが（エラー解決のため）、実際は１つだけでOKなはず
+		        /*
 		        for(let j=0; j<result.length; j++){         
 		          //isStockプロパティを付与した配列を作成          	          		                
 
@@ -569,6 +491,7 @@ export default {
 
 		          this.allArticleDataStocked.push(resultAddedIsStock_1[j]);		          
 		        }
+		        */
 
 		        for(let j=0; j<result.length; j++){         
 		          //isStockプロパティを付与した配列を作成          	          		                
@@ -596,16 +519,14 @@ export default {
 		      console.log("this.allArticleDataSorted");
 		      console.log(this.allArticleDataSorted);
 
-		      //最初は１ページ目に１０件の検索結果を表示する
-		      let dataPage1 = this.getRangeByPage(1);
+		     
 		      
-		      //表示用配列に必要なデータを入れる
-		      for(let j=0; j<dataPage1.length; j++){
-		        this.allArticleDataForDisplay.push(dataPage1[j]);      
-		      }  
+		      //アニメーションを停止
+		      this.loading = false;  
 
 		    //検索対象のドメインがqiita以外の場合  
 			} else {
+
 
 				//googleのAPIを用いて、指定したドメインにおける検索結果を取得する
 				//ただし、無料使用の場合、１日１００クエリという厳しい制限があるので
@@ -652,6 +573,8 @@ export default {
 	      		for(let i=0; i<result.items.length; i++){		            
 			       this.allArticleData.push(result.items[i]);
 		      	} 
+
+		      	this.loading = false;
 		    }
 
 		},

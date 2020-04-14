@@ -46,11 +46,12 @@ export default {
     },
   },
   created:function(){
+    //ログインユーザのお気に入り記事の数を取得し、永続化させる
     db.collection("users").get()
       .then((querySnapshot)=>{        
         querySnapshot.forEach((doc)=>{
           const data = _.cloneDeep(doc.data());
-          //ログインユーザのお気に入り記事の数を取得し、永続化させる
+          //
           if(data.name === this.$store.state.currentUserName){
             console.log("data.name");
             console.log(data.name);
@@ -58,9 +59,16 @@ export default {
             console.log(data.like_article_count);
             console.log("doc.id");
             console.log(doc.id);
+            //ログインユーザのお気に入り記事数をブラウザに保存する
+            //test4@t.com以前のユーザはDBにlike_article_countが設定されていないので注意
+            this.$store.dispatch('persistedParameter/likeArticleCountSetAction',data.like_article_count);
 
-            this.$store.dispatch('persistedParameter/likeArticleCountSetAction',data.like_article_count);            
+            //ログインユーザのusersテーブルにおけるドキュメントIDをブラウザに保存する
+            //お気に入り記事数を更新する際に使う            
             this.$store.dispatch('persistedParameter/docIdForUpdatelikeArticleCountSetAction',doc.id);
+
+            //お気に入り記事数が３未満のとき、isAdditionOfLikeArticleがtrueとなる
+            //like-article-registration.vueにて、isAdditionOfLikeArticleの真偽値により、コンテンツの表示を切り替えている
             this.$store.dispatch('persistedParameter/changeIsAdditionOfLikeArticleAction',data.like_article_count);
 
             console.log("this.$store.getters['persistedParameter/getLikeArticleCount'] in dashboard");

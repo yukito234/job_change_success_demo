@@ -1,38 +1,29 @@
 <template>
   <div >        
-    <h2>ユーザ一覧</h2>
-    <el-table 
-      ref="filterTable"
-      :data="tableData"       
-      style="width: 100%" 
-      >
-      <el-table-column 
-        type="index">
-      </el-table-column>
-      <!--
-      <el-table-column        
-        label="ユーザー"
+    <b-spinner small v-show="loading"></b-spinner>
+    <div  v-show="!loading">
+      <h2>ユーザ一覧</h2>
+      
+
+      <b-table        
+        :items="tableData"
+        :fields="fields"
+        :outlined="true"           
         >
-      -->
-      <el-table-column        
-        
-        >
-        <div slot-scope="{row}">
-          <!--<a v-bind:href="row.url">{{row.title}}</a>-->          
-          <nuxt-link v-on:click.native="setUserData(row)" v-bind:to="{ path: `/id` }">{{ row.nick_name }}</nuxt-link>
+      
+        <template v-slot:cell(userImage)="data">
+          <img :src="getImage(data.item.image_url)" class="profileimage">
+        </template>
+        <template v-slot:cell(titleLink)="data">                
+          <nuxt-link v-on:click.native="setUserData(data.item)" v-bind:to="{ path: `/id` }">{{data.item.nick_name}}</nuxt-link>
           <br>
-          <!--<img :src="row.image_url" class="profileimage">-->          
-          <img :src="getImage(row.image_url)" class="profileimage">
-          <!--<p>{{row.image_url}}</p>-->
-        </div>
-        
-      </el-table-column>
-      <el-table-column        
-        prop="self_introduction"        
-        >        
-      </el-table-column>
-    </el-table>
-    
+          <br>
+          <p>{{data.item.self_introduction}}</p>
+        </template>
+      </b-table>
+      
+      
+    </div>
   </div>
 </template>
 
@@ -45,9 +36,27 @@ import _ from 'lodash';
 export default {   
   data () {
     return {            
+      loading:true,
       allProfile:[],
       tableData:[],
-      
+      defaultImage:"https://firebasestorage.googleapis.com/v0/b/job-change-success-demo.appspot.com/o/icon_default.png?alt=media&token=2f9b0a2b-5547-46a5-9853-e3c8932806ed",
+      fields:[
+        {
+          key:'userImage',
+          label:'',
+          thStyle: {
+             display: 'none'
+          }
+        },
+        {
+          key:'titleLink',
+          label:'',
+          thStyle: {
+             display: 'none'
+          }
+        },
+        
+      ],      
     }
   },
   mounted () {    
@@ -66,6 +75,8 @@ export default {
           this.$store.dispatch('persistedParameter/allProfilePersistedSetAction',data);
 
           this.tableData.push(dataForElementTable);
+
+          this.loading=false;
 
         });        
                          

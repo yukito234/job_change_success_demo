@@ -1,14 +1,14 @@
 <template>
   <div class="educational-background-container">
-    <h3>学歴</h3>
-    体験記事の投稿者の学歴を選択してください。   
-    <select v-model="educationalBackground">
-      <option disabled value="">選択してください</option>
-      <option value="高卒">高卒</option>
-      <option value="高専卒">高専卒</option>
-      <option value="大卒">大卒</option>
-      <option value="大学院卒">大学院卒</option>      
-    </select>   
+    <b-form-group
+      label-cols-sm="3"
+      label="学歴:"
+      label-align-sm="right"
+     
+    >
+      <b-form-select v-model="educationalBackground" :options="options"></b-form-select>
+    </b-form-group>
+    
   </div>
 </template>
 
@@ -17,7 +17,14 @@
 export default { 
   data () {
     return {         
-      
+      options: [
+        { value: null, text: '選択してください' },
+        { value: '高卒', text: '高卒' },
+        { value: '高専卒', text: '高専卒' },
+        { value: '大卒', text: '大卒' },
+        { value: '大学院卒', text: '大学院卒' },
+              
+      ],
     }
   },  
   methods: {

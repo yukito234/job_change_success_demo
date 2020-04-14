@@ -1,88 +1,154 @@
 <template>
   <div>
-  	<h2>お気に入り記事の登録・削除</h2>    
-    <br>
-    <br>
-    <button v-on:click="addLikeArticle()">お気に入り記事を追加・削除する</button>
-    <br>
-    <br>
-    <div v-if="editFlag">    	
-    	<div v-if="this.$store.getters['persistedParameter/getisAdditionOfLikeArticle']">
-	        <p>ここでは、お気に入り記事を追加することができます。<br>ここで登録された記事は、プロフィールページに反映されます。<br>記事はあと{{ 3 - this.$store.getters['persistedParameter/getLikeArticleCount'] }}記事まで登録可能です。（最大３記事）</p>
-	        <br>
-    		<br>
-	  		<h3>記事タイトルを入力してください</h3>
-	  		<span>必須</span>
-	  		<input type="text" v-model="title">
-	  		<br>
-    		<br>
-	  		<h3>URLを入力してください</h3>
-	  		<span>必須</span>
-	  		<input type="text" v-model="url">
-	  		<br>
-    		<br>
-	  		<h3>この記事は誰におすすめですか？</h3>
-	  		<span>必須</span>
-	  		<input type="text" v-model="recommendation">
-	  		<br>
-    		<br>
-	  		<h3>自由記述欄</h3>
-	  		<p>ここでは、記事の共感ポイントや学びなどを簡単にまとめてください。</p>
-	  		<textarea v-model="freeTextArea"></textarea>  		
-	  		<br> 
-	  		<button v-on:click="registerLikeArticle()">お気に入り記事を登録する</button>
-	  		<br>
-    		<br>
-	  	</div>
+  	<b-button v-b-toggle.collapse-4 variant="primary">お気に入り記事の登録・編集・削除</b-button>
+  	<b-collapse id="collapse-4" class="mt-2">
+  		<!--  			
+  			this.$store.getters['persistedParameter/getisAdditionOfLikeArticle']はdashboard.vueで設定している
+			test4@t.com以前のユーザは、DBにlike_article_countが設定されていないので正しく動作しない
+			ログアウトするときに、ブラウザのお気に入り記事数のカウントをnullにしておく
+  		-->
+  		<div v-if="this.$store.getters['persistedParameter/getisAdditionOfLikeArticle']">
+  		
+	  		<b-card bg-variant="light">
+	  			
+		        <b-form-group
+		          label-cols-lg="3"
+		          label="お気に入り記事の登録"
+		          label-size="lg"
+		          label-class="font-weight-bold pt-0"
+		          class="mb-0"
+		        >
 
+		        <p>ここで登録された記事は、プロフィールページに反映されます。<br>あと{{ 3 - this.$store.getters['persistedParameter/getLikeArticleCount'] }}記事登録が可能です。（最大３記事）</p>
+		          <b-form-group
+		            label-cols-sm="3"
+		            label="記事タイトル:"
+		            label-align-sm="right"
+		            
+		          >
+		            <b-form-input  v-model="title"></b-form-input>
+		          </b-form-group>
+
+		          <b-form-group
+		            label-cols-sm="3"
+		            label="URL:"
+		            label-align-sm="right"
+		            
+		          >
+		            <b-form-input  v-model="url"></b-form-input>	            	            
+		          </b-form-group>
+
+		          <b-form-group
+		            label-cols-sm="3"
+		            label="おすすめしたい人:"
+		            label-align-sm="right"
+		            label-for="nested-city"
+		            placeholder="例：ポートフォリオの作り方が分からず悩んでいる人..."
+		          >
+		            <b-form-input v-model="recommendation"></b-form-input>	            	            
+		          </b-form-group>
+
+		          <b-form-group
+		            label-cols-sm="3"
+		            label="コメント:"
+		            label-align-sm="right"
+		            
+		          >
+		            <b-form-textarea
+		              id="textarea"
+		              v-model="freeTextArea"
+		              placeholder="記事の共感ポイントや学びなどを簡単にまとめてください..."
+		              rows="3"
+		              max-rows="6"
+		            ></b-form-textarea>
+		          </b-form-group>
+
+		          <b-form-group
+		            label-cols-sm="3"
+		            label=""
+		            label-align-sm="right"
+		            
+		          >
+		            <b-button v-on:click="registerLikeArticle()">お気に入り記事を登録する</b-button>
+		          </b-form-group>
+		        </b-form-group>
+		      </b-card> 		  
+
+  		</div>
 	  	<div v-else>
-	  		<p>{{errorMessage}}</p>
-	  		<p>あなたの登録記事数は、現在{{this.$store.getters['persistedParameter/getLikeArticleCount']}}記事です。</p>
-	  		<p>登録記事数の上限は３つまでです。すでに上限に達している場合は、以下より記事を削除してください。</p>
-
+	  		
+	  		<b-card bg-variant="light">
+		  		<p>{{errorMessage}}</p>
+		  		<p>現在{{this.$store.getters['persistedParameter/getLikeArticleCount']}}記事が登録されています。（上限３記事）</p>
+		  		<p>上限に達している場合は、以下より記事を削除してください。</p>
+		  	</b-card>			
+			
 	  	</div>
 	  	<div>
-	  		<p>削除ボタンを押すと、記事をお気に入りから削除できます。</p>
-	  		<p>編集ボタンを押すと、おすすめする人やコメントの修正ができます。</p>
-		  	<table border="1">
-		      <thead>
-		        <tr>
-		          <th>削除ボタン</th>          
-		          <th>記事タイトル</th>
-		          <th>おすすめする人</th>
-		          <th>コメント</th>
-		        </tr>
-		  	  </thead>
-		  	  <tbody>		  	  	
-		  	  	<!--<tr v-for="(item,index) in likeArticlesData" v-bind:key="item.title">-->
-	  	  		<tr v-for="(item,index) in obtainLikeArticlesData" v-bind:key="item.title">
-		  	  		<td>		            
-		            	<!--<input type="checkbox" v-on:click="deleteCheck(item)" v-model="item.isChecked">-->
-		            	<button type="button" v-on:click="deleteLikeArticles(item)">削除</button>                    		            
-		          　</td>  	  		
-		            <td>
-		          		<a v-bind:href="item.url" >{{ item.title }}</a>
-		          	</td>
-		          	<td>
-		          		<p>{{ item.recommendation }}</p>		          		
-		          		<button type="button" v-on:click="editRecommendation(item)">編集</button>
-		          		<!--<input type="text" v-if="isEditRecommendation" v-model="editedRecommendationContent">-->
-		          		<input type="text" v-if="item.isEditRecommendation" v-model="item.editedRecommendationContent">
-		          		<button type="button" v-if="item.isEditRecommendation" v-on:click="confirmRecommendation(item)">確定</button>
-		          	</td>
-		          	<td>
-		          		<p>{{ item.free_text_area }}</p>
-		          		<button type="button" v-on:click="editFreeTextArea(item)">編集</button>
-		          		<input type="text" v-if="item.isEditFreeTextArea" v-model="item.editedFreeTextAreaContent">
-		          		<button type="button" v-if="item.isEditFreeTextArea" v-on:click="confirmFreeTextArea(item)">確定</button>
-		          	</td>
-		  	  	</tr>
-		  	  </tbody>
-		  	</table>
-		  	<br>
-		  	<!--<button type="button" v-on:click="deleteSelectedStock()">選択した記事をお気に入りから削除する</button>  -->
-		</div>
-  	</div>	
+	  		
+      		<b-card bg-variant="light">
+      			<h4>お気に入り記事の編集・削除</h4>
+	      		<p>編集ボタンを押すと、おすすめする人やコメントの修正ができます。<br>
+	      		削除ボタンを押すと、記事をお気に入りから削除できます。
+		  		</p>
+
+		  		<b-table 			      
+			      :items="obtainLikeArticlesData" 
+			      :fields="fields"
+			      responsive="sm"
+			     			      			      
+			      >
+			      <!-- :style="{width:'50%'}"-->
+			      	<template v-slot:cell(titleLink)="data" :style="{width:'100px'}">
+				        <a v-bind:href="data.item.url">{{data.item.title}}</a>
+				        
+				    </template>
+
+				    <template v-slot:cell(deleteButton)="data">
+				        <b-button v-on:click="deleteLikeArticles(data.item)">削除</b-button>
+				        
+				    </template>
+
+			      	<template v-slot:cell(editButton)="row">
+				        <b-button size="sm" @click="row.toggleDetails" class="mr-2">
+				         
+				          {{ row.detailsShowing ? '閉じる' : '開く'}}
+				        </b-button>				        
+				        
+				    </template>
+				    <template v-slot:row-details="row">
+				        <b-card>
+				          <b-row class="mb-2">
+				            <b-col sm="3" class="text-sm-right"><b>おすすめする人:</b></b-col>
+				            
+				            <b-col><b-form-input v-model="row.item.recommendation"></b-form-input></b-col>				            
+				            
+				          </b-row>
+
+				          <b-row class="mb-2">
+				            <b-col sm="3" class="text-sm-right"><b>コメント:</b></b-col>
+				            
+				            <b-col>
+				            	<b-form-textarea
+							      id="textarea"
+							      v-model="row.item.free_text_area"						      
+							      rows="3"
+							      max-rows="6"
+							    ></b-form-textarea>
+							</b-col>
+				          </b-row>
+
+				          <b-button size="sm" @click="confirm(row.item)">編集を確定</b-button>
+				         
+				        </b-card>
+				    </template>
+			    </b-table>
+		  	</b-card>
+	  		
+	  	</div>
+
+	  	
+	  </b-collapse>
   </div>
 </template>
 
@@ -96,6 +162,31 @@ export default {
 	middleware: 'authenticated',  
 	data () {
 		return {			            
+			fields:[		        
+		        {
+		          key:'titleLink',
+		          label:'記事タイトル',
+		        },
+		        {
+		          key:'editButton',
+		          label:'編集ボタン',
+		        },
+		        /*
+		        {
+		          key:'recommendation',
+		          label:'おすすめする人',
+		        },
+		        {
+		          key:'freeTextArea',
+		          label:'コメント',
+		        },
+		        */
+		        {
+		          key:'deleteButton',
+		          label:'削除ボタン',
+		        },
+
+	        ],
 			editFlag:false,//お気に入り記事を追加・削除するのボタンがクリックされるとtrueになる			
 			
 			title:"",
@@ -116,8 +207,8 @@ export default {
 
 	},
 	created:function(){
-		console.log("this.likeArticleCount");
-	    console.log(this.likeArticleCount);
+		//console.log("this.likeArticleCount");
+	    //console.log(this.likeArticleCount);
 
 	   //ログインユーザのお気に入り記事データを取得する
 		db.collection("like_articles").get()
@@ -139,8 +230,8 @@ export default {
 	          }	          	          
 
 	        });
-	        console.log("this.likeArticlesData");
-	        console.log(this.likeArticlesData);
+	        //console.log("this.likeArticlesData");
+	        //console.log(this.likeArticlesData);      	        
 
 	      })
 	      .catch(function(error) {
@@ -152,6 +243,28 @@ export default {
 
 	},
 	methods:{
+		confirm(item){
+			console.log("item");
+			console.log(item);
+			db.collection("like_articles").doc(item.documentId)
+		        .update({                   
+		        	//recommendation:this.editedRecommendationContent
+		        	recommendation:item.recommendation,
+		        	free_text_area:item.free_text_area,
+
+
+		        }).then(() => {
+		           alert("おすすめの人の編集が完了しました");
+		           //リロードしないと、連続で編集する際に、直前の編集内容が反映されない
+		    	   //リロードして直前の編集内容を読みこむ
+		           this.$router.go({path: this.$router.currentRoute.path, force: true});            
+
+		        })
+		        .catch(function(error) {            
+		            console.error("Error updating document: ", error);
+		        });	
+
+		},
 		editFreeTextArea(item){
 			//ユーザが編集しようとしている記事を配列から見つける
 			for(let j=0; j<this.likeArticlesData.length; j++){
@@ -230,7 +343,7 @@ export default {
 			/**/
 			db.collection("like_articles").doc(item.documentId)
 		        .update({                   
-		        	recommendation:targetContent
+		        	free_text_area:targetContent
 		        	        	
 
 		        }).then(() => {
@@ -247,7 +360,7 @@ export default {
 			
 		    console.log("item");    
 		    console.log(item);  
-		    
+		    /**/
 		    //記事を削除した後で、DB(usersテーブル)のお気に入り記事数のカウントを更新する
 		    //そのために、ドキュメントIDを取得しておく
 		    let docId = this.$store.getters['persistedParameter/getDocIdForUpdatelikeArticleCount'];
@@ -259,13 +372,13 @@ export default {
 			console.log(newLikeArticleCount);
 			console.log("docId");
 			console.log(docId);			
+			
 
-			/**/
 			//まずはお気に入り記事のデータをDBから削除する
 			//今後の課題：以下はtransaction処理に変更する
 			db.collection("like_articles").doc(item.documentId).delete()
 			.then(() => {
-				/**/
+				
 				//記事の削除に成功したら、DBのお気に入り記事数カウントを更新
 				db.collection("users").doc(docId)
 			        .update({                   
@@ -287,9 +400,7 @@ export default {
 
 			}).catch(function(error) {            
 	            console.error("Error updating document: ", error);
-	        });
-	        
-
+	        });       
 
 		},
 		addLikeArticle(){

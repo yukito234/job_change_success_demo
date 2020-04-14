@@ -1,7 +1,14 @@
 <template>
   <div class="article-title-container">
-    <h3>記事タイトル</h3>
-    上の記事のタイトルを入力してください。<input type="text" v-model="title">        
+    <b-form-group
+      label-cols-sm="3"
+      label="記事タイトル:"
+      label-align-sm="right"
+      
+    >
+      <b-form-input v-model="title"></b-form-input>
+    </b-form-group>
+            
   </div>
 </template>
 

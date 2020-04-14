@@ -1,154 +1,109 @@
 <template>
 	<div>
     <global-navi></global-navi>
-		<!--ここは永続化させる必要があるのか検討必要-->				
-    <h2>{{ $store.getters['persistedParameter/getUserData'].nick_name }}さんのプロフィール</h2>		
-    <img :src="$store.getters['persistedParameter/getUserData'].image_url" class="profileimage">
-		<!--<p>自己紹介</p>		-->
-    <p>{{$store.getters['persistedParameter/getUserData'].self_introduction}}</p>
-    <br>
-    <br>
-    <h2>お気に入り記事</h2>
-    <table border="1">
-      <thead>
-        <tr>
-          <th>記事タイトル</th>          
-          <th>こんな人におすすめ！</th>
-          <th>まとめ</th>
-        </tr>
-      </thead>
-      <tbody>           
-        <tr v-for="item in allLikeArticlesData" v-bind:key="item.title"> 
-          <td>                
-            <a v-bind:href="item.url" >{{ item.title }}</a>                                  
-        　</td>          
-          <td>
-            {{item.recommendation}}
-          </td>
-          <td>
-            {{item.free_text_area}}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <br>
-    <br>    
-		<h2>コメントを残す</h2>		
-		<textarea v-model="userComment"></textarea>
-		<br>
-		<button v-on:click="registerComment">コメントを送信する</button>
-		<br>
-		<h2>コメント一覧</h2>    
-    <el-table 
-      ref="filterTable"
-      :data="tableData2"       
-      style="width: 100%" 
-      >
-      <el-table-column                    
-        >
-        <div slot-scope="{row}" v-bind:style="{marginLeft:getMarginLeft(row)}">
-          <span>{{row.nick_name_from}}</span>
-          <!--
-          <div>
-            {{row.nick_name_from}} <span><router-link v-if="row.replyButtonFlag" v-on:click.native="setCommentData(row)" v-bind:to="{ path: `/reply` }">返信する</router-link></span>
-          </div>
-          -->
-          <div>
-            {{row.comment}}
-          </div>
-          <!--
-          <div>
-            {{row.createdAt}}
-          </div>
-          -->
-          <span>{{row.createdAt}}</span>
-          <router-link v-if="row.replyButtonFlag" v-on:click.native="setCommentData(row)" v-bind:to="{ path: `/reply` }">返信する</router-link>
-        </div>
-      </el-table-column>
-    </el-table>
-    <br>
-    <br>
-    <!--以下はデバッグ用として表示-->
-    <el-table 
-      ref="filterTable"
-      :data="tableData2"       
-      style="width: 100%" 
-      >
-      <!--
-      <el-table-column
-        label="コメント番号"
-        prop="commentNumber"       
-        
-        >
-      </el-table-column>
-      -->
-      <el-table-column
-        label="コメントID"
-        prop="commentId"       
-        
-        >
-      </el-table-column>
-      <el-table-column
-        label="日時"
-        prop="createdAt"       
-        
-        >
-      </el-table-column>
-      <el-table-column
-        label="投稿者"
-        prop="nick_name_from"       
-        
-        >
-      </el-table-column>
-      <el-table-column
-        label="コメント"
-        prop="comment"       
-        
-        >
-      </el-table-column>
-      <el-table-column
-        label="返信"            
-        
-        >
-        <div slot-scope="{row}">
-          <router-link v-if="row.replyButtonFlag" v-on:click.native="setCommentData(row)" v-bind:to="{ path: `/reply` }">返信する</router-link>
-          <!--{{row.replyButtonFlag}}-->
-        </div>
-      </el-table-column>
-      <el-table-column
-        label="reply_comment_id"
-               
-        
-        >
-        <div slot-scope="{row}">
-          {{row.reply_comment_id}}
-        </div>
-      </el-table-column>
-      <el-table-column
-        label="ネスト数"
-               
-        
-        >
-        <div slot-scope="{row}">
-          {{row.nestCount}}
-        </div>
-      </el-table-column>
-      <!--
-      <el-table-column
-        label="返信するコメント番号"
-               
-        
-        >
-        <div slot-scope="{row}">
-          {{getReplyCommentNumber(row)}}
-        </div>
-      </el-table-column>
-    -->
+    <b-spinner small v-show="loading"></b-spinner>
+    <div v-show="!loading">
+  		<!--ここは永続化させる必要があるのか検討必要-->				
+      <h2>{{ $store.getters['persistedParameter/getUserData'].nick_name }}さんのプロフィール</h2>		
+      
+      <b-card no-body  style="max-width: 540px;">
+        <b-row >
+          <b-col md="6">
+            
+            <b-img :src="$store.getters['persistedParameter/getUserData'].image_url" alt="" ></b-img>
+          </b-col>
+          <b-col md="6">
+            <b-card-body :title="$store.getters['persistedParameter/getUserData'].nick_name">
+              <b-card-text>
+                {{$store.getters['persistedParameter/getUserData'].self_introduction}}
+                abcdedffgadfasdfeilsdjfksjfoeilsdfjksjdfif
+                asdfalsfjieasjdlfjalskjdflsjdlfaskdjflsajdlfa
+                asjdfjlasdjflasjdflkjasdlfkjlasdjflasdjflajsdf
+              </b-card-text>
+            </b-card-body>
+          </b-col>
+        </b-row>
+      </b-card>
+      <h2>お気に入り記事</h2>
 
-    </el-table>
-    <br>
-    <br>   
-	  
+      <b-table            
+        :items="allLikeArticlesData" 
+        :fields="fieldsOfLikeArticle"
+        responsive="sm"                       
+        >
+        <template v-slot:cell(titleLink)="data">
+            <a v-bind:href="data.item.url">{{data.item.title}}</a>
+            
+        </template>
+        
+        <template v-slot:cell(detailButton)="row" >
+            <b-button size="sm" @click="row.toggleDetails" class="mr-2" >
+            
+              {{ row.detailsShowing ? '閉じる' : '詳細'}}
+            </b-button>               
+            
+        </template>
+
+        <template v-slot:row-details="row">
+            <b-card>
+              <b-row class="mb-2">
+                <b-col sm="3" class="text-sm-right"><b>おすすめする人:</b></b-col>
+                
+                <b-col>{{ row.item.recommendation }}</b-col>                
+                
+              </b-row>
+
+              <b-row class="mb-2">
+                <b-col sm="3" class="text-sm-right"><b>コメント:</b></b-col>
+                
+                <b-col>{{ row.item.free_text_area }}</b-col>                                  
+          
+              </b-row>              
+              
+            </b-card>
+        </template>
+      </b-table>      
+          
+  		<h2>コメントを残す</h2>		
+      <b-overlay :show="show" rounded="sm">
+        <b-card bg-variant="light">
+          
+              <b-form-textarea
+                id="textarea"
+                v-model="userComment"
+                placeholder="Enter something..."
+                rows="3"
+                max-rows="6"
+              ></b-form-textarea>
+             
+            <b-button v-on:click="registerComment" >コメントを送信する</b-button>
+            
+        </b-card>
+      </b-overlay>
+     
+  		<h2>コメント一覧</h2>    
+      <b-table            
+        :items="tableData3" 
+        :fields="fieldsOfCommentData"
+        responsive="sm"                       
+        >
+        <template v-slot:cell(content)="data" :style="{width:'100px'}">
+          <div v-bind:style="{marginLeft:getMarginLeft(data.item)}">
+            <b-img :src="data.item.image_url" v-bind="mainProps" ></b-img>
+            <span>{{data.item.nick_name_from}}</span>
+            <p>{{data.item.comment}}</p>
+            <span>{{data.item.createdAt}}</span>
+            <router-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/reply` }">返信する</router-link>
+            <p>commentId:  {{data.item.commentId}}</p>
+            <p>reply_comment_id:  {{data.item.reply_comment_id}}</p>
+
+          </div>
+            
+        </template>
+
+      </b-table>
+      
+	  </div>
 	</div>
 </template>
 
@@ -166,54 +121,74 @@ export default {
 
   },
   data () {
-    return {            
+    return { 
+      show:false,
+      loading:true,
+      mainProps:{
+        //center: true,
+        //fluidGrow: true,
+        //blank: true,
+        //blankColor: '#bbb',
+        width: 30,
+        //height: 400,
+        //class: 'my-5'
+        //display:incline-block
+        block:false,
+      },
+      fieldsOfCommentData:[
+        /*
+        {
+          key:'titleLink',
+          label:'記事タイトル',
+        },
+        */
+        {
+          key:'content',
+          label:'',
+        },
+      ],
+      tableData3:[],
+      fieldsOfLikeArticle:[            
+        {
+          key:'titleLink',
+          label:'記事タイトル',
+        },
+        {
+          key:'detailButton',
+          label:'詳細',
+        },               
+
+      ],           
      userInfo:"",
      userComment:"",
      //allCommentData:[],
      replyContent:"",
      //tableData:[],
-     tableData2:[],
+     //tableData2:[],
      allLikeArticlesData:[],
       
     }
   },
   methods:{  	
-
     getMarginLeft(row){
       //コメントに返信する場合、元のコメントより右に少しずらす
       //このマージンをコメントのネスト数から算出する
-
-      let value = Number(row.nestCount)*10;
+      let value = Number(row.nestCount)*30;
       let marginLeft = value + "px";
-      console.log("marginLeft");
-      console.log(marginLeft);
-
       return marginLeft;
 
     },
-    clearFilter() {
-      this.$refs.filterTable.clearFilter();
-    },
-    /*
-  	getReplyCommentNumber(element){
-  		//elementでreply_comment_idが存在する場合は、テーブルデータ配列のcommentIdと照合を行い
-  		//一致したcommentIdを持つ要素のcommentNumberを取得してくる
-  		if(element.reply_comment_id){
-        for(let i=0;i<this.$store.getters['persistedParameter/getAllCommentData'].length;i++){        
-          if(this.$store.getters['persistedParameter/getAllCommentData'][i].commentId === element.reply_comment_id){
-            return this.$store.getters['persistedParameter/getAllCommentData'][i].commentNumber;
-          }
-        }         		
-  		}
-  	},
-    */
+    
   	setCommentData(element){ 		      
       //返信ボタンが押されたら、そのコメントを取得し、保存永続化させる
       //reply.vueにて、この永続化されたコメントデータを呼び出す
       this.$store.commit('persistedParameter/commentDataSet',element);
 
+
   	},  	  	
   	registerComment(){
+      //プロフィールユーザがログインしているときは、コメントの投稿機能は非表示にする
+      this.show=true;
       //コメントをDBに登録      
       //今後の改善：reply_comment_idを付与してnullにしておく
   		db.collection("user_comment").add({
@@ -224,7 +199,9 @@ export default {
             
         })
         .then(() => {
+            
             alert("コメントの登録完了");            
+            this.show=false;
             //以下の処理はおそらく不要
             this.$store.dispatch('persistedParameter/allCommentDataInitAction');
             //リロードする
@@ -251,18 +228,21 @@ export default {
             //お気に入り記事のuser_nameが、現在表示しているページのuser_nameと一致する場合
             //this.$store.getters['persistedParameter/getUsersData']にuser_profileの全データが保管されている
                         
-            if(data.user_name === this.$store.getters['persistedParameter/getUserData'].user_name){
-              
+            if(data.user_name === this.$store.getters['persistedParameter/getUserData'].user_name){             
               this.allLikeArticlesData.push(data);
             }                        
 
           });
-          console.log("this.allLikeArticlesData");
-          console.log(this.allLikeArticlesData);
+          //お気に入り記事紹介テーブルの最初の記事の詳細だけあらかじめ表示させておくために設定する
+          //ただ、ボタンが正しく動作しないのでやめた
+          //それぞれのボタンが区別されていないので、下のボタンをクリックすると上の表示まで閉じてしまう
+          //this.allLikeArticlesData[0]._showDetails= true;
+          //console.log("this.allLikeArticlesData");
+          //console.log(this.allLikeArticlesData);
 
           //authenticationから会員の全ユーザIDを取得する方法が分からない
-          console.log("firebase.auth()");
-          console.log(firebase.auth());
+          //console.log("firebase.auth()");
+          //console.log(firebase.auth());
 
         })
         .catch(function(error) {
@@ -271,6 +251,7 @@ export default {
 
   },
   mounted () {  
+
     //this.userInfo = this.$store.getters['persistedParameter/getUserData'];
     //このthis.userInfoは、プロフィールページのユーザ情報となる
     //よって、プロフィール登録していないユーザがコメントした場合は、以下の処理でcommentIdが空になったりするエラーが発生する
@@ -279,361 +260,221 @@ export default {
     this.userInfo = _.cloneDeep(this.$store.getters['persistedParameter/getUserData']);
   	
     //DBからコメントデータを取得した際に、データを一時退避させる配列
-  	let dataStockArray = [];
+  	let dataStockArray = [];    
 
-    //デバッグ用にもう１つ退避先の配列を用意
-    let dataStockArray_1 = [];
+    //DBからコメントデータを取得した際に、データを一時保存させる配列
+    let dataStockArray_2 = [];
   	
     //このプロフィールに向けられたコメント（初回コメント）と返信コメント(ネストしたコメント)をすべて取得    
     db.collection("user_comment").get()
       .then((querySnapshot)=>{        
         querySnapshot.forEach((doc)=>{
           
-          const data = _.cloneDeep(doc.data());
-          const data_1 = _.cloneDeep(doc.data());           
-                    
-          //初回コメントを取得
-          //初回コメントはreply_comment_idがnullで、user_id_toがこのプロフィールページユーザのものとなっている
-          //返信コメント(ネストしたコメント)は、reply_comment_id
-          //このプロフィールページのユーザのユーザIDが、コメントデータのユーザIDと一致する場合
-          if(this.userInfo.user_id === data_1.user_id_to){                       
+          const data = _.cloneDeep(doc.data());          
 
-            //全ユーザのプロフィール情報を探索する
-            for(let i=0;i<this.$store.getters['persistedParameter/getAllProfilePersisted'].length;i++){
+          const data_2 = _.cloneDeep(doc.data());
 
-              //コメント投稿者のニックネームを調べる
-              //各ユーザのプロフィールのユーザIDをチェックしていき、コメントの投稿者のユーザIDと一致した場合
-              if(this.$store.getters['persistedParameter/getAllProfilePersisted'][i].user_id === data_1.user_id_from){
+          //コメントデータのコメントIDをドキュメントIDとする
+          data_2.commentId = doc.id;            
 
-                //コメントデータにニックネーム情報を追加する
-                data_1.nick_name_from = this.$store.getters['persistedParameter/getAllProfilePersisted'][i].nick_name;
+          //初回コメントと返信コメントを正しい順番で表示用配列に格納していく際に、dataStockArray_2の要素ですでに追加されたものはtrueにしておくことで、コメントの探索が効率よく行える
+          data_2.isAddition = false;
 
-                //コメントデータのコメントIDをドキュメントIDとする
-                data_1.commentId = doc.id;
-                //console.log("doc.id if");
-                //console.log(doc.id); 
-                
-              }
+          //同様にコメントの種類（初回、返信）やネストの深さを判別しやすくするために設定する
+          data_2.nestCount = null;
+
+          //返信コメント格納用
+          data_2.nestArray =[];
+
+          //nestArrayの制御変数
+          data_2.numberForNestArray = 0;
+
+          for(let i=0;i<this.$store.getters['persistedParameter/getAllProfilePersisted'].length;i++){
+
+            if(this.$store.getters['persistedParameter/getAllProfilePersisted'][i].user_id === data_2.user_id_from){
+              //コメントデータにニックネーム情報を追加する
+              data_2.nick_name_from = this.$store.getters['persistedParameter/getAllProfilePersisted'][i].nick_name;
+
+              data_2.image_url = this.$store.getters['persistedParameter/getAllProfilePersisted'][i].image_url;
+              //console.log("this.$store.getters['persistedParameter/getAllProfilePersisted'][i]");
+              //console.log(this.$store.getters['persistedParameter/getAllProfilePersisted'][i]);
+
             }
-            //console.log("data_1.commentId");
-            //console.log(data_1.commentId);                                   
-            dataStockArray_1.push(data_1);
-
-          //このプロフィールページのユーザが返信したコメントを取得
-          //実際には、各プロフィールページにIDを設けて、ユーザがどのプロフィールページでやり取りしているのかを識別できるようにする  
-          } else if (data_1.reply_comment_id && this.userInfo.user_id === data_1.user_id_from){
-            for(let i=0;i<this.$store.getters['persistedParameter/getAllProfilePersisted'].length;i++){
-              //コメント投稿者のニックネームを調べる
-              if(this.$store.getters['persistedParameter/getAllProfilePersisted'][i].user_id === data_1.user_id_from){
-                
-                data_1.nick_name_from = this.$store.getters['persistedParameter/getAllProfilePersisted'][i].nick_name;
-                data_1.commentId = doc.id;
-                //console.log("doc.id else if");
-                //console.log(doc.id); 
-              }
-            }             
-            dataStockArray_1.push(data_1);
-
+          
           }
 
-          /////////////////////////////////////////////////////////
+          //data_2.createdAt = data_2.createdAt.toDate(); 
+          //以下配列に全コメントが格納される
+          dataStockArray_2.push(data_2);          
+                	          	          	                    	       	    	                       
+        });//querySnapshot.forEach((doc)=>{
 
-          //このプロフィールに向けられたコメントを収集                    
-          if(this.userInfo.user_id === data.user_id_to){          	           
-            for(let i=0;i<this.$store.getters['persistedParameter/getAllProfilePersisted'].length;i++){
-              //コメント投稿者のニックネームを調べる
-              if(this.$store.getters['persistedParameter/getAllProfilePersisted'][i].user_id === data.user_id_from){
-                data.nick_name_from = this.$store.getters['persistedParameter/getAllProfilePersisted'][i].nick_name;
-                data.commentId = doc.id;
-                
+        console.log("DBから取得した全コメント:");
+        console.log("dataStockArray_2:");
+        console.log(dataStockArray_2);
+
+       
+        for(let i=0;i<dataStockArray_2.length;i++){
+          //console.log("dataStockArray_2[i].createdAt before");
+          //console.log(dataStockArray_2[i].createdAt);
+
+          //dataStockArray_2[i].createdAtがundefinedのデータもあるので、ifで分岐させないとエラーが出る
+          if(dataStockArray_2[i].createdAt){
+            dataStockArray_2[i].createdAt = dataStockArray_2[i].createdAt.toDate();
+          }
+                   
+          //console.log("dataStockArray_2[i].createdAt after");
+          //console.log(dataStockArray_2[i].createdAt);
+        }       
+
+        //A（閲覧プロフィール）に向けられた初回と返信コメントを格納する  
+        let targetDataArray_2 =[];  
+        //全コメントの中から、A（閲覧プロフィール）に向けられた初回コメントを取得してくる  
+        for(let i=0;i<dataStockArray_2.length;i++){
+
+          //Aへの初回コメントか判定する
+          if(dataStockArray_2[i].reply_comment_id === undefined && this.userInfo.user_id === dataStockArray_2[i].user_id_to) {
+
+            dataStockArray_2[i].isAddition = true;
+            dataStockArray_2[i].nestCount = 0;
+            let commetData = _.cloneDeep(dataStockArray_2[i]);
+            targetDataArray_2.push(commetData);
+
+          } 
+
+        }        
+
+        //初回コメントを時系列の古い順に並べ替える
+        targetDataArray_2.sort(sortFunc2);
+
+        console.log("プロフィールユーザ向けの初回コメント（時系列順）:");
+        console.log("targetDataArray_2:");
+        console.log(targetDataArray_2);
+
+        //表示用配列
+        let displayArray_2=[];
+
+        //初回コメントを１つずつチェック
+        for(let j=0;j<targetDataArray_2.length;j++){
+
+         //console.log(`targetDataArray_2[${j}].nestArray`);
+          //console.log(targetDataArray_2[j].nestArray);
+          displayArray_2.push(targetDataArray_2[j]);
+
+          for(let i=0;i<dataStockArray_2.length;i++){
+            //初回コメントのコメントIDと一致する返信データを見つける
+            //ネスト数１の返信コメントを取得
+            if(dataStockArray_2[i].reply_comment_id === targetDataArray_2[j].commentId){
+
+              //返信データを初回コメントのネスト配列に格納             
+
+              if(!dataStockArray_2[i].isAddition){
+                dataStockArray_2[i].isAddition=true;
+                dataStockArray_2[i].nestCount = 1;
+                let nest1 = _.cloneDeep(dataStockArray_2[i]);
+                targetDataArray_2[j].nestArray.push(nest1);
+
+                displayArray_2.push(nest1);
+              }                           
+
+              //ネスト数2
+              for(let m=0; m<dataStockArray_2.length; m++){
+                if(dataStockArray_2[m].reply_comment_id === dataStockArray_2[i].commentId ){                                    
+                  if(!dataStockArray_2[m].isAddition){
+                    dataStockArray_2[m].isAddition=true;
+                    dataStockArray_2[m].nestCount = 2;
+                    let nest2 = _.cloneDeep(dataStockArray_2[m]);
+
+                    targetDataArray_2[j].nestArray.push(nest2);
+
+                    displayArray_2.push(nest2);
+                    
+                  }                  
+                  
+                  //ネスト数3
+                  for(let n=0; n<dataStockArray_2.length; n++){
+
+                    if(dataStockArray_2[n].reply_comment_id === dataStockArray_2[m].commentId ){                                          
+                      if(!dataStockArray_2[n].isAddition){
+                        dataStockArray_2[n].isAddition=true;
+                        dataStockArray_2[n].nestCount = 3;
+                        let nest3 = _.cloneDeep(dataStockArray_2[n]);
+                        targetDataArray_2[j].nestArray.push(nest3);
+
+                        displayArray_2.push(nest3);
+                        
+                      }                      
+                    }
+                  }
+                }
               }
-            }            	                     	
-          	dataStockArray.push(data);
-
-          } else if (data.reply_comment_id && this.userInfo.user_id === data.user_id_from){
-            for(let i=0;i<this.$store.getters['persistedParameter/getAllProfilePersisted'].length;i++){
-              //コメント投稿者のニックネームを調べる
-              if(this.$store.getters['persistedParameter/getAllProfilePersisted'][i].user_id === data.user_id_from){
-                
-                data.nick_name_from = this.$store.getters['persistedParameter/getAllProfilePersisted'][i].nick_name;
-                data.commentId = doc.id;
-              }
-            }             
-          	dataStockArray.push(data);
-
-          }       	          	          	                    	       	    	                       
-        });
-        
-        
-        for(let i=0;i<dataStockArray.length;i++){
-        	dataStockArray[i].createdAt = dataStockArray[i].createdAt.toDate();      		
-      	}
-
-        for(let i=0;i<dataStockArray_1.length;i++){
-          dataStockArray_1[i].createdAt = dataStockArray_1[i].createdAt.toDate();         
+            }
+          }
         }
 
-        dataStockArray.sort(sortFunc);
-        dataStockArray_1.sort(sortFunc2);
-
-        //コメント一覧を投稿日時でソートするための関数を定義
-  	    function sortFunc(a,b){
-  	      return b.createdAt - a.createdAt;
-  	    }
-
-        function sortFunc2(a,b){
-          return a.createdAt - b.createdAt;
-        }
+        console.log("プロフィールユーザ向けの初回コメントと返信コメント:");
+        console.log("targetDataArray_2:");
+        console.log(targetDataArray_2);
         
-        for(let i=0;i<dataStockArray.length;i++){
-        	let month = String(Number(dataStockArray[i].createdAt.getMonth())+1);
-        	let dateInfo = dataStockArray[i].createdAt.getFullYear() + "年" + month + "月" + dataStockArray[i].createdAt.getDate() + "日" + dataStockArray[i].createdAt.getHours()+ "時" + dataStockArray[i].createdAt.getMinutes() + "分";
-        	dataStockArray[i].createdAt = dateInfo;      		
-      	}
+        console.log("displayArray_2:");
+        console.log(displayArray_2);
 
-        for(let i=0;i<dataStockArray_1.length;i++){
-          let month = String(Number(dataStockArray_1[i].createdAt.getMonth())+1);
-          let dateInfo = dataStockArray_1[i].createdAt.getFullYear() + "年" + month + "月" + dataStockArray_1[i].createdAt.getDate() + "日" + dataStockArray_1[i].createdAt.getHours()+ "時" + dataStockArray_1[i].createdAt.getMinutes() + "分";
-          dataStockArray_1[i].createdAt = dateInfo;         
+        //日付の表示方法の変更
+        for(let i=0;i<displayArray_2.length;i++){
+          let month = String(Number(displayArray_2[i].createdAt.getMonth())+1);
+          let dateInfo = displayArray_2[i].createdAt.getFullYear() + "年" + month + "月" + displayArray_2[i].createdAt.getDate() + "日" + displayArray_2[i].createdAt.getHours()+ "時" + displayArray_2[i].createdAt.getMinutes() + "分";
+          displayArray_2[i].createdAt = dateInfo;         
         }
-      	      	
-        //commentNumberの設定
-    		for(let i=0;i<dataStockArray.length;i++){
-    			dataStockArray[i].commentNumber = i;
 
-    		}        
-
-        for(let i=0;i<dataStockArray_1.length;i++){
-          dataStockArray_1[i].commentNumber = i;
-
-        }  
 
         //replyButtonFlagの初期化
-        for(let i=0;i<dataStockArray.length;i++){
-          dataStockArray[i].replyButtonFlag = true;
+        for(let i=0;i<displayArray_2.length;i++){
+          displayArray_2[i].replyButtonFlag = false;
 
         }
-
-        for(let i=0;i<dataStockArray_1.length;i++){
-          dataStockArray_1[i].replyButtonFlag = true;
-          //console.log(`dataStockArray_1[${i}].commentId:`);
-          //console.log(dataStockArray_1[i].commentId);
-
-        }
-       
 
         //replyButtonFlagを設定        
-        //プロフィールページのユーザがログインしている場合
+        //プロフィールページのユーザ本人のAがログインしている場合
         if(this.$store.getters['persistedParameter/getUserIdPersisted'] === this.userInfo.user_id){
-          //投稿者がプロフィールページユーザのコメントをfalseにする
-          for(let j=0;j<dataStockArray.length;j++){
-            if(dataStockArray[j].user_id_from === this.userInfo.user_id){
-              dataStockArray[j].replyButtonFlag = false;
-            }
-          }          
-          for(let j=0;j<dataStockArray_1.length;j++){
-            if(dataStockArray_1[j].user_id_from === this.userInfo.user_id){
-              dataStockArray_1[j].replyButtonFlag = false;
-            }
-          } 
           
-        } else {//プロフィールページユーザ以外のユーザAがログインしている場合
-          //投稿者がAのコメントをfalseにする
-          for(let j=0;j<dataStockArray.length;j++){
-            if( dataStockArray[j].user_id_from === this.$store.getters['persistedParameter/getUserIdPersisted'] ){
-              dataStockArray[j].replyButtonFlag = false;
+          //ネスト０とネスト２のコメントに返信ボタンをつける
+          //ただし、その下にネストが存在する場合は返信をつけない
+          //これは、j+1番目の要素のネスト数が０になっているかで判断できる
+          for(let j=0;j<displayArray_2.length;j++){
+            if(displayArray_2[j].nestCount === 0 && displayArray_2[j+1].nestCount === 0){
+              displayArray_2[j].replyButtonFlag = true;
             }
-          } 
-
-          for(let j=0;j<dataStockArray_1.length;j++){
-            if( dataStockArray_1[j].user_id_from === this.$store.getters['persistedParameter/getUserIdPersisted'] ){
-              dataStockArray_1[j].replyButtonFlag = false;
+            if(displayArray_2[j].nestCount === 2 && displayArray_2[j+1].nestCount === 0){
+              displayArray_2[j].replyButtonFlag = true;
             }
-          }                  
-        }                                    
-
-        /**/
-        //コメントデータを適切な順番に並び替える
-        //並び替え完了後のコメントデータ配列
-        let displayArray=[];
-
-        //追加したい要素がコメントデータ配列に含まれているかをチェックするフラグ
-        let isDataIncluded=false;
-
-        //ネストコメント保管用
-        let storedReplyArray=[];
-
-        //処理前の配列確認
-        for(let p=0;p<dataStockArray_1.length;p++){
-          /**/
-          //console.log(`dataStockArray_1[${p}].commentId:`);
-          //console.log(dataStockArray_1[p].commentId);
-          //console.log(`dataStockArray_1[${p}].reply_comment_id:`);
-          //console.log(dataStockArray_1[p].reply_comment_id);
+           
+          }                   
           
-        }
+        } else {//プロフィールページユーザ以外のユーザBがログインしている場合
+          //ネスト１のコメントで、なおかつuser_id_toがユーザBのものは返信ボタンをつける
+          //ただし、その下にネストが存在する場合は返信をつけない
 
-        //ネストカウントを初期化
-        for(let p=0;p<dataStockArray_1.length;p++){
-          dataStockArray_1[p].nestCount=0;
-          /*
-          console.log(`dataStockArray_1[${p}].commentId:`);
-          console.log(dataStockArray_1[p].commentId);
-          console.log(`dataStockArray_1[${p}].reply_comment_id:`);
-          console.log(dataStockArray_1[p].reply_comment_id);
-          */
-        }
+          for(let j=0;j<displayArray_2.length;j++){
+            if( displayArray_2[j].nestCount === 1 && displayArray_2[j].user_id_to === this.userInfo.user_id && displayArray_2[j+1].nestCount === 0){
+              displayArray_2[j].replyButtonFlag = true;
+            }            
+          }                         
+        }      
 
-        //昇順で並んだデータdataStockArray_1において、ネストされたコメントを取り出す
-        for(let i=0;i<dataStockArray_1.length;i++){
-          //親コメントにネストされた全コメントを取得
-          searchReply(dataStockArray_1[i].commentId, i);
+        console.log("displayArray_2 after replyButton addition:");
+        console.log(displayArray_2);
 
-          //ネストされた全コメントを取得できているか確認
-          /*
-          console.log(`i=${i}-----------------`);
-          for(let p=0;p<storedReplyArray.length;p++){
-            //console.log("storedReplyArray:");
-            console.log(storedReplyArray[p].commentId);
-          }
-          */
+        //テーブル表示用配列にデータを入れる
+        for(let i=0;i<displayArray_2.length;i++){         
+          this.tableData3.push(displayArray_2[i]);
+        }                                  
 
-          //ストックされたデータを表示用配列に格納する
-          /*
-          for(let k=0;k<storedReplyArray.length;k++){
+        //コメント一覧を投稿日時でソートするための関数を定義 	   
+        function sortFunc2(a,b){
+          return a.createdAt - b.createdAt;
+        }               
 
-            let data = _.cloneDeep(storedReplyArray[k]);
-            displayArray.push(data);
-          }
-          */
-
-          /**/
-          //ネストを含む親コメント要素を表示用配列に格納
-          for(let k=0;k<storedReplyArray.length;k++){
-            //並び替え後配列に追加したい要素
-            let data = _.cloneDeep(storedReplyArray[k]);
-
-            //追加したい要素が並び替え後配列に含まれているかをチェック
-            for(let u=0;u<displayArray.length;u++){
-              if(data.commentId ===  displayArray[u].commentId){
-                //console.log(storedReplyArray);              
-                isDataIncluded = true;
-              }
-            }
-
-            if(!isDataIncluded){
-              displayArray.push(data);              
-            } else {
-              isDataIncluded = false;
-            }
-            
-          }
-          
-
-
-
-
-          //一時保管配列の初期化
-          storedReplyArray.splice(-storedReplyArray.length);
-
-          function searchReply(commentId, index){
-
-            storedReplyArray.push(dataStockArray_1[index]);
-            
-            for(let j=index+1;j<dataStockArray_1.length;j++){
-
-              if(dataStockArray_1[j].reply_comment_id === undefined){
-                dataStockArray_1[j].reply_comment_id="";
-                //console.log("property is not defined");
-                console.log(dataStockArray_1[j].reply_comment_id);//undefined
-              }
-              //追加したい要素のコメントに対して、返信があるか確認する
-              //親：dataStockArray_1[j]
-              if( dataStockArray_1[j].reply_comment_id !== "" && commentId === dataStockArray_1[j].reply_comment_id){
-
-                dataStockArray_1[j].nestCount = dataStockArray_1[index].nestCount + 1;
-
-                let data1 =_.cloneDeep(dataStockArray_1[j]);
-                //返信がある場合は、そのコメントを一時ストック配列に格納する
-                //子要素をストック配列に格納する
-                //storedReplyArray.push(data1);
-                /*
-                console.log("storedReplyArray before call recursive function<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-                for(let z=0;z<storedReplyArray.length;z++){
-                  console.log(storedReplyArray[z].commentId);
-                }
-                */
-                
-
-
-                searchReply(dataStockArray_1[j].commentId, j);
-              }
-              /*
-              try{
-                if(dataStockArray_1[j].reply_comment_id === undefined){
-                  dataStockArray_1[j].reply_comment_id="xxxx";
-                  //console.log("property is not defined");
-                  console.log(dataStockArray_1[j].reply_comment_id);//undefined
-                }
-                
-                if( commentId === dataStockArray_1[j].reply_comment_id){
-                  let data1 =_.cloneDeep(dataStockArray_1[j]);
-                  storedReplyArray.push(data1);
-
-                }
-
-              } catch(e){
-                //console.log("property is not defined");
-
-              }
-              */
-              
-              /*
-              if(dataStockArray_1[j].reply_comment_id === undefined || dataStockArray_1[j].reply_comment_id === null){
-                
-                console.log("property is not defined");
-                console.log(dataStockArray_1[j].reply_comment_id);//undefined
-              }
-              else if( commentId === dataStockArray_1[j].reply_comment_id){
-                let data1 =_.cloneDeep(dataStockArray_1[j]);
-                storedReplyArray.push(data1);
-
-              }
-              */
-            }
-            //一時保存配列の先頭に親要素を追加する
-            //storedReplyArray.unshift(dataStockArray_1[index]);
-            /*
-            console.log("storedReplyArray after unshift>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");                   
-            for(let zz=0;zz<storedReplyArray.length;zz++){
-              console.log(storedReplyArray[zz].commentId);
-            }
-            */
-          }
-
-        }
-        console.log("displayArray:");
-        console.log(displayArray);
-        
-
-
-
-
-
-
-
-      	for(let i=0;i<dataStockArray.length;i++){      		
-          this.$store.dispatch('persistedParameter/allCommentDataSetAction',dataStockArray[i]);
-      	}        
-
-        for(let i=0;i<dataStockArray_1.length;i++){         
-          //this.tableData.push(dataStockArray_1[i]);
-        }
-        //console.log(dataStockArray_1);
-        for(let i=0;i<displayArray.length;i++){         
-          this.tableData2.push(displayArray[i]);
-        }
-        
+        this.loading=  false;        
                  
       })
       .catch(function(error) {

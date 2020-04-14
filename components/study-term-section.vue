@@ -1,7 +1,14 @@
 <template>
   <div class="study-term-container">
-    <h3>勉強期間(ヶ月)</h3>
-    記事投稿者の勉強期間を入力してください。<input type="number" v-model="studyTerm">       
+    <b-form-group
+      label-cols-sm="3"
+      label="勉強期間(ヶ月):"
+      label-align-sm="right"
+      
+    >
+      <b-form-input  v-model="studyTerm"></b-form-input>
+    </b-form-group>
+        
   </div>
 </template>
 

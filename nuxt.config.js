@@ -52,6 +52,7 @@ export default {
   modules: [
   '@nuxtjs/dotenv',
   '@nuxtjs/axios',
+  'bootstrap-vue/nuxt',
   ],
   /*
   ** Build configuration

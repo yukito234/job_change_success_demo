@@ -1,8 +1,14 @@
 <template>
   <div>
-    <header-area></header-area>
-    <!--<global-navi></global-navi>-->
-    <nuxt />
+    <!--
+    <b-overlay :show="this.$store.getters['persistedParameter/getIsShowAll']" rounded="sm">
+    </b-overlay>
+    -->
+
+      <header-area></header-area>
+      <!--<global-navi></global-navi>-->
+      <nuxt />
+    
   </div>
 </template>
 
@@ -11,7 +17,6 @@
 //つまり、v-ifでダッシュボードやログアウトなどのメニューの表示/非表示を切り替えることができない
 //import globalNavi from '~/components/global-navi.vue';
   import headerArea from '~/components/header-area.vue';
-
   export default {     
     components: {
     //"global-navi": globalNavi,

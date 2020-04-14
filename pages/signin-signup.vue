@@ -1,8 +1,7 @@
 <template>
   <div >
     <global-navi></global-navi>
-    <p>test0@t.com</p>
-    <p>testtest0</p>
+    
     <signin></signin>
     <signup></signup>
   </div>

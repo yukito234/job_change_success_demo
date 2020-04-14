@@ -29,6 +29,7 @@ import db from '../plugins/firebase_config'
 export default {
   data () {
     return {
+
       //ログイン時とログアウト時でグローバルに表示するメニューを切り替えるため
       //ログアウト時:false、ログイン時:true      
       userFlag:this.$store.getters['persistedParameter/getIsLoginUser'],
@@ -37,6 +38,10 @@ export default {
   },
   methods:{
     signOut() {           
+      //ログアウトが押されたのでアニメーション開始
+      //this.$store.dispatch('persistedParameter/changeIsShowAllAction',true);  
+
+
       //member.vueページに表示されているユーザ名を初期化する
       //ユーザ名は永続化させておいた方がいいかも
       this.$store.commit('nameInit');
@@ -51,6 +56,8 @@ export default {
       this.$store.commit('persistedParameter/changeIsEmpty',true);      
 
       firebase.auth().signOut().then(() => {
+        //トップページに戻る直前でアニメーションを解除
+        //this.$store.dispatch('persistedParameter/changeIsShowAllAction',false);  
         //トップページでログアウトした場合、リロードさせないと、ダッシュボード等のメニューがグローバルに残ったままになってしまう
         this.$router.go({path: this.$router.currentRoute.path, force: true});
         this.$router.push('/');        

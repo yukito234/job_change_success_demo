@@ -5,13 +5,13 @@ import Vuex from 'vuex'
 export const state = () => ({	
 	url : "",
 	title: "",
-	age: "",
-	educationalBackground: "",
+	age: null,
+	educationalBackground: null,
 	studyTerm: "",
-	schoolPresence: "",
+	schoolPresence: null,
 	language: [],
 	framework: [],
-	company: "",
+	company: null,
 })
 	
 export const actions = {	

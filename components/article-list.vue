@@ -1,6 +1,6 @@
 <template>
   <div class="article-list-container">        
-    <!--<h2>未経験webエンジニア転職者の体験記の一覧</h2>-->
+    
     <h3>上のグラフのデータ一覧</h3>    
     <p>下表では、年齢・学歴、スクール有無、転職先の項目でフィルターできます。
       <br>気になる項目でフィルターをかけて表のデータを比較してみると新たな発見があるかもしれません。
@@ -8,80 +8,67 @@
       <br>※空白はデータなしです。
     </p>    
 
-    <el-button @click="clearFilter">下表のフィルターをすべて解除する</el-button>    
-    <el-table 
-      ref="filterTable"
-      :data="tableData"       
-      style="width: 100%" 
-      >
+    <b-form-group
+      label="Filter"
+      label-cols-sm="3"
+      label-align-sm="right"
+      label-size="sm"
+      label-for="filterInput"
+      class="mb-0"
+    >
+      <b-input-group size="sm">
+        <b-form-input
+          v-model="filter"
+          type="search"
+          id="filterInput"
+          placeholder="Type to Search"
+        ></b-form-input>
+        <b-input-group-append>
+          <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+        </b-input-group-append>
+      </b-input-group>
+    </b-form-group>
 
-      <el-table-column 
-        type="index">
-      </el-table-column>
-      
-      <el-table-column        
-        label="記事タイトル"
-        >
-        <div slot-scope="{row}">
-          <a v-bind:href="row.url">{{row.title}}</a>          
-        </div>
-      </el-table-column>
-    
-    <!--
-      <el-table-column        
-        label="記事タイトル"
-        >
-        <template v-slot:default="{row}">
-          <a v-bind:href="row.url">{{row.title}}</a>          
-        </template>
-      </el-table-column>
+    <b-form-group
+      label="Filter On"
+      label-cols-sm="3"
+      label-align-sm="right"
+      label-size="sm"
+      description="Leave all unchecked to filter on all data"
+      class="mb-0">
+      <b-form-checkbox-group v-model="filterOn" class="mt-1">
+        <b-form-checkbox value="age">年齢</b-form-checkbox>
+        <b-form-checkbox value="educational_background">学歴</b-form-checkbox>
+        <b-form-checkbox value="school_presence">スクール有無</b-form-checkbox>
+        <b-form-checkbox value="company">転職先</b-form-checkbox>        
+      </b-form-checkbox-group>
+    </b-form-group>
+
+    <b-table 
+      striped hover 
+      :items="tableData" 
+      :fields="fields"
+      sticky-header="600px"
+      :sort-compare="mySortCompare"
+      @filtered="onFiltered"
+      :filter="filter"
+      :filterIncludedFields="filterOn"
+      >
+    <!-- 
+      responsive sticky-header 
+      no-border-collapse
     -->
-      
-      <el-table-column
-        prop="age"
-        label="年齢"
-        :filters="[{text: '20代後半', value: '20代後半'}, {text: '30代前半', value: '30代前半'}, {text: '20代前半', value: '20代前半'}]"
-        :filter-method="filterHandler"
-        >
-      </el-table-column>
-      <el-table-column
-        prop="educational_background"
-        label="学歴"
-        :filters="[{text: '大学院卒', value: '大学院卒'}, {text: '高専卒', value: '高専卒'}, {text: '高卒', value: '高卒'}, {text: '大卒', value: '大卒'}]"
-        :filter-method="filterHandler"
-        >
-      </el-table-column>      
     
-      <el-table-column
-        prop="study_term"
-        label="勉強期間（ヶ月）"
-        :sort-method="(a, b) => sortChange(a, b)"        
-        sortable
-        >
-      </el-table-column>
-      <el-table-column
-        prop="school_presence"
-        label="スクール有無"
-        :filters="[{text: 'あり', value: 'あり'}, {text: 'なし', value: 'なし'}]"
-        :filter-method="filterHandler"
-        >
-      </el-table-column>
-      
-      <el-table-column
-        prop="company"
-        label="転職先"
-        :filters="[{text: '受託', value: '受託'}, {text: '自社開発', value: '自社開発'}, {text: 'SES', value: 'なし'}]"
-        :filter-method="filterHandler"
-        >
-      </el-table-column>
-    </el-table>    
-    <br>
-    <br>
-    <!--以下２つのボタンはデバッグ用-->
-    <el-button @click="displayMessage()">コンソールでテーブルのデータをチェック</el-button>
-    <el-button @click="sortFunctionCheck()">jsのsortの機能をチェック</el-button>
-    <br>
-    <br>        
+      <template v-slot:cell(index)="data">
+        {{ data.index + 1 }}
+      </template>    
+      <template v-slot:cell(titleLink)="data">
+        <a v-bind:href="data.item.url">{{data.item.title}}</a>
+        
+      </template>
+    </b-table>
+
+         
   </div>
 </template>
 
@@ -93,17 +80,60 @@ import _ from 'lodash';
 
 export default {
   data(){
+
     return {
+      totalRows: 1,
+      filter: null,
+      filterOn: [],
       tableData:[],//表の描画用データ
+      fields:[
+        'index',
+        //'title',
+        //'url',
+        {
+          key:'titleLink',
+          label:'記事タイトル',
+        },
+        {
+          key:'age',
+          label:'年齢',
+        },
+        {
+          key:'educational_background',
+          label:'学歴',
+        },
+        {
+          key:'study_term',
+          label:'勉強期間（ヶ月）',
+          sortable: true,
+          //sort-null-last:true,
+          //formatter
+          //sortByFormatted
+          //filterByFormatted
+          //stickyColumn
+        },
+        {
+          key:'school_presence',
+          label:'スクール有無',
+        },
+        {
+          key:'company',
+          label:'転職先',
+        },
+      ],
 
     }
+  },
+  mounted() {
+  
+
   },
   created:function(){ 
     //firebaseから記事データ一覧を取得
     db.collection("experience_articles").get()
       .then((querySnapshot)=>{        
         querySnapshot.forEach((doc)=>{
-          //const data = doc.data();          
+               
           const data = _.cloneDeep(doc.data());
           const dataForElementTable = _.cloneDeep(doc.data());          
          
@@ -112,7 +142,10 @@ export default {
           this.tableData.push(dataForElementTable);
         });
         //console.log("this.tableData");
-        //console.log(this.tableData);        
+        //console.log(this.tableData);
+        this.totalRows = this.tableData.length;
+        console.log("this.totalRows");
+        console.log(this.totalRows);        
                 
       })
       .catch(function(error) {
@@ -120,130 +153,72 @@ export default {
       });
   },
   methods:{
-    sortFunctionCheck(){
-      //jsのsortメソッドの動作を確認
-      let primes = [7, 13, 2, 5, 19, 3, 11, 17];
-      //a,bの値と移動後の配列
-      /*      
-      7 13->7, 13,| 2, 5, 19, 3, 11, 17
-
-      13 2->7 2 13 | 5  19, 3, 11, 17
-      7 2-> 2 7 13
-
-      7 5-> 2 5 7 13 | 19, 3, 11, 17
-      2 5-> 2 5 7 13 | 19, 3, 11, 17
-      
-      5 19 -> 2 5 19 7 13 | 3, 11, 17
-      7 19 -> 2 5 7 19 13 | 3, 11, 17
-      13 19 -> 2 5 7 13 19 | 3, 11, 17
-
-      7 3 -> 2 5 3 7 13 19 | 11, 17
-      */
-      
-      primes.sort(function(b, a){
-        if(a < b) {
-          console.log("a < b");
-          console.log(`a = ${a}, b= ${b}`);
-          return -1;
-        }
-        else if(a > b) {
-          console.log("a > b");
-          console.log(`a = ${a}, b= ${b}`);
-          return 1;
-        }
-        else {
-          console.log("a = b");
-          console.log(`a = ${a}, b= ${b}`);
+    onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.totalRows = filteredItems.length;
+      //this.currentPage = 1
+    },
+    mySortCompare(a, b, key, sortDesc){
+      if (key === 'study_term') {
+        console.log(sortDesc);
+        
+        //降順
+        if(sortDesc){
+          if( Number(a[key]) - Number(b[key]) > 0 ){
+            //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+            return 1;
+          } else if (Number(a[key]) - Number(b[key]) <0){
+            //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+            return -1;
+          }        
+          //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
           return 0;
-        }
-      });
 
-      console.log("primes");
-      console.log(primes);
+        //昇順  
+        } else{
+          //空要素のソート
+          if (a[key] === '' && b[key] === '') {
+            //console.log(`a = ${a.study_term}, b= ${b.study_term}  both empty`);
+            //a と b を並び替えしない
+            return 0;          
+          }
 
-    },
-    displayMessage(){      
-      //デバッグ用の機能
-      console.log("this.$refs.filterTable");
-      console.log(this.$refs.filterTable);
-      console.log("this.$refs.filterTable.tableData");
-      console.log(this.$refs.filterTable.tableData);
-    },    
-    filterHandler(value, row, column) {
-      //テーブルのフィルター機能      
-      const property = column['property'];
-      return row[property] === value;
-    },
-    clearFilter() {
-      //フィルターを解除する
-      this.$refs.filterTable.clearFilter();
-    },
-    sortChange(a,b){           
-      //ユーザがクリックしたソートボタンの値(昇順or降順)を取得
-      let direction = this.$refs.filterTable.columns[4].order;
-      console.log("direction:");
-      console.log(direction);
+          if (a[key] === '') {
+            //console.log(`a = ${a.study_term}, b= ${b.study_term} a is empty`);
+            //bを前方へ移動させる(b を a より小さい添字にソート)
+            return 1;
+          }
 
-      //昇順
-      if(direction === "ascending"){
-        console.log("into ascending section");
-        //並び替えるデータ           
-        //[6, "", 6, 4, "", 4, 2, 6, 8, 4, 3, "", 3, 4, 6, 4, 6, 6, 6]        
-        //b=6, a=""から並べ替えスタート
+          if (b[key] === '') {
+            //console.log(`a = ${a.study_term}, b= ${b.study_term} b is empty`);
+            //aを前方へ移動させる (a を b より小さい添字にソート)     
+            return -1;    
+          }
 
-        //空要素のソート
-        if (a.study_term === '' && b.study_term === '') {
-          //console.log(`a = ${a.study_term}, b= ${b.study_term}  both empty`);
-          //a と b を並び替えしない
-          return 0;          
-        }
-
-        if (a.study_term === '') {
-          //console.log(`a = ${a.study_term}, b= ${b.study_term} a is empty`);
-          //bを前方へ移動させる(b を a より小さい添字にソート)
-          return 1;
-        }
-
-        if (b.study_term === '') {
-          //console.log(`a = ${a.study_term}, b= ${b.study_term} b is empty`);
-          //aを前方へ移動させる (a を b より小さい添字にソート)     
-          return -1;    
-        }
-
-        //数字のソート
-        if( Number(a.study_term) - Number(b.study_term) > 0 ){
+          //数字のソート
+          if( Number(a[key]) - Number(b[key]) > 0 ){
+            //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+            //bを前方へ移動させる(b を a より小さい添字にソート)
+            return 1;
+          } else if (Number(a[key]) - Number(b[key]) <0){
+            //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+            //aを前方へ移動させる (a を b より小さい添字にソート)
+            return -1;
+          }        
           //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
-          //bを前方へ移動させる(b を a より小さい添字にソート)
-          return 1;
-        } else if (Number(a.study_term) - Number(b.study_term) <0){
-          //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
-          //aを前方へ移動させる (a を b より小さい添字にソート)
-          return -1;
-        }        
-        //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
-        return 0;
+          return 0;
 
-      //降順  
-      } else {        
-        console.log("into descending section");                        
-        if( Number(a.study_term) - Number(b.study_term) > 0 ){
-          //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
-          return 1;
-        } else if (Number(a.study_term) - Number(b.study_term) <0){
-          //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
-          return -1;
-        }        
-        //console.log(`a = ${a.study_term}, b= ${b.study_term} `);
-        return 0;
-      }              
-    }    
-    /*
-    sortChange(){     
-      return function(a,b){       
-        ...
+
+        }
+        
+      } else {
+        
+        return false;
       }
-    }
-    */   
+
+
+    },
+    
   },
 }
 

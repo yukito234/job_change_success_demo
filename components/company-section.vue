@@ -1,15 +1,14 @@
 <template>
   <div class="company-container">
-    <h3>転職先</h3>
-    転職先を選択してください。    
-    <select v-model="company">
-      <option disabled value="">選択してください</option>
-      <option value="自社開発">自社開発</option>
-      <option value="受託">受託</option>
-      <option value="SIer">SIer</option>
-      <option value="SES">SES</option>
-      <option value="その他">その他</option>           
-    </select>    
+    <b-form-group
+      label-cols-sm="3"
+      label="転職先:"
+      label-align-sm="right"
+      
+    >
+      <b-form-select v-model="company" :options="options"></b-form-select>
+    </b-form-group>
+    
   </div>
 </template>
 
@@ -18,7 +17,16 @@
 export default {  
   data () {
     return {           
+      options: [
+        { value: null, text: '選択してください' },
+        { value: '自社開発', text: '自社開発' },
+        { value: '受託', text: '受託' },
+        { value: 'SIer', text: 'SIer' },
+        { value: 'SES', text: 'SES' },
+        { value: 'その他', text: 'その他' },
+        
       
+      ],
     }
   },  
   methods: {

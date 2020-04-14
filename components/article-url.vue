@@ -1,7 +1,14 @@
 <template>
   <div class="article-url-container">
-    <h3>記事URL</h3>
-    参考になった体験記事のURLを入力してください。<input type="text" v-model="url">        
+    <b-form-group
+      label-cols-sm="3"
+      label="記事URL:"
+      label-align-sm="right"
+      
+    >
+      <b-form-input  v-model="url"></b-form-input>
+    </b-form-group>
+            
   </div>
 </template>
 

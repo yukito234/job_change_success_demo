@@ -1,54 +1,145 @@
 <template>
-  <div>	   	 
-  	<div v-if="$store.state.persistedParameter.isEmpty">           
-	    <h2>プロフィール作成</h2>
-	    <br>
-	    <h3>ニックネームを入力してください</h3>    
-	    <input type="text" v-model="nickName">  
-	    <br>
-      <br>
-	    <h3>画像をアップロードしてください</h3>
-	    <img :src="uploadedImage">
-	    <!--<img :src="downloadedImage">-->
-	    <br>
-	    <input type="file" accept="image/*" @change="onFileChange" >
-	    <br>
-      <br>
-	    <h3>自己紹介文を入力してください</h3>   
-      <br>
-      <br> 
-	    <textarea v-model="selfIntroduction"></textarea>
-	    <br>
-      <br>
-	    <button v-on:click="registerProfile">プロフィールを登録する</button>   	    	    
-	</div>
-	<div v-else>
-		<h2>プロフィールの編集</h2>
-    <br>
-		<button v-on:click="editProfile">プロフィールを編集する</button>
+  <div>	   	     
+    <p>{{$store.state.persistedParameter.isEmpty}}</p>
+  	<div v-if="$store.state.persistedParameter.isEmpty">
+      <b-button v-b-toggle.collapse-11 variant="primary">プロフィールを登録する</b-button>
+      <b-collapse id="collapse-11" class="mt-2">
+        <b-card bg-variant="light">
+          <b-form-group
+            label-cols-lg="3"
+            label="プロフィールの作成"
+            label-size="lg"
+            label-class="font-weight-bold pt-0"
+            class="mb-0"
+          >
+            <b-form-group
+              label-cols-sm="3"
+              label="ニックネーム:"
+              label-align-sm="right"
+              
+            >
+              <b-form-input  v-model="nickName"></b-form-input>
+            </b-form-group>
 
-	    <div v-if="editFlag">
-		    <h3>ニックネームを編集してください</h3>
-        <br>    
-        <br>
-		    <input type="text" v-model="nickName">  
-		    <br>
-        <br>
-		    <h3>新たに画像をアップロードしてください</h3>
-		    <img :src="uploadedImage">		    
-		    <!--<img :src="downloadedImage">-->
-		    <br>
-		    <input type="file" accept="image/*" @change="onFileChange" >
-		    <br>
-        <br>
-		    <h3>自己紹介文を編集してください</h3>    
-		    <br>
-        <br>
-        <textarea v-model="selfIntroduction"></textarea>
-		    <br>
-		    <button v-on:click="registerEditedProfile">編集したプロフィールを登録する</button>   		    		    
-		</div>
-	</div>
+            <b-form-group
+              label-cols-sm="3"
+              label="プロフィール画像:"
+              label-align-sm="right"
+              
+            >
+              <b-form-file
+                v-model="file"
+                :state="Boolean(file)"
+                placeholder="Choose a file or drop it here..."
+                drop-placeholder="Drop file here..."
+                accept="image/*"
+                @change="onFileChange"
+              ></b-form-file>
+              <img :src="uploadedImage">
+              
+            </b-form-group>
+
+            <b-form-group
+              label-cols-sm="3"
+              label="自己紹介文:"
+              label-align-sm="right"
+              
+            >
+              <b-form-textarea
+                id="textarea"
+                v-model="selfIntroduction"
+                placeholder="Enter something..."
+                rows="3"
+                max-rows="6"
+              ></b-form-textarea>
+            </b-form-group>
+
+            <b-form-group
+              label-cols-sm="3"
+              label=""
+              label-align-sm="right"
+              
+            >
+              <b-button v-on:click="registerProfile">プロフィールを新規登録する</b-button>
+            </b-form-group>
+          </b-form-group>
+        </b-card>
+      </b-collapse>
+          	    
+  	</div>
+  	<div v-else>    
+      <!--
+        以下ボタンを押してもドロップダウンのコンテンツが表示されないことがある
+        いったんユーザ一覧のボタンをクリックして、再度このページに戻ると表示される
+        firefoxでは、上のif内のb-buttonとb-collapseのidをid="collapse-11"で統一させることで解決した
+        ただし、chromeでは解決せず
+      -->
+      <b-button v-b-toggle.collapse-11 variant="primary">プロフィールを編集する</b-button>
+      <b-collapse id="collapse-11" class="mt-2">
+        <b-card bg-variant="light">
+          <b-form-group
+            label-cols-lg="3"
+            label="プロフィールの編集"
+            label-size="lg"
+            label-class="font-weight-bold pt-0"
+            class="mb-0"
+          >
+            <b-form-group
+              label-cols-sm="3"
+              label="ニックネーム:"
+              label-align-sm="right"
+              
+            >
+              <b-form-input  v-model="nickName"></b-form-input>
+            </b-form-group>
+
+            <b-form-group
+              label-cols-sm="3"
+              label="プロフィール画像:"
+              label-align-sm="right"
+              
+            >
+              <b-form-file
+                v-model="file"
+                :state="Boolean(file)"
+                placeholder="Choose a file or drop it here..."
+                drop-placeholder="Drop file here..."
+                accept="image/*"
+                @change="onFileChange"
+              ></b-form-file>
+              <img :src="uploadedImage">
+              
+            </b-form-group>
+
+            <b-form-group
+              label-cols-sm="3"
+              label="自己紹介文:"
+              label-align-sm="right"
+              
+            >
+              <b-form-textarea
+                id="textarea"
+                v-model="selfIntroduction"
+                placeholder="Enter something..."
+                rows="3"
+                max-rows="6"
+              ></b-form-textarea>
+            </b-form-group>
+
+            <b-form-group
+              label-cols-sm="3"
+              label=""
+              label-align-sm="right"
+              
+            >
+              <b-button v-on:click="registerEditedProfile">プロフィールを更新する</b-button>
+            </b-form-group>
+          </b-form-group>
+        </b-card>
+      </b-collapse>
+        		    		    
+  		
+  	</div>
   </div>
 </template>
 
@@ -60,6 +151,7 @@ import db from '../plugins/firebase_config'
 export default {  
   data () {
     return {
+      file:null,
     	uploadedImage:"",
     	files:"",    	
     	downloadedImage:"",
@@ -161,9 +253,24 @@ export default {
            })           
      	})    	    	      
   	},
-  	onFileChange(e) {      
+  	onFileChange(e) {            
       this.files = e.target.files || e.dataTransfer.files;            
-      this.createImage(this.files[0]);
+      console.log("this.files[0]");
+      console.log(this.files[0]);
+      //画像をアップロードせずにキャンセルした場合、以下のエラーが出る
+      //failed to execute 'readAsDataURL' on 'filereader': parameter 1 is not of type 'blob'
+      //さらに、this.files[0]=undefinedとなる
+      //そこでthis.files[0]が存在する場合のみ画像表示を実行する
+      if(this.files[0]){
+        this.createImage(this.files[0]);
+      } 
+      /**/
+      else{
+        //chromeの場合は、画像をアップロードせずにキャンセルした場合、以下の処理により画像が消える
+        //firefoxの場合は、そのまま画像が残る
+        this.uploadedImage ="";
+      }      
+      
     },
 
     createImage(file) {

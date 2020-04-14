@@ -1,19 +1,14 @@
 <template>
   <div class="age-section-container">
-    <h3>年齢</h3>
-    <span>体験記事の投稿者の年齢を選択してください。</span>   
-    <select v-model="age">
-      <option disabled value="">選択してください</option>
-      <option value="10代">10代</option>
-      <option value="20代前半">20代前半</option>
-      <option value="20代後半">20代後半</option>
-      <option value="30代前半">30代前半</option>
-      <option value="30代後半">30代後半</option>
-      <option value="40代前半">40代前半</option>
-      <option value="40代後半">40代後半</option>
-      <option value="50代">50代</option>
-      <option value="60代以降">60代以降</option>
-    </select>    
+    <b-form-group
+      label-cols-sm="3"
+      label="年齢:"
+      label-align-sm="right"
+      
+    >
+      <b-form-select v-model="age" :options="options"></b-form-select>
+    </b-form-group>
+    
   </div>
 </template>
 
@@ -22,6 +17,19 @@
 export default {  
   data () {
     return {
+      options: [
+        { value: null, text: '選択してください' },
+        { value: '20代前半', text: '20代前半' },
+        { value: '20代後半', text: '20代後半' },
+        { value: '30代前半', text: '30代前半' },
+        { value: '30代後半', text: '30代後半' },
+        { value: '40代前半', text: '40代前半' },
+        { value: '40代後半', text: '40代後半' },
+        { value: '50代', text: '50代' },
+        { value: '60代以降', text: '60代以降' },
+      
+      ],
+
 
     }
   },  

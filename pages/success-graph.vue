@@ -1,13 +1,16 @@
 <template>
   <div >
   	<global-navi></global-navi>
-    <h2>未経験から転職に成功した人のデータ</h2>
-    <p>転職成功者のデータ（年齢・学歴・勉強期間・スクール有無・転職先）をまとめたので、
-      <br>あなたが気になる項目をチェックしてみてください。
-    </p>
-  	<doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>       
-    <doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
-    <article-list></article-list>
+    <b-spinner small v-show="loading"></b-spinner>
+    <div v-show="!loading">
+      <h2>未経験から転職に成功した人のデータ</h2>
+      <p>転職成功者のデータ（年齢・学歴・勉強期間・スクール有無・転職先）をまとめたので、
+        <br>あなたが気になる項目をチェックしてみてください。
+      </p>
+    	<doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>       
+      <doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
+      <article-list></article-list>
+    </div>
   </div>
 </template>
 
@@ -31,10 +34,12 @@ export default {
   data () {
     return {
       datacollection: null,
+      loading: true,
       
     }
   },  
   mounted () {    
+    this.loading=false;  
     //グラフ描画に必要な全データを取得
     db.collection("experience_articles").get()
       .then((querySnapshot)=>{        
@@ -60,7 +65,8 @@ export default {
               backgroundColor: this.$store.state.graphColor,              
             }
           ]                    
-        }        
+        }
+        //this.loading=false;        
          
       })
       .catch(function(error) {

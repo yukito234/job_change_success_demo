@@ -1,36 +1,42 @@
 <template>
   <div>
-    <h2>体験記の追加</h2>    
-    <br>
-    <br>
-    <button v-on:click="addExperience()">体験記を追加する</button>
-    <div v-if="editFlag">
-        <p>ここでは、転職成功者のデータが記載されている記事を追加することができます。<br>ここで登録された記事は、成功者グラフのデータとして採用されます。</p>
-        <article-url></article-url>
-        <article-title></article-title>
-        <age-section></age-section>
-        <educational-background-section></educational-background-section>
-        <study-term-section></study-term-section>
-        <school-presence-section></school-presence-section>
-        <language-section></language-section>
-        <framework-section></framework-section>
-        <company-section></company-section>    
-      
-        <!--登録前に送信内容をチェック-->
-        <div>{{ $store.state.articleAddition.url }}</div>
-        <div>{{ $store.state.articleAddition.title }}</div>
-        <div>{{ $store.state.articleAddition.age }}</div>
-        <div>{{ $store.state.articleAddition.educationalBackground }}</div>
-        <div>{{ $store.state.articleAddition.studyTerm }}</div>
-        <div>{{ $store.state.articleAddition.schoolPresence }}</div>
-        <div>{{ $store.state.articleAddition.language.join(",") }}</div>
-        <div>{{ $store.state.articleAddition.framework.join(",") }}</div>
-        <div>{{ $store.state.articleAddition.company }}</div>
+    <b-button v-b-toggle.collapse-44 variant="primary">体験記の登録</b-button>
+    <b-collapse id="collapse-44" class="mt-2">
+        <b-card bg-variant="light">
+            <b-form-group
+              label-cols-lg="3"
+              label="体験記の登録"
+              label-size="lg"
+              label-class="font-weight-bold pt-0"
+              class="mb-0"
+            >
+                <p>ここで登録された記事は、成功者グラフページに反映されます。</p>
+                <article-url></article-url>
+                <article-title></article-title>
+                <age-section></age-section>
+                <educational-background-section></educational-background-section>
+                <study-term-section></study-term-section>
+                <school-presence-section></school-presence-section>
+                <company-section></company-section>
 
-        <button v-on:click="registerArticle">記事を登録する</button>
-    </div>
-    <br>
-    <br>
+                <!--登録前に送信内容をチェック-->
+                <div>{{ $store.state.articleAddition.url }}</div>
+                <div>{{ $store.state.articleAddition.title }}</div>
+                <div>{{ $store.state.articleAddition.age }}</div>
+                <div>{{ $store.state.articleAddition.educationalBackground }}</div>
+                <div>{{ $store.state.articleAddition.studyTerm }}</div>
+                <div>{{ $store.state.articleAddition.schoolPresence }}</div>
+                <div>{{ $store.state.articleAddition.language.join(",") }}</div>
+                <div>{{ $store.state.articleAddition.framework.join(",") }}</div>
+                <div>{{ $store.state.articleAddition.company }}</div>
+
+                <b-button v-on:click="registerArticle">記事を登録する</b-button>
+
+
+            </b-form-group>
+        </b-card>
+    </b-collapse>
+    
   </div>
 </template>
 
