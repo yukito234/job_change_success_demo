@@ -93,8 +93,12 @@
             <span>{{data.item.nick_name_from}}</span>
             <p>{{data.item.comment}}</p>
             <span>{{data.item.createdAt}}</span>
-            <router-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/reply` }">返信する</router-link>
+            <!--<router-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/reply` }">返信する</router-link>
+              
+            -->
+            <router-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/members/${$route.params.username}/reply/${data.item.commentId}` }">返信する</router-link>
             <p>commentId:  {{data.item.commentId}}</p>
+            
             <p>reply_comment_id:  {{data.item.reply_comment_id}}</p>
 
           </div>
@@ -111,7 +115,7 @@
 <script>
 /* eslint-disable */
 import firebase from 'firebase'
-import db from '../plugins/firebase_config'
+import db from '../../plugins/firebase_config'
 import globalNavi from '~/components/global-navi.vue';
 import _ from 'lodash';
 

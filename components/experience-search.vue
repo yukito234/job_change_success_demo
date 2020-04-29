@@ -36,6 +36,18 @@
 	    
 
 	    <b-form-input v-model.trim="searchBox" v-on:blur="doOnBlur()" placeholder="検索ワードを直接入力できます"></b-form-input>
+	    <!--
+	    	<b-icon icon="x-circle" scale="2" variant="danger"></b-icon>
+	    	<b-icon icon="x" scale="2" variant="danger"></b-icon>
+	    	<b-icon icon="exclamation-circle-fill" variant="success"></b-icon>
+
+	    	<b-icon-arrow-up></b-icon-arrow-up>
+	    	<b-icon icon="arrow-up"></b-icon>
+	    -->
+	    <b-icon icon="x" ></b-icon>
+	    
+	    
+	    
 	    <p>検索ボックスの内容(searchBoxContent):{{ searchBoxContent }}</p>
 
 	    
@@ -93,9 +105,14 @@
 			      :sort-compare="mySortCompare"
 			      
 	      		  
-	      		  :sort-direction="sortDirection"			      			      
+	      		  			      			      
 			    >
-			    <!--:sort-desc.sync="sortDesc" :sort-by.sync="sortBy"-->
+			    <!--
+			    	:sort-direction="sortDirection"
+			    	:sort-desc.sync="sortDesc" 
+			    	:sort-by.sync="sortBy"
+
+			    -->
 				    <template v-slot:cell(index)="data">
 			        	<!--{{ data.index + 1 }}-->
 			        	{{ (data.index+1)+(currentPage-1)*perPageOfBootstrap }}
@@ -113,13 +130,16 @@
 
 				</b-table>
 
+
 				
 			    
 
 			    <p>1ページの表示件数を変更する</p>
 			    <p>表示件数を入力してください</p>
 
-			    <b-form-input :type="number" v-model.number="perPageOfUserInput" placeholder="表示件数を入力"></b-form-input>
+			    <!--<b-form-input :type="number" v-model.number="perPageOfUserInput" placeholder="表示件数を入力"></b-form-input>-->
+			    <b-form-input type="number" v-model.number="perPageOfUserInput" placeholder="表示件数を入力"></b-form-input>
+
 			    <b-button variant="primary" v-on:click="changePerPage()">
 				    表示件数を変更する
 				</b-button>
@@ -129,7 +149,7 @@
 
 			    	    
 			    <p>{{ perPageOfBootstrap }}</p>
-			    
+			    <h2>ストック記事の一覧</h2>
 			    <p>以下の記事がストックされています</p>
 
 			    <b-table 			      
@@ -162,8 +182,24 @@
 <script>
 /* eslint-disable */
 import _ from 'lodash';
+//import { BIcon } from 'bootstrap-vue'
+//import { BootstrapVueIcons } from 'bootstrap-vue'
+import { BIcon, BIconArrowUp, BIconArrowDown, BIconX } from 'bootstrap-vue'
 
 export default {  
+	/*
+	components: {
+	    BootstrapVueIcons,
+	},
+	*/
+	/**/
+	components: {
+	    BIcon,
+	    BIconArrowUp,
+    	BIconArrowDown,
+    	BIconX
+	},
+	
 	data () {
 	    return {
 	      
@@ -238,7 +274,7 @@ export default {
 	          { text: '体験', value: '体験' },
 	          { text: '自社開発', value: '自社開発' },
 	          { text: 'フロントエンド', value: 'フロントエンド' },
-	          { text: 'バックエンド ', value: 'バックエンド ' },
+	          { text: 'バックエンド', value: 'バックエンド' },
 
 	      ],
 	     
@@ -261,15 +297,75 @@ export default {
 	      
 	    }
 	},
+	
 	watch:{           		
 		suggestKeywords:function(){       	      
-		  //検索ヒントsuggestKeywords[]がチェックされた場合、検索ボックスsearchBoxに反映させる
-		  //検索ボックスにカーソルがあたり、その後フォーカスが外れたら、ヒントのチェックボックスを初期化する
+		  //検索ヒント配列suggestKeywords[]が変化した場合の処理
+		  //suggestKeywords[]が変化したら、それを検索ボックスsearchBoxに反映させる
+
+		  //ここで、searchBoxの中身は、suggestKeywords[]とstoredSearchKeywords[]をあわせたものとなる
+		  //storedSearchKeywords[]は、検索ボックスからカーソルが外れたときの検索ボックスの中身
+
+		  //storedSearchKeywords[]が必要な理由		  
+		  //ユーザが検索ヒントの選択と検索ボックスへの直接入力を繰り返すことを想定すると、以下の2点が必要
+		  //1:検索ボックスにカーソルがあたった時点で、検索ヒントからの選択はいったん終わったものと判断し、suggestKeywords[]を初期化
+		  //ここで初期化しておかないと、検索ボックスにキーワードを直接入力し、再度検索ヒントを選択したときに、検索ボックス内にキーワードが重複表示される
+
+		  //2:検索ボックスからカーソルが外れた際に、検索ヒントの再選択に備えて、直前の検索ボックスの内容を保持しておく
+		  
+
+
+		  //suggestKeywords[]が空、storedSearchKeywords[]が空
+		  if(this.suggestKeywords.length === 0 && this.storedSearchKeywords.length === 0){
+		  	//検索ボックス内の不要な空白を除去
+		  	//this.searchBox = "";
+		  	console.log("in suggestKeywords=0 storedSearchKeywords=0");
+
+		  //suggestKeywords[]が空	
+		  } else if(this.suggestKeywords.length === 0){
+		  	//
+		  	this.searchBox =  this.storedSearchKeywords.join(" ");
+		  	console.log("in suggestKeywords=0 ");
+		  	console.log(this.storedSearchKeywords);
+		  	console.log(this.searchBox);
+
+		  //storedSearchKeywords[]が空	
+		  } else if(this.storedSearchKeywords.length === 0){
+		  	//
+		  	this.searchBox = this.suggestKeywords.join(" ");
+		  	console.log("in storedSearchKeywords=0 ");
+		  	console.log(this.suggestKeywords);
+		  	console.log(this.searchBox);
+
+
+		  //suggestKeywords[]が空でなく、storedSearchKeywords[]も空でない
+		  } else{
+
+		  	this.searchBox =  this.storedSearchKeywords.join(" ") + " " + this.suggestKeywords.join(" ");
+		  	console.log("in suggestKeywords!=0 storedSearchKeywords!=0 ");
+		  	console.log(this.storedSearchKeywords);
+		  	console.log(this.suggestKeywords);
+		  	console.log(this.searchBox);
+		  }
+
+		  /*
+		  console.log("this.searchBox");
+	      console.log(this.searchBox);
+	      console.log("this.storedSearchKeywords");
+	      console.log(this.storedSearchKeywords);
+	      */
+
+
+
+
+		  /*
+
+		  //検索ボックスにカーソルがあたったら、ヒントのチェックボックスを初期化する
 		  //このとき、直前の検索ボックスの内容はstoredSearchKeywords[]に退避させておく
 		  //ヒントのチェックと直接入力が繰り返し行われることを想定し、
 		  //検索ボックスの内容はヒントsuggestKeywords[]と、storedSearchKeywords[]を連結させたものとする	     
-	      //ただし、どちらかの配列が空の場合は文字列の前後に空白が入らないように場合分けで対処する
 
+	      //また、どちらかの配列が空の場合は文字列の前後に空白が入らないように場合分けで対処する
 	      //まだ検索ボックスにカーソルがあたっていない場合    
 	      if(this.storedSearchKeywords.length === 0){
 
@@ -290,13 +386,33 @@ export default {
 	      console.log(this.searchBox);
 	      console.log("this.storedSearchKeywords");
 	      console.log(this.storedSearchKeywords);
+
+	      */
 	    },
 	    searchBox( val ){ 
+
 	      //検索ボックスの内容確認
 	      this.searchBoxContent = val;
-	      //検索ボックスの内容を空白で区切って、検索ワードを配列に格納する
-	      this.searchBoxContentArray = this.searchBoxContent.split(/\s+/);             	      
+
+	      console.log("this.searchBoxContent in searchBox");
+	      console.log(this.searchBoxContent);
+
+	      //検索ボックスが空でない場合
+	      if(this.searchBoxContent !== ""){
+
+		      //検索ボックスの内容を半角空白で区切って、検索ワードを配列に格納する
+		      this.searchBoxContentArray = this.searchBoxContent.split(/\s+/);
+		      console.log("this.searchBoxContentArray in searchBox");
+	      		console.log(this.searchBoxContentArray);
+      	  } else{
+      	  	 console.log("this.searchBoxContent is empty");
+
+      	  	this.searchBoxContentArray=[];
+      	  }
+	      
+
 	    },
+	    
 	    
 	    
 	},
@@ -316,6 +432,7 @@ export default {
 	    },
 	},
 	methods:{
+
 		mySortCompare(a, b, key, sortDesc){
 			if (key === 'updated') {
 							
@@ -405,6 +522,11 @@ export default {
 		},	   
 		
 		async doSearch(){		
+
+			if(this.searchBoxContentArray.length === 0){
+				alert("キーワードを入力してください");
+				return;
+			}
 			//loadingアニメーションの実行
 			this.loading = true;
 

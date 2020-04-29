@@ -1,9 +1,10 @@
 <template>
   <div class="member-container">    
-    
+    <!---->
+    <global-navi></global-navi>
     <span>{{loginUserName}}さん、ようこそ！！</span>
     <br>                
-    <users-list></users-list>   
+    <users-list-members></users-list-members>   
   </div>
 </template>
 
@@ -11,16 +12,16 @@
 <script>
 /* eslint-disable */
 import firebase from 'firebase'
-import db from '../plugins/firebase_config'
-import UsersList from '~/components/users-list.vue'
-
+import db from '../../plugins/firebase_config'
+import UsersListMembers from '~/components/users-list-members.vue'
+import globalNavi from '~/components/global-navi.vue';
 
 export default {
   middleware: 'authenticated', 
   name: 'Member',
   components: {        
-    'users-list': UsersList,    
-    
+    'users-list-members': UsersListMembers,    
+    "global-navi": globalNavi,
   },
   head(){
     return {
@@ -38,8 +39,6 @@ export default {
     },
   },
   created:function(){
-    
-
     //会員情報を取得
     db.collection("users").get()
       .then((querySnapshot)=>{        
@@ -80,7 +79,7 @@ export default {
       })
     }, 
     goToDashboard(){
-      this.$router.push('/dashboard');
+      this.$router.push('/members/dashboard-members');
 
     },  
   }

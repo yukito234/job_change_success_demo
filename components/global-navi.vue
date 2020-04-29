@@ -6,6 +6,7 @@
     <el-menu-item index="2" :route="{ path: '/success-graph' }">
       成功者グラフ
     </el-menu-item>
+    
     <el-menu-item index="3" :route="{ path: '/member' }" v-if="checkUser">
       ユーザ一覧
     </el-menu-item>
@@ -19,6 +20,7 @@
       ログアウト
     </el-menu-item>       
     
+    
   </el-menu>
 </template>
 
@@ -27,14 +29,15 @@ import firebase from 'firebase'
 import db from '../plugins/firebase_config'
 
 export default {
+ 
   data () {
-    return {
-
-      //ログイン時とログアウト時でグローバルに表示するメニューを切り替えるため
-      //ログアウト時:false、ログイン時:true      
-      userFlag:this.$store.getters['persistedParameter/getIsLoginUser'],
+    return {     
       
     }
+  },
+  //
+  mounted() {
+    
   },
   methods:{
     signOut() {           
@@ -67,7 +70,10 @@ export default {
   },
   computed: {    
     checkUser(){
-      return this.userFlag;      
+     
+      //return this.$store.getters['persistedParameter/getIsLoginUser'];            
+      //gettersを使わずに直接stateを参照しても問題なかった
+      return this.$store.state.persistedParameter.isLoginUser;
     }        
   }
 }

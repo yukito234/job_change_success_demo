@@ -3,6 +3,7 @@
     <b-overlay :show="show" rounded="sm">
       <b-card bg-variant="light">
             
+
         <b-form-group
           label-cols-lg="3"
           label="ログインはこちら"
@@ -72,10 +73,19 @@ export default {
 
         
 
+
+
         this.show=false;        
         //alert('ログイン成功');        
+        //global-navi.vueをdefault.vueでimportする場合、pushメソッドの手前でリロードするとmemberページに飛ばず、このページがリロードされて処理終了となる
+        //つまりこのページが描画されたまま
+        //グローバルメニューはユーザー一覧、ダッシュボード、ログアウトを含み正しく表示される
+        //this.$router.go({path: this.$router.currentRoute.path, force: true});
         this.$router.push('/member');
-        //this.$router.go({path: this.$router.currentRoute.path, force: true});        
+        //以下にリロードを記述すると、memberページが描画された後でサイドsigninページがリロードされるので、最終的にsigninページのまま
+        //グローバルメニューはユーザー一覧、ダッシュボード、ログアウトを含み正しく表示される
+        //this.$router.go({path: this.$router.currentRoute.path, force: true});
+                
       })
       .catch(error => {
         alert(error.message);

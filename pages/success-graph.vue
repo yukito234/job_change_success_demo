@@ -1,6 +1,6 @@
 <template>
   <div >
-  	<global-navi></global-navi>
+  	
     <b-spinner small v-show="loading"></b-spinner>
     <div v-show="!loading">
       <h2>未経験から転職に成功した人のデータ</h2>
@@ -20,7 +20,7 @@ import db from '../plugins/firebase_config'
 import ArticleList from '~/components/article-list.vue'
 import DoughnutGraph from '~/components/doughnut.vue'
 import DoughnutGraphSelect from '~/components/doughnut-graph-select.vue'
-import globalNavi from '~/components/global-navi.vue';
+
 
 export default {
   components: {    
@@ -28,7 +28,7 @@ export default {
     'article-list': ArticleList,
     'doughnut-graph': DoughnutGraph,
     'doughnut-graph-select': DoughnutGraphSelect,    
-    "global-navi": globalNavi,
+    
 
   },
   data () {
@@ -38,7 +38,11 @@ export default {
       
     }
   },  
+  created() {
+    
+  },
   mounted () {    
+
     this.loading=false;  
     //グラフ描画に必要な全データを取得
     db.collection("experience_articles").get()

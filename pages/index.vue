@@ -1,18 +1,19 @@
 <template>
   <div >
-    <global-navi></global-navi>
+        
     <experience-search></experience-search>                  
   </div>
 </template>
 
+
 <script>
 import ExperienceSearch from '~/components/experience-search.vue'
-import globalNavi from '~/components/global-navi.vue';
+
 
 export default {
   components: {          
     'experience-search': ExperienceSearch,
-    "global-navi": globalNavi,
+    
 
   },
   data () {
