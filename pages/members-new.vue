@@ -1,7 +1,7 @@
 <template>
   <div class="member-container">    
     <!---->
-    <global-navi></global-navi>
+    
     <span>{{loginUserName}}さん、ようこそ！！</span>
     <br>                
     <users-list-members></users-list-members>   
@@ -12,7 +12,7 @@
 <script>
 /* eslint-disable */
 import firebase from 'firebase'
-import db from '../../plugins/firebase_config'
+import db from '../plugins/firebase_config'
 import UsersListMembers from '~/components/users-list-members.vue'
 import globalNavi from '~/components/global-navi.vue';
 

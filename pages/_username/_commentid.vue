@@ -1,6 +1,6 @@
 <template>
 	<div>		
-		<global-navi></global-navi>		
+			
 		
 		<h2>返信する</h2>
 		<b-overlay :show="show" rounded="sm">
@@ -29,7 +29,7 @@
 <script>
 /* eslint-disable */
 import firebase from 'firebase'
-import db from '../../../../plugins/firebase_config'
+import db from '../../plugins/firebase_config'
 import globalNavi from '~/components/global-navi.vue';
 
 export default {  

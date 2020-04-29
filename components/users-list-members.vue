@@ -11,12 +11,13 @@
         :outlined="true"           
         >
       
+      
         <template v-slot:cell(userImage)="data">
           <img :src="getImage(data.item.image_url)" class="profileimage">
         </template>
         <template v-slot:cell(titleLink)="data">                
           <!--<nuxt-link v-on:click.native="setUserData(data.item)" v-bind:to="{ path: `/id` }">{{data.item.nick_name}}</nuxt-link>-->
-          <nuxt-link v-on:click.native="setUserData(data.item)" v-bind:to="{ path: `/members/${data.item.nick_name}` }">{{data.item.nick_name}}</nuxt-link>
+          <nuxt-link v-on:click.native="setUserData(data.item)" v-bind:to="{ path: `/${data.item.nick_name}` }">{{data.item.nick_name}}</nuxt-link>
           <br>
           <br>
           <p>{{data.item.self_introduction}}</p>

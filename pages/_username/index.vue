@@ -1,6 +1,6 @@
 <template>
 	<div>
-    <global-navi></global-navi>
+    
     <b-spinner small v-show="loading"></b-spinner>
     <div v-show="!loading">
   		<!--ここは永続化させる必要があるのか検討必要-->				
@@ -96,7 +96,13 @@
             <!--<router-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/reply` }">返信する</router-link>
               
             -->
+            <!--
             <router-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/members/${$route.params.username}/reply/${data.item.commentId}` }">返信する</router-link>
+            <router-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/${data.item.commentId}` }">返信する</router-link>
+            -->
+
+            <router-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/${$route.params.username}/${data.item.commentId}` }">返信する</router-link>
+
             <p>commentId:  {{data.item.commentId}}</p>
             
             <p>reply_comment_id:  {{data.item.reply_comment_id}}</p>
