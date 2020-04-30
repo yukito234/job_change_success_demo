@@ -71,9 +71,9 @@ export default {
   computed: {    
     checkUser(){
      
-      //return this.$store.getters['persistedParameter/getIsLoginUser'];            
+      return this.$store.getters['persistedParameter/getIsLoginUser'];            
       //gettersを使わずに直接stateを参照しても問題なかった
-      return this.$store.state.persistedParameter.isLoginUser;
+      //return this.$store.state.persistedParameter.isLoginUser;
     }        
   }
 }

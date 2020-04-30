@@ -36,19 +36,12 @@
 	    
 
 	    <b-form-input v-model.trim="searchBox" v-on:blur="doOnBlur()" placeholder="検索ワードを直接入力できます"></b-form-input>
-	    <!--
-	    	<b-icon icon="x-circle" scale="2" variant="danger"></b-icon>
-	    	<b-icon icon="x" scale="2" variant="danger"></b-icon>
-	    	<b-icon icon="exclamation-circle-fill" variant="success"></b-icon>
+	    
+	    <b-icon icon="x" v-on:click="deleteSearchBoxContent()"></b-icon>
 
-	    	<b-icon-arrow-up></b-icon-arrow-up>
-	    	<b-icon icon="arrow-up"></b-icon>
-	    -->
-	    <b-icon icon="x" ></b-icon>
 	    
 	    
 	    
-	    <p>検索ボックスの内容(searchBoxContent):{{ searchBoxContent }}</p>
 
 	    
     	
@@ -68,7 +61,7 @@
     		-->
 	    	<div v-if="isOtherDomainSearchResultDisplay">
 	    		<b-table 			      
-			      :items="allArticleData" 
+			      :items="allArticleDataSorted" 
 			      :fields="fieldsOfGoogleSearch"
 			      responsive="sm"			      			      
 			    >
@@ -78,6 +71,9 @@
 				    <template v-slot:cell(titleLink)="data">
 				        <a v-bind:href="data.item.link">{{data.item.title}}</a>			        
 				    </template>
+				    <template v-slot:cell(stockButton)="data">
+			        	<b-button variant="outline-primary" v-on:click="addStockArrayInGoogleSearch(data.item)">ストック</b-button>
+			        </template>
 
 				</b-table>
 
@@ -149,11 +145,14 @@
 
 			    	    
 			    <p>{{ perPageOfBootstrap }}</p>
+
+
+			</div>    
 			    <h2>ストック記事の一覧</h2>
 			    <p>以下の記事がストックされています</p>
 
 			    <b-table 			      
-			      :items="obtainStockedArticles" 
+			      :items="obtainStockedArticles()" 
 			      :fields="fieldsOfStockedArticles"
 			      responsive="sm"			      			      
 			    >
@@ -173,7 +172,7 @@
 
 			    
 				
-			</div>
+			
 		</div>
 
     </div>
@@ -182,21 +181,13 @@
 <script>
 /* eslint-disable */
 import _ from 'lodash';
-//import { BIcon } from 'bootstrap-vue'
-//import { BootstrapVueIcons } from 'bootstrap-vue'
-import { BIcon, BIconArrowUp, BIconArrowDown, BIconX } from 'bootstrap-vue'
+
+import {  BIcon, BIconX } from 'bootstrap-vue'
 
 export default {  
-	/*
-	components: {
-	    BootstrapVueIcons,
-	},
-	*/
-	/**/
+	
 	components: {
 	    BIcon,
-	    BIconArrowUp,
-    	BIconArrowDown,
     	BIconX
 	},
 	
@@ -214,7 +205,7 @@ export default {
 	        },
 
           ],
-          loading:false,
+          loading:false,//検索ボタンクリック時のアニメーションや結果表示タイミングの制御用
 	      currentPage: 1,
 	      perPageOfBootstrap: 8,
 	      fieldsOfQiitaSearch:[
@@ -255,8 +246,12 @@ export default {
 		          key:'titleLink',
 		          label:'記事タイトル',
 		        },
+		        {
+		          key:'stockButton',
+		          label:'ストック',
+		        },
 		  ],
-	      searchBoxOfBootstrap:"",
+	      //searchBoxOfBootstrap:"",
 	     
 	      optionsOfDomain:[
 	      	{ value: 'qiita', text: 'qiita' },
@@ -280,136 +275,118 @@ export default {
 	     
 	      perPageOfUserInput:10,//ユーザが入力した表示数の一時保存用
 	      suggestKeywords: [], //キーワード候補の格納用
-	      allArticleData:[], //QiitaやGoogleのAPIから取得する全検索結果データの格納用
-	      searchBoxContent: "", //検索ボックスの内容確認用(この変数は不要かも)
+	      //allArticleData:[], //QiitaやGoogleのAPIから取得する全検索結果データの格納用
+	      //searchBoxContent: "", //検索ボックスの内容確認用(この変数は不要かも)
 	      searchBox:"", //検索ボックスの内容
 	      searchBoxContentArray:[],//検索ボックスの複合キーワードを分割して格納する配列
 	      
-	      allArticleDataSorted: [],//sortTypeに従って並べ替えられた後の記事データ格納用
+	      allArticleDataSorted: [],//記事データ格納用
 	      
 	      //allArticleDataStocked: [],//isStockプロパティを含むQiitaから取得した全データ格納用(この変数は不要かも) 
 	      
 	      domain:"qiita",//検索対象のドメイン（googleのAPIを用いない場合は不要）
-	      isOtherDomainSearchResultDisplay: false,//検索結果の表示切り替え用。qiita以外のドメインを検索する場合にtrueになる
-	      isQiitaSearchResultDisplay:false,//検索結果の表示切り替え用。trueでqiitaの検索結果が表示される
+	      isOtherDomainSearchResultDisplay: false,//検索結果の表示切り替え用。qiita以外のドメインを対象に検索した場合にtrueになる
+	      isQiitaSearchResultDisplay:false,//検索結果の表示切り替え用。qiitaで検索したときにtrueとなり、qiitaの検索結果を表示するためのHTMLが表示される
 	      storedSearchKeywords:[],//検索ボックスの内容を一時保存する配列
-	      allStockedData:[],//永続化されたstockedArticles[]のコピー配列。データを削除する際の一時保存用。
+	      
+	      //allStockedData:[],
+	      //永続化されたstockedArticles[]のコピー配列。データを削除する際の一時保存用。
+	      //コピーを取らずに、必要なときに永続化データをgettersで取得してくればいい
 	      
 	    }
 	},
 	
 	watch:{           		
 		suggestKeywords:function(){       	      
-		  //検索ヒント配列suggestKeywords[]が変化した場合の処理
-		  //suggestKeywords[]が変化したら、それを検索ボックスsearchBoxに反映させる
+		  //検索ヒント配列suggestKeywords[]が変化したら、それを検索ボックスsearchBoxに反映させる
 
 		  //ここで、searchBoxの中身は、suggestKeywords[]とstoredSearchKeywords[]をあわせたものとなる
 		  //storedSearchKeywords[]は、検索ボックスからカーソルが外れたときの検索ボックスの中身
 
-		  //storedSearchKeywords[]が必要な理由		  
-		  //ユーザが検索ヒントの選択と検索ボックスへの直接入力を繰り返すことを想定すると、以下の2点が必要
-		  //1:検索ボックスにカーソルがあたった時点で、検索ヒントからの選択はいったん終わったものと判断し、suggestKeywords[]を初期化
-		  //ここで初期化しておかないと、検索ボックスにキーワードを直接入力し、再度検索ヒントを選択したときに、検索ボックス内にキーワードが重複表示される
-
-		  //2:検索ボックスからカーソルが外れた際に、検索ヒントの再選択に備えて、直前の検索ボックスの内容を保持しておく
+		  //storedSearchKeywords[]の役割  
+		  //ユーザが検索ヒントの選択と検索ボックスへの直接入力を繰り返すことを想定し、検索ボックスからカーソルが外れた際に、検索ヒントの再選択に備えて、直前の検索ボックスの内容を保持しておく
 		  
-
-
-		  //suggestKeywords[]が空、storedSearchKeywords[]が空
-		  if(this.suggestKeywords.length === 0 && this.storedSearchKeywords.length === 0){
-		  	//検索ボックス内の不要な空白を除去
-		  	//this.searchBox = "";
-		  	console.log("in suggestKeywords=0 storedSearchKeywords=0");
-
-		  //suggestKeywords[]が空	
-		  } else if(this.suggestKeywords.length === 0){
-		  	//
+		  //suggestKeywords[]が空
+		  if(this.suggestKeywords.length === 0 && this.storedSearchKeywords.length !== 0){
+		  	//検索ボックスの中身は、直前の検索ボックス配列の要素を連結させたもの
 		  	this.searchBox =  this.storedSearchKeywords.join(" ");
-		  	console.log("in suggestKeywords=0 ");
+		  	/*
+		  	console.log("suggestKeywords.length === 0");
+		  	console.log("this.storedSearchKeywords");
 		  	console.log(this.storedSearchKeywords);
+		  	console.log("this.searchBox");
 		  	console.log(this.searchBox);
+		  	console.log("------------------------------");
+		  	*/
 
 		  //storedSearchKeywords[]が空	
-		  } else if(this.storedSearchKeywords.length === 0){
-		  	//
+		  } else if(this.suggestKeywords.length !== 0 && this.storedSearchKeywords.length === 0){
+		  	//検索ボックスの中身は、検索ヒント配列の要素を連結させたもの
 		  	this.searchBox = this.suggestKeywords.join(" ");
-		  	console.log("in storedSearchKeywords=0 ");
+		  	/*
+		  	console.log("storedSearchKeywords.length === 0");
+		  	console.log("this.suggestKeywords");
 		  	console.log(this.suggestKeywords);
+		  	console.log("this.searchBox");
 		  	console.log(this.searchBox);
+		  	console.log("------------------------------");
+		  	*/
 
 
 		  //suggestKeywords[]が空でなく、storedSearchKeywords[]も空でない
-		  } else{
-
+		  } else if(this.suggestKeywords.length !== 0 && this.storedSearchKeywords.length !== 0){
+		  	//検索ボックスの中身は、2つの配列の要素を連結させたもの
 		  	this.searchBox =  this.storedSearchKeywords.join(" ") + " " + this.suggestKeywords.join(" ");
-		  	console.log("in suggestKeywords!=0 storedSearchKeywords!=0 ");
+		  	/*
+		  	console.log("suggestKeywords.length !== 0 && storedSearchKeywords.length !== 0");
+		  	console.log("this.storedSearchKeywords");
 		  	console.log(this.storedSearchKeywords);
+		  	console.log("this.suggestKeywords");
 		  	console.log(this.suggestKeywords);
+		  	console.log("this.searchBox");
 		  	console.log(this.searchBox);
-		  }
+		  	console.log("------------------------------");
+		  	*/
 
-		  /*
-		  console.log("this.searchBox");
-	      console.log(this.searchBox);
-	      console.log("this.storedSearchKeywords");
-	      console.log(this.storedSearchKeywords);
-	      */
+		  	//検索ボックス配列と検索ヒント配列が両方空の場合
+		  } else {
+		  	//検索ボックスの中身は、空
+		  	this.searchBox = "";
+		  	//console.log("suggestKeywords.length === 0 && storedSearchKeywords.length === 0");
+
+		  }		  
 
 
 
-
-		  /*
-
-		  //検索ボックスにカーソルがあたったら、ヒントのチェックボックスを初期化する
-		  //このとき、直前の検索ボックスの内容はstoredSearchKeywords[]に退避させておく
-		  //ヒントのチェックと直接入力が繰り返し行われることを想定し、
-		  //検索ボックスの内容はヒントsuggestKeywords[]と、storedSearchKeywords[]を連結させたものとする	     
-
-	      //また、どちらかの配列が空の場合は文字列の前後に空白が入らないように場合分けで対処する
-	      //まだ検索ボックスにカーソルがあたっていない場合    
-	      if(this.storedSearchKeywords.length === 0){
-
-	      	//選択されたヒントのキーワードを連結させるだけでOK
-	      	this.searchBox =  this.suggestKeywords.join(" ");
-
-	      //検索ボックスにカーソルがあたったが、ヒントが１つもチェックされていない場合	
-	      } else if(this.suggestKeywords.length === 0){
-	      	//カーソルが外れる直前の内容が検索ボックスの中身となる
-	      	this.searchBox =  this.storedSearchKeywords.join(" ");
-
-	      //ヒントが１つ以上チェックされ、なおかつ検索ボックスにカーソルがあたってから外れた場合
-	      } else {
-	      	this.searchBox =  this.storedSearchKeywords.join(" ") + " " + this.suggestKeywords.join(" ");
-	      }
-	      
-	      console.log("this.searchBox");
-	      console.log(this.searchBox);
-	      console.log("this.storedSearchKeywords");
-	      console.log(this.storedSearchKeywords);
-
-	      */
+		 
 	    },
 	    searchBox( val ){ 
 
-	      //検索ボックスの内容確認
-	      this.searchBoxContent = val;
-
-	      console.log("this.searchBoxContent in searchBox");
-	      console.log(this.searchBoxContent);
+	      //検索ボックスの内容確認      
+	      //console.log("val in searchBox");
+	      //console.log(val);
 
 	      //検索ボックスが空でない場合
-	      if(this.searchBoxContent !== ""){
+	      if(val !== ""){	     
 
-		      //検索ボックスの内容を半角空白で区切って、検索ワードを配列に格納する
-		      this.searchBoxContentArray = this.searchBoxContent.split(/\s+/);
-		      console.log("this.searchBoxContentArray in searchBox");
-	      		console.log(this.searchBoxContentArray);
+		      //検索ボックスの内容を半角空白で区切って、検索ワードを配列に格納する	     
+	      	  this.searchBoxContentArray = val.split(/\s+/);
+		      //console.log("this.searchBoxContentArray in searchBox");
+	      	  //console.log(this.searchBoxContentArray);
+
+	      //検索ボックスが空のとき
       	  } else{
-      	  	 console.log("this.searchBoxContent is empty");
+      	  	 
+      	  	 //console.log("this.searchBoxContentArray before");
+      	  	 //console.log(this.searchBoxContentArray);
 
+      	  	 //検索ボックスが空のときは、検索ボックス配列も空にする
+      	  	 //これを実行しないと、検索ボックスの文字列を手動で全消去しても、searchBoxContentArrayに1文字だけ残ってしまう
       	  	this.searchBoxContentArray=[];
+      	  	//console.log("this.searchBoxContentArray after");
+      	  	//console.log(this.searchBoxContentArray);
       	  }
-	      
+      	  //console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");	      
 
 	    },
 	    
@@ -421,18 +398,41 @@ export default {
 	        return this.allArticleDataSorted.length;
 	    },
 	   
-	    obtainStockedArticles(){ 
-	        //ユーザがストックしている記事データを返す
-	    	//永続化された記事ストック用配列のデータを値渡しでコピーする
-	    	this.allStockedData = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);	    	
-
-			console.log("this.allStockedData");
-	    	console.log(this.allStockedData);
-	    	return this.allStockedData;
-	    },
 	},
 	methods:{
+		obtainStockedArticles(){ 
+	        //ユーザがストックしている記事データを返す
 
+	    	//永続化された記事ストック用配列のデータを値渡しでコピーする
+	    	//this.allStockedData = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);	    	
+
+	    	//Qiitaのストック記事を取得
+	    	const stockedDataInQiita = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);	
+
+	    	console.log("stockedDataInQiita in obtainStockedArticles");
+	    	console.log(stockedDataInQiita);
+
+	    	//Googleからストックした記事を取得
+	    	const stockedDataInGoogle = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticlesInGoogleSearch']);	
+
+	    	console.log("stockedDataInGoogle in obtainStockedArticles");
+	    	console.log(stockedDataInGoogle);
+
+	    	//全ストック記事
+	    	const concatArray = stockedDataInQiita.concat(stockedDataInGoogle);
+
+	    	
+	    	return concatArray;
+	    },
+		deleteSearchBoxContent(){
+			//検索ボックス内の文字列を全消去
+			this.storedSearchKeywords.splice(-this.storedSearchKeywords.length);
+			this.suggestKeywords.splice(-this.suggestKeywords.length);
+			//上記２処理の後、watchのsuggestKeywordsにて、this.searchBox = "";が実行される			
+			//これにより、watchのsearchBoxにて、this.searchBoxContentArray=[];が実行される
+			
+
+		},
 		mySortCompare(a, b, key, sortDesc){
 			if (key === 'updated') {
 							
@@ -455,16 +455,21 @@ export default {
 		},
 		doOnBlur(){
 			//検索ボックスからフォーカスが外れたときに実行される
+			//console.log("enter doOnBlur method");
 
 			//検索ボックスの内容を一時保存するための配列を初期化する			
 			this.storedSearchKeywords.splice(-this.storedSearchKeywords.length);
+
+			//フォーカスが外れる直前の検索ボックスの内容を確認
+			//console.log("this.searchBoxContentArray");
+			//console.log(this.searchBoxContentArray);
 
 			//フォーカスが外れる直前の検索ボックスの内容を一時保存用の配列に格納する
 			for(let j=0; j<this.searchBoxContentArray.length; j++){
 		        this.storedSearchKeywords.push(this.searchBoxContentArray[j]);
 		    }
-		    console.log("this.storedSearchKeywords");
-			console.log(this.storedSearchKeywords);
+		    //console.log("this.storedSearchKeywords");
+			//console.log(this.storedSearchKeywords);
 
 			//検索ボックスの内容を退避させたら、ヒントキーワードを格納する配列を空にする			
 			this.suggestKeywords.splice(-this.suggestKeywords.length);
@@ -477,31 +482,99 @@ export default {
 	    },
 	    deleteStockArray(element){
 
-	    	//押下された要素を特定する
-	    	for(let i=0; i<this.allStockedData.length; i++){
-	          if(this.allStockedData[i].id === element.id){
-	          	//削除する要素のフラグをtrueに変更
-	          	this.allStockedData[i].isStock = true;	          	
-	                                           
-	            console.log(`this.allStockedData[${i}]`);
-    			console.log(this.allStockedData[i]);
-    			
+	    	//Qiitaの記事がクリックされた場合
+	    	if(element.domain === "qiita"){
+	    		//Qiitaのストック記事を取得
+	    		const stockedDataInQiita = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);
+
+	    		console.log(`stockedDataInQiita in deleteStockArray`);
+    			console.log(stockedDataInQiita);
+
+
+	    		//押下された要素を特定する
+		    	for(let i=0; i<stockedDataInQiita.length; i++){
+		          if(stockedDataInQiita[i].id === element.id){
+		          	//削除する要素のフラグをtrueに変更
+		          	stockedDataInQiita[i].isDelete = true;	          	
+		                                           
+		            console.log(`stockedDataInQiita[${i}] in deleteStockArray`);
+	    			console.log(stockedDataInQiita[i]);
+	    			
+		          }
+		        }
+
+		        this.$store.commit('persistedParameter/deleteSingleStockedArticle',stockedDataInQiita);
+		        //const deleteData = _.cloneDeep(stockedDataInQiita);
+		        //console.log("deleteData");
+		        //console.log(deleteData);
+	        	//this.$store.commit('persistedParameter/deleteSingleStockedArticle',deleteData);	
+
+	        	//Googleの記事がクリックされた場合
+	    	} else {
+
+	    		//Googleからストックした記事を取得
+	    		const stockedDataInGoogle = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticlesInGoogleSearch']);
+
+	    		console.log(`stockedDataInGoogle in deleteStockArray`);
+    			console.log(stockedDataInGoogle);
+
+	    		//押下された要素を特定する
+		    	for(let i=0; i<stockedDataInGoogle.length; i++){
+		          if(stockedDataInGoogle[i].cacheId === element.cacheId){
+		          	//削除する要素のフラグをtrueに変更
+		          	stockedDataInGoogle[i].isDelete = true;	          	
+		                                           
+		            console.log(`stockedDataInGoogle[${i}] in deleteStockArray`);
+	    			console.log(stockedDataInGoogle[i]);
+	    			
+		          }
+		        }
+
+		        this.$store.commit('persistedParameter/deleteSingleStockedArticle',stockedDataInGoogle);
+		        //const deleteData = _.cloneDeep(stockedDataInGoogle);
+		        //console.log("deleteData");
+		        //console.log(deleteData);
+	        	//this.$store.commit('persistedParameter/deleteSingleStockedArticle',deleteData);
+
+	    	}
+
+	    	
+	    	
+
+	    },
+	    addStockArrayInGoogleSearch(element){
+
+	    	//Googleの記事をストックする
+	    	for(let i=0; i<this.allArticleDataSorted.length; i++){
+	          if(this.allArticleDataSorted[i].cacheId === element.cacheId){	            
+	          	//押下された要素のディープコピーをとる
+	            let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
+
+	            console.log(`this.allArticleDataSorted[${i}] in addStockArrayInGoogleSearch`);
+    			console.log(this.allArticleDataSorted[i]);
+
+	            this.$store.commit('persistedParameter/changeStockedArticlesInGoogleSearch',changeData);
+	            
 	          }
 	        }
-	        let deleteData = _.cloneDeep(this.allStockedData);
-	        this.$store.commit('persistedParameter/deleteSingleStockedArticle',deleteData);
-	    	
+
+
 
 	    },
 	    addStockArray(element){
 	    	//記事をブラウザに保存して永続化させる
 	    	//後で読みたい記事をストックしておける
 
+	    	//Qiitaの記事をストックする
+
 	    	//押下された要素を特定する
 	    	for(let i=0; i<this.allArticleDataSorted.length; i++){
 	          if(this.allArticleDataSorted[i].id === element.id){	            
 	          	//押下された要素のディープコピーをとる
 	            let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
+
+	            console.log(`this.allArticleDataSorted[${i}] in addStockArray`);
+    			console.log(this.allArticleDataSorted[i]);
 
 	            this.$store.commit('persistedParameter/changeStockedArticles',changeData);
 	            
@@ -523,37 +596,56 @@ export default {
 		
 		async doSearch(){		
 
+			//検索ボックスが空の場合はアラートを出す
 			if(this.searchBoxContentArray.length === 0){
+
 				alert("キーワードを入力してください");
 				return;
 			}
+
 			//loadingアニメーションの実行
 			this.loading = true;
 
-			//検索を実行する
+			
 
-			//すでに表示されている検索結果をクリアにする
+			//すでに表示されている検索結果を非表示にする			
 			this.isQiitaSearchResultDisplay=false;
 			this.isOtherDomainSearchResultDisplay=false;
 
+
+
+			let urlParameter ='';
+		    let url ='';
+
+		   
+		    //APIから取得したデータの格納用
+		    let result=[];
+
+		     //resultのコピー用
+		    let resultAddedIsStock_3=[];
+
+		    //配列の初期化
+		    this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);
+
+
+
+
 			//検索対象ドメインがqiitaの場合
 			if(this.domain === "qiita"){
-				
+			
+				//		
 	          this.isQiitaSearchResultDisplay=true;	          
 
-	      	  //配列の初期化
-		      this.allArticleData.splice(-this.allArticleData.length);
-		      this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);
-		      //this.allArticleDataForDisplay.splice(-this.allArticleDataForDisplay.length);
-		      //this.allArticleDataStocked.splice(-this.allArticleDataStocked.length);
+	      	  
+		      
 		      
 		      //qiitaのAPIを利用することをaxios.jsに伝える
 		      //axios.jsでは、このusedAPIフラグにてどのAPIとやり取りをしているのかを判断し、
 		      //ヘッダーにトークン情報を付加して通信する
+		      //ローカルではなく、通常のstoreで問題ないのでは？
 		      this.$store.commit("persistedParameter/changeUsedAPI","qiita");
 
-		      let urlParameter ='';
-		      let url ='';      
+		            
 		      const pageMax = 5;
 		      //pageMaxの決め方
 		      /*
@@ -580,20 +672,16 @@ export default {
 		      }            
 		      url = "https://qiita.com/api/v2/items?query=" + urlParameter;      
 		      
-		      //ここからは冗長な処理を含む
-		      //後で取得した記事がユーザにストックされることを想定し、取得した各記事データにisStockフラグを設置する(最初はfalse)
-		      //その際に、取得した生のデータを変更したくないので、元データのコピー用配列を準備しておく
-		      //以下に４つの配列を用意しているのは、エラー解決のために使用したからである
-		      //今後４つのうち３つは削除予定
-		      let resultAddedIsStock=[];
-		      //let resultAddedIsStock_1=[];
-		      let resultAddedIsStock_2=[];
-		      let resultAddedIsStock_3=[];
+		      console.log("url:");
+		      console.log(url);
 
 		      //APIにアクセスして検索結果を取得する
 		      for(let i=0; i<pageMax; i++){
 		        url = "https://qiita.com/api/v2/items?query=" + urlParameter + `&page=${i+1}&per_page=100`;
-		        let result = await this.$axios.$get(url);       
+		               
+		        result = await this.$axios.$get(url);
+
+
 
 		        //取得数が上限の500件未満の場合は、途中でQiitaから空配列が返ってくるので、
 		        //その時点で、必要なデータをゲットできたと判断し、取得処理を中止する
@@ -601,44 +689,26 @@ export default {
 		          break;
 		        }
 
-		        //以下３種類の配列に同じ検索結果を格納しているが（エラー解決のため）、実際は１つだけでOKなはず
-		        /*
-		        for(let j=0; j<result.length; j++){         
-		          //isStockプロパティを付与した配列を作成          	          		                
-
-		          //qiitaから取得したデータをディープコピーする
-		          resultAddedIsStock_1[j] = _.cloneDeep(result[j]); 		          
-		          resultAddedIsStock_1[j].isStock = false;
-		          resultAddedIsStock_1[j].articleNumber = j;
-
-		          this.allArticleDataStocked.push(resultAddedIsStock_1[j]);		          
-		        }
-		        */
+		        
 
 		        for(let j=0; j<result.length; j++){         
 		          //isStockプロパティを付与した配列を作成          	          		                
 
 		          //qiitaから取得したデータをディープコピーする
-		          resultAddedIsStock_2[j] = _.cloneDeep(result[j]); 		          
-		          resultAddedIsStock_2[j].isStock = false;
-		          resultAddedIsStock_2[j].articleNumber = j;
+		          resultAddedIsStock_3[j] = _.cloneDeep(result[j]);
 
-		          this.allArticleData.push(resultAddedIsStock_2[j]);		          
-		        }
+		          //ストック記事を削除する際に使うフラグ 		          
+		          resultAddedIsStock_3[j].isDelete = false;
+		         
 
-		        for(let j=0; j<result.length; j++){         
-		          //isStockプロパティを付与した配列を作成          	          		                
-
-		          //qiitaから取得したデータをディープコピーする
-		          resultAddedIsStock_3[j] = _.cloneDeep(result[j]); 		          
-		          resultAddedIsStock_3[j].isStock = false;
-		          resultAddedIsStock_3[j].articleNumber = j;
+		          //ストック記事テーブルから記事を削除する際に、このプロパティを設定しておくと便利なため
+  				  resultAddedIsStock_3[j].domain = "qiita";
 
 		          this.allArticleDataSorted.push(resultAddedIsStock_3[j]);		          
 		        }		        
 
 		      }                
-		      console.log("this.allArticleDataSorted");
+		      console.log("this.allArticleDataSorted of qiita");
 		      console.log(this.allArticleDataSorted);
 
 		     
@@ -655,11 +725,8 @@ export default {
 				//今後機能を削除する可能性あり
 				this.isOtherDomainSearchResultDisplay=true;
 
-				let urlParameter ='';
-	      		let url ='';
-	      		let result = "";
+				
 
-	      		this.allArticleData.splice(-this.allArticleData.length);
 	      		this.$store.commit("persistedParameter/changeUsedAPI","google");      		
 
 	      		for(let i=0; i<this.searchBoxContentArray.length; i++){
@@ -693,8 +760,28 @@ export default {
 	      		result = await this.$axios.$get(url);       		
 
 	      		for(let i=0; i<result.items.length; i++){		            
-			       this.allArticleData.push(result.items[i]);
+			       
+
+			       resultAddedIsStock_3[i] = _.cloneDeep(result.items[i]);
+
+			       //ストック記事を削除する際に使うフラグを設定 		          
+  				   resultAddedIsStock_3[i].isDelete = false;
+
+  				   //QiitaのAPI取得データと同じurlプロパティを設定
+  				   //ストック記事をテーブルに表示する際に、urlというプロパティが必要になるため  				   
+  				   resultAddedIsStock_3[i].url = resultAddedIsStock_3[i].link;
+
+  				   //ストック記事テーブルから記事を削除する際に、このプロパティを設定しておくと便利なため
+  				   resultAddedIsStock_3[i].domain = "otherThanQiita";
+
+
+
+			       
+			       this.allArticleDataSorted.push(resultAddedIsStock_3[i]);
 		      	} 
+
+		      	console.log("this.allArticleDataSorted of google search");
+	      		console.log(this.allArticleDataSorted);
 
 		      	this.loading = false;
 		    }

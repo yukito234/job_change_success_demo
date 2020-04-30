@@ -6,7 +6,10 @@ export const state = () => ({
 	isEmpty : true,	
 	userIdPersisted: "",
 	//userIdPersisted: null,
+
 	stockedArticles: [],
+	stockedArticlesInGoogleSearch: [],
+
 	usedAPI:"",	
 	commentData:"",//reply.vueに表示するコメント
 	allCommentData:[],//id.vueのコメント表の全データ
@@ -63,6 +66,9 @@ export const getters = {
 	},
 	getStockedArticles(state){		
 		return state.stockedArticles;
+	},
+	getStockedArticlesInGoogleSearch(state){		
+		return state.stockedArticlesInGoogleSearch;
 	},
 
 }
@@ -131,6 +137,21 @@ export const mutations ={
 		state.userIdPersisted = id ;
 		
 	},
+	changeStockedArticlesInGoogleSearch(state, element){
+		let isDuplication=false;				
+		for(let i=0; i<state.stockedArticlesInGoogleSearch.length; i++){
+			if(state.stockedArticlesInGoogleSearch[i].cacheId === element.cacheId){
+				 isDuplication=true;
+				 break;
+			}
+		}
+		if(!isDuplication){
+			state.stockedArticlesInGoogleSearch.push(element);
+			console.log("state.stockedArticlesInGoogleSearch after element pushed in changeStockedArticlesInGoogleSearch");
+			console.log(state.stockedArticlesInGoogleSearch);
+		}
+
+	},
 	changeStockedArticles(state, element){
 		let isDuplication=false;				
 		for(let i=0; i<state.stockedArticles.length; i++){
@@ -141,30 +162,73 @@ export const mutations ={
 		}
 		if(!isDuplication){
 			state.stockedArticles.push(element);
+			console.log("state.stockedArticles after element pushed in changeStockedArticles");
+			console.log(state.stockedArticles);
 		}
 		
 	},
 	deleteSingleStockedArticle(state,stockDataArray){
 
-		console.log("state.stockedArticles before");
-		console.log(state.stockedArticles);
+		console.log("stockDataArray in deleteSingleStockedArticle");
+		console.log(stockDataArray);
 
-		state.stockedArticles.splice(-state.stockedArticles.length);
+		
+		
 
-		for(let i=0; i<stockDataArray.length; i++){
-			if( !stockDataArray[i].isStock ){
-				//削除しない要素をストック記事保管用配列に挿入する
-				state.stockedArticles.push(stockDataArray[i]);
-			} 
-		}		
+		//Qiita記事の削除ボタンがクリックされた場合、stockDataArrayにはQiitaのストック記事一覧が格納されている
+		//つまり、先頭データのドメインをチェックすれば、渡された配列がQiitaのストック記事一覧なのか、Googleのストック記事一覧か識別できる
+		if(stockDataArray[0].domain === "qiita"){
 
-		console.log("state.stockedArticles after");
-		console.log(state.stockedArticles);
+			//Qiitaのストック記事格納用の配列を初期化
+			state.stockedArticles.splice(-state.stockedArticles.length);
+
+			//console.log("state.stockedArticles before");
+			//console.log(state.stockedArticles);
+
+			for(let i=0; i<stockDataArray.length; i++){
+				if( !stockDataArray[i].isDelete ){
+					//削除しない要素をストック記事保管用配列に挿入する
+					state.stockedArticles.push(stockDataArray[i]);
+				} 
+			}		
+
+			console.log("state.stockedArticles after");
+			console.log(state.stockedArticles);
+
+
+
+		} else {
+			//Googleのストック記事格納用の配列を初期化
+			state.stockedArticlesInGoogleSearch.splice(-state.stockedArticlesInGoogleSearch.length);
+
+			console.log("state.stockedArticlesInGoogleSearch before");
+			console.log(state.stockedArticlesInGoogleSearch);
+
+			for(let i=0; i<stockDataArray.length; i++){
+				if( !stockDataArray[i].isDelete ){
+					//削除しない要素をストック記事保管用配列に挿入する
+					state.stockedArticlesInGoogleSearch.push(stockDataArray[i]);
+				} 
+			}		
+
+			console.log("state.stockedArticlesInGoogleSearch after");
+			console.log(state.stockedArticlesInGoogleSearch);
+
+
+
+		}
+
+		
+
+		
 
 	},
 	
 	deleteStockedArticles(state, element){				
+		//Qiitaのストック記事を削除
 		state.stockedArticles.splice(-state.stockedArticles.length);
+		//Googleから取得したストック記事を削除
+		state.stockedArticlesInGoogleSearch.splice(-state.stockedArticlesInGoogleSearch.length);
 	},
 	usersDataSet(state, data){				
 		state.usersData.push(data);
