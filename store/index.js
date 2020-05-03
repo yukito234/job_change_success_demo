@@ -12,10 +12,17 @@ export const state = () => ({
 	graphItemData:{},
 	graphType: "age",		
 	//allProfileInStore:[],
+	//APIError:false,//qiitaやgoogleのAPI利用時のエラー発生有無
 
 })
 
 export const getters = {
+	/*
+	getAPIError(state){
+		return state.APIError;
+
+	},
+	*/
 	/*
 	getAllProfileInStore(state){		
 		return state.allProfileInStore;
@@ -47,7 +54,14 @@ export const actions = {
 	graphTypeChangeAction(context, graphType){
 		context.commit('graphTypeChange', graphType);
 
+	},
+	/*
+	APIErrorSetAction(context, flag){
+		console.log("in APIErrorSetAction");
+		context.commit('APIErrorSet',flag);
+
 	},		
+	*/
 }
 
 export const mutations ={
@@ -55,6 +69,11 @@ export const mutations ={
 	allProfileInStoreSet(state,data){
 		state.allProfileInStore.push(data);		
 
+	},
+	*/
+	/*
+	APIErrorSet(state,flag){
+		state.APIError = flag;
 	},
 	*/
 	nameSet(state, name){		

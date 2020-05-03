@@ -17,41 +17,26 @@
 	        :options="optionsOfsuggestKeywords"	        
 	      ></b-form-checkbox-group>
 	    </b-form-group>
-	    <p>チェックを入れたキーワード:{{suggestKeywords}}</p>
-
-    	
+	    <p>チェックを入れたキーワード:{{suggestKeywords}}</p>    	
 	    
 	    <h3>step2.ドメインを選ぶ</h3>
 	    <p>検索したいドメインを選んでください。</p>
 
-
 	    <b-form-select v-model="domain" :options="optionsOfDomain"></b-form-select>
-	    <p>検索対象のドメイン:{{ domain }}</p>
-
-	   
-
+	    <p>検索対象のドメイン:{{ domain }}</p>	   
 	    
 	    <h3>step3.検索を開始</h3>
-	    <p>step2で選んだドメインを対象に検索を行います。<br>ここでは検索したいキーワードを直接入力することもできます。<br>こちらの検索ボックスに入力されているキーワードをすべてタイトルに含む記事が表示されます。</p>
-	    
+	    <p>step2で選んだドメインを対象に検索を行います。<br>ここでは検索したいキーワードを直接入力することもできます。<br>こちらの検索ボックスに入力されているキーワードをすべてタイトルに含む記事が表示されます。</p>	    
 
 	    <b-form-input v-model.trim="searchBox" v-on:blur="doOnBlur()" placeholder="検索ワードを直接入力できます"></b-form-input>
 	    
-	    <b-icon icon="x" v-on:click="deleteSearchBoxContent()"></b-icon>
-
-	    
-	    
-	    
-
-	    
-    	
+	    <b-icon icon="x" v-on:click="deleteSearchBoxContent()"></b-icon>       	    	        	
 
     	<b-button variant="primary" v-bind:disabled="loading" v-on:click="doSearch">
 		    <b-spinner small v-show="loading"></b-spinner>
 		    <span v-show="loading">Loading...</span>
 		    <span v-show="!loading">検索する</span>
 		</b-button>
-
 
     	<!--<b-spinner label="Loading..." v-show="loading"></b-spinner>-->
 
@@ -60,117 +45,116 @@
     		<div  v-show="!loading">
     		-->
 	    	<div v-if="isOtherDomainSearchResultDisplay">
-	    		<p v-if="isAPIError">Googleから記事を取得する際にエラーが発生しました。</p>
-	    		<no-search-result v-if="getIsSearchResult"></no-search-result>
+	    		<!--<p v-if="isAPIError">Googleから記事を取得する際にエラーが発生しました。</p>-->
+	    		<p v-if="checkAPIError">Googleから記事を取得する際にエラーが発生しました。</p>
 
-	    		<!--
-	    		<div v-if="getIsSearchResult">
-					<h3>上記のキーワードをタイトルに含む記事は見つかりませんでした。</h3>
-					<p>検索キーワードを減らしたり、別のキーワードを選ぶなどして再検索してください！</p>
+	    		<div v-if="!checkAPIError">
+		    		<no-search-result v-if="getIsSearchResult"></no-search-result>
+
+		    		<!--
+		    		<div v-if="getIsSearchResult">
+						<h3>上記のキーワードをタイトルに含む記事は見つかりませんでした。</h3>
+						<p>検索キーワードを減らしたり、別のキーワードを選ぶなどして再検索してください！</p>
+					</div>
+					-->
+					<div v-if="!getIsSearchResult">
+			    		<b-table 			      
+					      :items="allArticleDataSorted" 
+					      :fields="fieldsOfGoogleSearch"
+					      responsive="sm"			      			      
+					    >
+						    <template v-slot:cell(index)="data">
+					        	{{ data.index + 1 }}
+					        </template>
+						    <template v-slot:cell(titleLink)="data">
+						        <a v-bind:href="data.item.link">{{data.item.title}}</a>			        
+						    </template>
+						    <template v-slot:cell(stockButton)="data">
+					        	<b-button variant="outline-primary" v-on:click="addStockArrayInGoogleSearch(data.item)">ストック</b-button>
+					        </template>
+
+						</b-table>
+					</div>
 				</div>
-				-->
-				<div v-if="!getIsSearchResult">
-		    		<b-table 			      
-				      :items="allArticleDataSorted" 
-				      :fields="fieldsOfGoogleSearch"
-				      responsive="sm"			      			      
-				    >
-					    <template v-slot:cell(index)="data">
-				        	{{ data.index + 1 }}
-				        </template>
-					    <template v-slot:cell(titleLink)="data">
-					        <a v-bind:href="data.item.link">{{data.item.title}}</a>			        
-					    </template>
-					    <template v-slot:cell(stockButton)="data">
-				        	<b-button variant="outline-primary" v-on:click="addStockArrayInGoogleSearch(data.item)">ストック</b-button>
-				        </template>
-
-					</b-table>
-				</div>
-
 				
 			</div>
 
 			<div v-if="isQiitaSearchResultDisplay">
-				<p v-if="isAPIError">Qiitaから記事を取得する際にエラーが発生しました。</p>
-				<no-search-result v-if="getIsSearchResult"></no-search-result>
-				<!--
-				<div v-if="getIsSearchResult">
-					<h3>上記のキーワードをタイトルに含む記事は見つかりませんでした。</h3>
-					<p>検索キーワードを減らしたり、別のキーワードを選ぶなどして再検索してください！</p>
-				</div>
-				-->
-				<div v-if="!getIsSearchResult">					
-					<h3>検索結果: {{rows}} 件のデータを取得しました</h3>
+				<!--<p v-if="isAPIError">Qiitaから記事を取得する際にエラーが発生しました。</p>-->
+				<p v-if="checkAPIError">Qiitaから記事を取得する際にエラーが発生しました。</p>
+
+				<div v-if="!checkAPIError">
+
+					<no-search-result v-if="getIsSearchResult"></no-search-result>
 					<!--
-						<h3>検索結果: {{allArticleDataSorted.length}} 件のデータを取得しました</h3>
-						<h3>検索結果: {{getNumberOfSearchResult}} 件のデータを取得しました</h3>
+					<div v-if="getIsSearchResult">
+						<h3>上記のキーワードをタイトルに含む記事は見つかりませんでした。</h3>
+						<p>検索キーワードを減らしたり、別のキーワードを選ぶなどして再検索してください！</p>
+					</div>
 					-->
-					<b-pagination
-				      v-model="currentPage"
-				      :total-rows="rows"
-				      :per-page="perPageOfBootstrap"
-				      aria-controls="my-table"
-				    ></b-pagination>
+					<div v-if="!getIsSearchResult">					
+						<h3>検索結果: {{rows}} 件のデータを取得しました</h3>
+						<!--
+							<h3>検索結果: {{allArticleDataSorted.length}} 件のデータを取得しました</h3>
+							<h3>検索結果: {{getNumberOfSearchResult}} 件のデータを取得しました</h3>
+						-->
+						<b-pagination
+					      v-model="currentPage"
+					      :total-rows="rows"
+					      :per-page="perPageOfBootstrap"
+					      aria-controls="my-table"
+					    ></b-pagination>
 
-				    <p class="mt-3">Current Page: {{ currentPage }}</p>
+					    <p class="mt-3">Current Page: {{ currentPage }}</p>
 
-					<b-table
-					  id="my-table" 			      
-				      :items="allArticleDataSorted" 
-				      :per-page="perPageOfBootstrap"
-				      :current-page="currentPage"
-				      :fields="fieldsOfQiitaSearch"
-				      responsive="sm"
-				      :sort-compare="mySortCompare"
-				      
-		      		  
-		      		  			      			      
-				    >
-				    <!--
-				    	:sort-direction="sortDirection"
-				    	:sort-desc.sync="sortDesc" 
-				    	:sort-by.sync="sortBy"
+						<b-table
+						  id="my-table" 			      
+					      :items="allArticleDataSorted" 
+					      :per-page="perPageOfBootstrap"
+					      :current-page="currentPage"
+					      :fields="fieldsOfQiitaSearch"
+					      responsive="sm"
+					      :sort-compare="mySortCompare"
+					    >
+					    <!--
+					    	:sort-direction="sortDirection"
+					    	:sort-desc.sync="sortDesc" 
+					    	:sort-by.sync="sortBy"
 
-				    -->
-					    <template v-slot:cell(index)="data">
-				        	<!--{{ data.index + 1 }}-->
-				        	{{ (data.index+1)+(currentPage-1)*perPageOfBootstrap }}
-				        </template>
-				        <template v-slot:cell(updated)="data">
-				        	{{ data.item.updated_at.slice(0,10)}}
-				        </template>
+					    -->
+						    <template v-slot:cell(index)="data">
+					        	<!--{{ data.index + 1 }}-->
+					        	{{ (data.index+1)+(currentPage-1)*perPageOfBootstrap }}
+					        </template>
+					        <template v-slot:cell(updated)="data">
+					        	{{ data.item.updated_at.slice(0,10)}}
+					        </template>
 
-					    <template v-slot:cell(titleLink)="data">
-					        <a v-bind:href="data.item.url">{{data.item.title}}</a>			        
-					    </template>
-					    <template v-slot:cell(stockButton)="data">
-				        	<b-button variant="outline-primary" v-on:click="addStockArray(data.item)">ストック</b-button>
-				        </template>
+						    <template v-slot:cell(titleLink)="data">
+						        <a v-bind:href="data.item.url">{{data.item.title}}</a>			        
+						    </template>
+						    <template v-slot:cell(stockButton)="data">
+					        	<b-button variant="outline-primary" v-on:click="addStockArray(data.item)">ストック</b-button>
+					        </template>
 
-					</b-table>
+						</b-table>									    
 
+					    <p>1ページの表示件数を変更する</p>
+					    <p>表示件数を入力してください</p>
 
-					
-				    
+					    <!--<b-form-input :type="number" v-model.number="perPageOfUserInput" placeholder="表示件数を入力"></b-form-input>-->
+					    <b-form-input type="number" v-model.number="perPageOfUserInput" placeholder="表示件数を入力"></b-form-input>
 
-				    <p>1ページの表示件数を変更する</p>
-				    <p>表示件数を入力してください</p>
-
-				    <!--<b-form-input :type="number" v-model.number="perPageOfUserInput" placeholder="表示件数を入力"></b-form-input>-->
-				    <b-form-input type="number" v-model.number="perPageOfUserInput" placeholder="表示件数を入力"></b-form-input>
-
-				    <b-button variant="primary" v-on:click="changePerPage()">
-					    表示件数を変更する
-					</b-button>
-					 <b-button variant="primary" v-on:click="displayAllArticles()">
-					    全件表示する
-					</b-button>
-
-				    	    
-				    <p>{{ perPageOfBootstrap }}</p>
+					    <b-button variant="primary" v-on:click="changePerPage()">
+						    表示件数を変更する
+						</b-button>
+						 <b-button variant="primary" v-on:click="displayAllArticles()">
+						    全件表示する
+						</b-button>
+					    	    
+					    <p>{{ perPageOfBootstrap }}</p>
+					</div>
 				</div>
-
 
 			</div>    
 
@@ -192,12 +176,7 @@
 				</b-table>
 				<b-button variant="primary" v-on:click="deleteStock">
 				    ストック記事を全部削除する
-				</b-button>
-
-				
-
-			    
-				
+				</b-button>							    				
 			
 		</div>
 
@@ -208,7 +187,7 @@
 /* eslint-disable */
 import _ from 'lodash';
 import {  BIcon, BIconX } from 'bootstrap-vue';
-import NoSearchResult from '~/components/no-search-result.vue' 
+import NoSearchResult from '~/components/no-search-result.vue'; 
 
 export default {  
 	
@@ -322,7 +301,14 @@ export default {
 	      
 	    }
 	},
-	
+	/*
+	created:function(){
+
+		let testArray = [];
+		console.log("testArray.length");
+		console.log(testArray.length);//0
+	},
+	*/
 	watch:{           		
 		suggestKeywords:function(){       	      
 		  //検索ヒント配列suggestKeywords[]が変化したら、それを検索ボックスsearchBoxに反映させる
@@ -433,6 +419,13 @@ export default {
 	    		return true;
 	    	}
 	    },
+	    checkAPIError(){
+     
+	      //return this.$store.getters['persistedParameter/getAPIError'];            
+	      //return this.$store.getters['getAPIError'];
+	      return this.isAPIError;
+	     
+	    }  
 	    
 
 	   
@@ -647,6 +640,8 @@ export default {
 			//APIによるデータ取得時のエラーを初期化
 			this.isAPIError = false;
 
+			//this.$store.dispatch('APIErrorSetAction',false);
+
 			
 
 			//すでに表示されている検索結果を非表示にする			
@@ -716,86 +711,76 @@ export default {
 		      console.log("url:");
 		      console.log(url);
 
-		      //APIにアクセスして検索結果を取得する
+		      //APIを利用して検索結果を取得する
 		      for(let i=0; i<pageMax; i++){
+		        //     
 		        url = "https://qiita.com/api/v2/items?query=" + urlParameter + `&page=${i+1}&per_page=100`;
 
-		        //url = "https://qiita.com/api/v2/items?query=" + urlParameter + `&page=${i+1}&per_page=102`;
-		        //1ページあたりの取得件数を100件より多くして、意図的にエラーを発生させた場合
-		        //以下のエラーがコンソールに出力された
-		        /*
-		        Error: Request failed with status code 400
-			    at createError (createError.js?2d83:16)
-			    at settle (settle.js?467f:17)
-			    at XMLHttpRequest.handleLoad
-		        */
-		        //さらにページは背景が真っ白になり、以下のメッセージが表示された
-		        //Request failed with status code 400		               
+		       
+
+				let status = await this.$axios.$get(url)
+					.then(response =>{
+						//responseオブジェクトからstatusを取得できないので、
+						//axiosの処理が正常に終了した場合は200を返す
+						result = response;
+						return 200;
+					})
+		        	.catch(err => {
+		        	  console.log("err");
+				      console.log(err);
+				      this.isAPIError=true;
+				      //result = null;
+				      return err.response.status;
+				    });
 
 
-		        result = await this.$axios.$get(url);
+				console.log("status of qiita search");
+	      	  	console.log(status);    
 
 		        console.log("result of qiita search");
 	      	  	console.log(result);
 
 
-	      	  	//Qiitaからのデータ取得でエラーが発生した場合
-	      	  	//エラー発生時には以下のオブジェクトが返却されるので、これを使ってエラー有無を判定する
-	      	  	/*
-	      	  	{
-				  "message": "Not found",
-				  "type": "not_found"
-				}
-	      	  	*/
-	      	  	//参考：https://qiita.com/api/v2/docs
-	      	  	if( result.message === "Not found"){
+	      	  	if(status === 200){
 
-	      	  		this.isAPIError = true;
-	      	  		console.log("this.isAPIError in qiita");
-	      	  		console.log(this.isAPIError);
+			        //取得数が上限の500件未満の場合は、途中でQiitaから空配列が返ってくるので、
+			        //その時点で、必要なデータをゲットできたと判断し、取得処理を中止する
+			        if(result===[]){
+			          break;
+			        }
 
-	      	  		break;
+			        
 
-	      	  	}
+			        for(let j=0; j<result.length; j++){         
+			          //isStockプロパティを付与した配列を作成          	          		                
 
+			          //qiitaから取得したデータをディープコピーする
+			          resultAddedIsStock_3[j] = _.cloneDeep(result[j]);
 
-	      	  	console.log("result.message");
-	      	  	console.log(result.message);//undefined
+			          //ストック記事を削除する際に使うフラグ 		          
+			          resultAddedIsStock_3[j].isDelete = false;
+			         
 
-		        //取得数が上限の500件未満の場合は、途中でQiitaから空配列が返ってくるので、
-		        //その時点で、必要なデータをゲットできたと判断し、取得処理を中止する
-		        if(result===[]){
-		          break;
-		        }
+			          //ストック記事テーブルから記事を削除する際に、このプロパティを設定しておくと便利なため
+	  				  resultAddedIsStock_3[j].domain = "qiita";
 
-		        
+			          this.allArticleDataSorted.push(resultAddedIsStock_3[j]);		          
+			        }		        			                      
 
-		        for(let j=0; j<result.length; j++){         
-		          //isStockプロパティを付与した配列を作成          	          		                
+			      
+			      console.log("this.allArticleDataSorted of qiita");
+			      console.log(this.allArticleDataSorted);
 
-		          //qiitaから取得したデータをディープコピーする
-		          resultAddedIsStock_3[j] = _.cloneDeep(result[j]);
+			    } else {
+			    	break;
 
-		          //ストック記事を削除する際に使うフラグ 		          
-		          resultAddedIsStock_3[j].isDelete = false;
-		         
+			    }
 
-		          //ストック記事テーブルから記事を削除する際に、このプロパティを設定しておくと便利なため
-  				  resultAddedIsStock_3[j].domain = "qiita";
-
-		          this.allArticleDataSorted.push(resultAddedIsStock_3[j]);		          
-		        }		        
-
-		      }                
-
-		      
-		      console.log("this.allArticleDataSorted of qiita");
-		      console.log(this.allArticleDataSorted);
+			  }
 
 		     
 		      
-		      //アニメーションを停止
-		      this.loading = false;  
+		       
 
 		    //検索対象のドメインがqiita以外の場合  
 			} else {
@@ -805,6 +790,8 @@ export default {
 				//ただし、無料使用の場合、１日１００クエリという厳しい制限があるので
 				//今後機能を削除する可能性あり
 				this.isOtherDomainSearchResultDisplay=true;
+
+				
 
 				
 
@@ -833,92 +820,88 @@ export default {
 		      			break;
 		      	}	      	
 
+		      	//
 		      	url = "https://www.googleapis.com/customsearch/v1?key=" + process.env.GOOGLE_API + "&cx=" + process.env.SEARCH_ENGINE_ID + "&q=allintitle:" + "+" + urlParameter;
+
+		      	
 
 	      		console.log("url");
 	      		console.log(url);
 
-	      		result = await this.$axios.$get(url);       		
+	      		    		
+
+	      		let status = await this.$axios.$get(url)
+					.then(response =>{
+
+						result = response;
+						return 200;
+					})
+		        	.catch(err => {
+		        	  console.log("err");
+				      console.log(err);
+				      this.isAPIError=true;
+				      //result = null;
+				      return err.response.status;
+				    });
+
+
+				console.log("status of google search");
+	      	  	console.log(status);    
+
+		        console.log("result of google search");
+	      	  	console.log(result);	      	  	
 
 
 
-	      		//エラー返却時
-	      		//参考：
-	      		//https://qiita.com/suin/items/f7ac4de914e9f3f35884
-	      		//https://qiita.com/megu_ma/items/8cad39f61e35588e5476
-	      		if(result.error){
-	      			this.isAPIError = true;
-	      			console.log("this.isAPIError in google");
-	      	  		console.log(this.isAPIError);
-	      	  		return;
 
-	      		}
+	      	  	if(status === 200){	      	  		
 
-	      		//検索結果が０件の場合のresult
-	      		/*
-	      		{kind: "customsearch#search", url: {…}, queries: {…}, searchInformation: {…}}
-		      		kind: "customsearch#search"
-					queries: {request: Array(1)}
-					searchInformation: {searchTime: 0.489478, formattedSearchTime: "0.49", totalResults: "0", formattedTotalResults: "0"}
-					url: {type: "application/json", template: "https://www.googleapis.com/customsearch/v1?q={sear…e?}&imgDominantColor={imgDominantColor?}&alt=json"}
-					__proto__: Object
+	      	  		//result.searchInformation.totalResults === "0" の場合はresult.itemsが存在しない
+	      	  		//よってresult.items.lengthでエラーが出る
+	      	  		//そこで検索結果が0でない場合にのみ以下の処理を行うこととする
+	      	  		//検索結果が0の場合は、this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);で配列allArticleDataSortedは初期化されるので、lengthは0となる
+	      	  		if(result.searchInformation.totalResults !== "0"){
 
-	      		*/
-	      		//検索結果が1件以上の場合のresult	      		
-	      		/*
-	      		{kind: "customsearch#search", url: {…}, queries: {…}, context: {…}, searchInformation: {…}, …}
-		      		context: {title: "Google"}
-					items: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
-					kind: "customsearch#search"
-					queries: {request: Array(1), nextPage: Array(1)}
-					searchInformation: {searchTime: 0.142998, formattedSearchTime: "0.14", totalResults: "92", formattedTotalResults: "92"}
-					url: {type: "application/json", template: "https://www.googleapis.com/customsearch/v1?q={sear…e?}&imgDominantColor={imgDominantColor?}&alt=json"}
-					__proto__: Object
+	      	  		
+
+		      	  		for(let i=0; i<result.items.length; i++){		            
+					       
+
+					       resultAddedIsStock_3[i] = _.cloneDeep(result.items[i]);
+
+					       //ストック記事を削除する際に使うフラグを設定 		          
+		  				   resultAddedIsStock_3[i].isDelete = false;
+
+		  				   //QiitaのAPI取得データと同じurlプロパティを設定
+		  				   //ストック記事をテーブルに表示する際に、urlというプロパティが必要になるため  				   
+		  				   resultAddedIsStock_3[i].url = resultAddedIsStock_3[i].link;
+
+		  				   //ストック記事テーブルから記事を削除する際に、このプロパティを設定しておくと便利なため
+		  				   resultAddedIsStock_3[i].domain = "otherThanQiita";
 
 
-	      		*/
+
+					       
+					       this.allArticleDataSorted.push(resultAddedIsStock_3[i]);
+				      	} 
+
+				      	console.log("this.allArticleDataSorted of google search");
+			      		console.log(this.allArticleDataSorted);
+			      	}
+			      	
+
+	      	  	}
+
+
+	      		
+
+	      		
 
 	      			      		
 
-
-	      		console.log("result of google search");
-	      		console.log(result);
-
-	      		//itemsが存在する場合は、検索結果を１件以上取得できたと判断
-	      		if(result.items){
-
-		      		for(let i=0; i<result.items.length; i++){		            
-				       
-
-				       resultAddedIsStock_3[i] = _.cloneDeep(result.items[i]);
-
-				       //ストック記事を削除する際に使うフラグを設定 		          
-	  				   resultAddedIsStock_3[i].isDelete = false;
-
-	  				   //QiitaのAPI取得データと同じurlプロパティを設定
-	  				   //ストック記事をテーブルに表示する際に、urlというプロパティが必要になるため  				   
-	  				   resultAddedIsStock_3[i].url = resultAddedIsStock_3[i].link;
-
-	  				   //ストック記事テーブルから記事を削除する際に、このプロパティを設定しておくと便利なため
-	  				   resultAddedIsStock_3[i].domain = "otherThanQiita";
-
-
-
-				       
-				       this.allArticleDataSorted.push(resultAddedIsStock_3[i]);
-			      	} 
-
-			      	console.log("this.allArticleDataSorted of google search");
-		      		console.log(this.allArticleDataSorted);
-
-		      	//検索結果０と判断	
-		      	} else {
-
-		      		//this.allArticleDataSorted = [];
-		      	}
-
-		      	this.loading = false;
 		    }
+		    //アニメーションを停止
+		    this.loading = false;
 
 		},
 	},

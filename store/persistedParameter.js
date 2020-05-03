@@ -23,12 +23,22 @@ export const state = () => ({
 	namePersisted:"",//ログインユーザのユーザ名
 	//isShowAll:false,	
 
+	//APIError:false,//qiitaやgoogleのAPI利用時のエラー発生有無
+
+
+
 })
 
 export const getters = {	
 	/*
 	getIsShowAll(state){		
 		return state.isShowAll;
+	},
+	*/
+	/*
+	getAPIError(state){
+		return state.APIError;
+
 	},
 	*/
 	getNamePersisted(state){		
@@ -236,6 +246,11 @@ export const mutations ={
 	namePersistedSet(state, name){				
 		state.namePersisted=name;
 	},
+	/*
+	APIErrorSet(state){
+		state.APIError = true;
+	},
+	*/
 	
 }	
 
@@ -243,6 +258,12 @@ export const actions = {
 	/*
 	changeIsShowAllAction(context, flag){		
 		context.commit('changeIsShowAll', flag);
+	},
+	*/
+	/*
+	APIErrorSetAction(context){
+		context.commit('APIErrorSet');
+
 	},
 	*/
 	changeIsAdditionOfLikeArticleAction(context, count){		
