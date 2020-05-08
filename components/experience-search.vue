@@ -185,9 +185,14 @@
 
 <script>
 /* eslint-disable */
-import _ from 'lodash';
+//import _ from 'lodash';
+
+import _cloneDeep from 'lodash/cloneDeep';
+
+
 import {  BIcon, BIconX } from 'bootstrap-vue';
 import NoSearchResult from '~/components/no-search-result.vue'; 
+import sanitizeHTML from 'sanitize-html';
 
 export default {  
 	
@@ -438,13 +443,17 @@ export default {
 	    	//this.allStockedData = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);	    	
 
 	    	//Qiitaのストック記事を取得
-	    	const stockedDataInQiita = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);	
+	    	//const stockedDataInQiita = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);	
+
+	    	const stockedDataInQiita = _cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);
 
 	    	console.log("stockedDataInQiita in obtainStockedArticles");
 	    	console.log(stockedDataInQiita);
 
 	    	//Googleからストックした記事を取得
-	    	const stockedDataInGoogle = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticlesInGoogleSearch']);	
+	    	//const stockedDataInGoogle = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticlesInGoogleSearch']);	
+
+	    	const stockedDataInGoogle = _cloneDeep(this.$store.getters['persistedParameter/getStockedArticlesInGoogleSearch']);	
 
 	    	console.log("stockedDataInGoogle in obtainStockedArticles");
 	    	console.log(stockedDataInGoogle);
@@ -516,7 +525,8 @@ export default {
 	    	//Qiitaの記事がクリックされた場合
 	    	if(element.domain === "qiita"){
 	    		//Qiitaのストック記事を取得
-	    		const stockedDataInQiita = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);
+	    		//const stockedDataInQiita = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);
+	    		const stockedDataInQiita = _cloneDeep(this.$store.getters['persistedParameter/getStockedArticles']);
 
 	    		console.log(`stockedDataInQiita in deleteStockArray`);
     			console.log(stockedDataInQiita);
@@ -544,7 +554,9 @@ export default {
 	    	} else {
 
 	    		//Googleからストックした記事を取得
-	    		const stockedDataInGoogle = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticlesInGoogleSearch']);
+	    		//const stockedDataInGoogle = _.cloneDeep(this.$store.getters['persistedParameter/getStockedArticlesInGoogleSearch']);
+
+	    		const stockedDataInGoogle = _cloneDeep(this.$store.getters['persistedParameter/getStockedArticlesInGoogleSearch']);
 
 	    		console.log(`stockedDataInGoogle in deleteStockArray`);
     			console.log(stockedDataInGoogle);
@@ -579,7 +591,8 @@ export default {
 	    	for(let i=0; i<this.allArticleDataSorted.length; i++){
 	          if(this.allArticleDataSorted[i].cacheId === element.cacheId){	            
 	          	//押下された要素のディープコピーをとる
-	            let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
+	            //let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
+	            let changeData = _cloneDeep(this.allArticleDataSorted[i]);
 
 	            console.log(`this.allArticleDataSorted[${i}] in addStockArrayInGoogleSearch`);
     			console.log(this.allArticleDataSorted[i]);
@@ -602,7 +615,8 @@ export default {
 	    	for(let i=0; i<this.allArticleDataSorted.length; i++){
 	          if(this.allArticleDataSorted[i].id === element.id){	            
 	          	//押下された要素のディープコピーをとる
-	            let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
+	            //let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
+	            let changeData = _cloneDeep(this.allArticleDataSorted[i]);
 
 	            console.log(`this.allArticleDataSorted[${i}] in addStockArray`);
     			console.log(this.allArticleDataSorted[i]);
@@ -625,7 +639,10 @@ export default {
 
 		},	   
 		
-		async doSearch(){		
+		async doSearch(){	
+
+			
+
 
 			//検索ボックスが空の場合はアラートを出す
 			if(this.searchBoxContentArray.length === 0){
@@ -665,6 +682,15 @@ export default {
 
 
 
+		    //検索キーワードをサニタイズする
+		      for(let i=0; i<this.searchBoxContentArray.length; i++){
+
+		      	this.searchBoxContentArray[i] = sanitizeHTML(this.searchBoxContentArray[i]);
+
+		               
+		      }   
+
+
 
 			//検索対象ドメインがqiitaの場合
 			if(this.domain === "qiita"){
@@ -677,9 +703,11 @@ export default {
 		      
 		      //qiitaのAPIを利用することをaxios.jsに伝える
 		      //axios.jsでは、このusedAPIフラグにてどのAPIとやり取りをしているのかを判断し、
-		      //ヘッダーにトークン情報を付加して通信する
-		      //ローカルではなく、通常のstoreで問題ないのでは？
-		      this.$store.commit("persistedParameter/changeUsedAPI","qiita");
+		      //ヘッダーにトークン情報を付加して通信する		     
+
+		      this.$store.commit("changeUsedAPI","qiita");
+
+
 
 		            
 		      const pageMax = 5;
@@ -697,6 +725,10 @@ export default {
 		      per_page=100 
 		      */
 		      
+		    
+
+
+		      /**/
 		      //検索ボックスのキーワードを取得
 		      //タイトルにすべてのキーワードを含む記事のみを検索対象とする
 		      for(let i=0; i<this.searchBoxContentArray.length; i++){
@@ -705,7 +737,9 @@ export default {
 		        } else{
 		          urlParameter = urlParameter + "title:" + this.searchBoxContentArray[i] + "+";
 		        }        
-		      }            
+		      }   
+		      
+
 		      url = "https://qiita.com/api/v2/items?query=" + urlParameter;      
 		      
 		      console.log("url:");
@@ -755,7 +789,9 @@ export default {
 			          //isStockプロパティを付与した配列を作成          	          		                
 
 			          //qiitaから取得したデータをディープコピーする
-			          resultAddedIsStock_3[j] = _.cloneDeep(result[j]);
+			          //resultAddedIsStock_3[j] = _.cloneDeep(result[j]);
+
+			          resultAddedIsStock_3[j] = _cloneDeep(result[j]);
 
 			          //ストック記事を削除する際に使うフラグ 		          
 			          resultAddedIsStock_3[j].isDelete = false;
@@ -795,7 +831,9 @@ export default {
 
 				
 
-	      		this.$store.commit("persistedParameter/changeUsedAPI","google");      		
+	      		//this.$store.commit("persistedParameter/changeUsedAPI","google");  
+
+	      		this.$store.commit("changeUsedAPI","google");    		
 
 	      		for(let i=0; i<this.searchBoxContentArray.length; i++){
 			        if(i === this.searchBoxContentArray.length-1 ){
@@ -867,7 +905,8 @@ export default {
 		      	  		for(let i=0; i<result.items.length; i++){		            
 					       
 
-					       resultAddedIsStock_3[i] = _.cloneDeep(result.items[i]);
+					       //resultAddedIsStock_3[i] = _.cloneDeep(result.items[i]);
+					       resultAddedIsStock_3[i] = _cloneDeep(result.items[i]);
 
 					       //ストック記事を削除する際に使うフラグを設定 		          
 		  				   resultAddedIsStock_3[i].isDelete = false;

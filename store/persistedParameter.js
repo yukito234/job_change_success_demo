@@ -10,7 +10,7 @@ export const state = () => ({
 	stockedArticles: [],
 	stockedArticlesInGoogleSearch: [],
 
-	usedAPI:"",	
+	//usedAPI:"",	
 	commentData:"",//reply.vueに表示するコメント
 	allCommentData:[],//id.vueのコメント表の全データ
 	userData:"",//users-list.vueでセットされるプロフィールページユーザの情報
@@ -134,11 +134,13 @@ export const mutations ={
 		state.commentData = element;
 
 	},	
+	/*
 	changeUsedAPI(state, name){
 		state.usedAPI=name;
 		console.log("state.usedAPI");
 		console.log(state.usedAPI);
 	},
+	*/
 	changeIsEmpty(state, flag){		
 		state.isEmpty = flag ;
 		

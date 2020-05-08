@@ -1,96 +1,233 @@
 <template>
-  <div >
-  	
-    <b-spinner small v-show="loading"></b-spinner>
-    <div v-show="!loading">
-      <h2>未経験から転職に成功した人のデータ</h2>
-      <p>転職成功者のデータ（年齢・学歴・勉強期間・スクール有無・転職先）をまとめたので、
-        <br>あなたが気になる項目をチェックしてみてください。
-      </p>
-    	<doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>       
-      <doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
+  <div > 	
+    
+    
+    <div>
+      <!--
+       
+      <doughnut-graph-section v-bind:chart-data="items" v-on:graphChangeNoticeToSuccessGraph="redrawGraph"></doughnut-graph-section>
+
+      <doughnut-graph-section v-bind:chart-data="datacollection" v-on:graphChangeNoticeToSuccessGraph="redrawGraph"></doughnut-graph-section>
+
+      -->
+      <doughnut-graph-section ></doughnut-graph-section>
+      
+      
       <article-list></article-list>
     </div>
   </div>
 </template>
 
+
 <script>
+//
 import firebase from 'firebase'
+//
 import db from '../plugins/firebase_config'
 import ArticleList from '~/components/article-list.vue'
-import DoughnutGraph from '~/components/doughnut.vue'
-import DoughnutGraphSelect from '~/components/doughnut-graph-select.vue'
+
+import DoughnutGraphSection from '~/components/doughnut-graph-section.vue'
+
+
 
 
 export default {
   components: {    
     
     'article-list': ArticleList,
-    'doughnut-graph': DoughnutGraph,
-    'doughnut-graph-select': DoughnutGraphSelect,    
+    'doughnut-graph-section': DoughnutGraphSection, 
+
+        
     
 
   },
+  /**/
   data () {
     return {
-      datacollection: null,
-      loading: true,
+     
+
+      
       
     }
   },  
+  async fetch ({ store }) {
+
+    //ページがレンダリングされる前に、体験記データをストアに入れる
+    console.log("store");
+    console.log(store);
+
+    //初回のみDBと通信して体験記データを取得
+    if( !store.getters['getIsExperienceArticles'] ){
+
+      console.log("store.getters['getIsExperienceArticles']"); 
+      console.log(store.getters['getIsExperienceArticles']); 
+
+
+      await db.collection("experience_articles").get()
+        .then((querySnapshot)=>{        
+          querySnapshot.forEach((doc)=>{          
+            const data = _.cloneDeep(doc.data());  
+
+            
+
+            store.commit('allArticlesForGraphGet', data);  
+             
+            //this.$store.dispatch('sessionStorageParameter/allArticlesForGraphGetAction', data);        
+
+          });     
+
+          
+
+
+          //グラフタイプ（初期はage）において、各項目のデータ数を取得
+          //例：２０代後・・・７人、３０代前半・・・５人
+          
+
+          //グラフ描画に必要なデータをすべてindex.jsに保存する場合
+          //app.store.dispatch('itemCountAction', app.store.getters['getGraphType']);
+          
+          
+
+
+          //グラフのラベル、データ、カラーの配列を準備
+          //グラフ描画に必要なデータをすべてindex.jsに保存する場合
+          //app.store.dispatch('createLabelQuantityColorAction');
+          
+
+
+          //DBからのデータ取得有無を表すflagを"取得済"に変更する
+
+          store.commit('changeIsExperienceArticles',true);       
+
+
+
+
+          
+          console.log("getting data is finished of success-graph.vue");          
+           
+        })
+        .catch(function(error) {
+            alert(error.message)
+        });
+
+    } else {
+      //2回目以降のアクセスでは、DBとのやり取りはせず、ストアに保存した体験記データを利用する
+      console.log("store.getters['getIsExperienceArticles']"); 
+      console.log(store.getters['getIsExperienceArticles']);     
+    }
+
+
+
+
+
+  },
+  /*
+  async asyncData({app}){
+
+    //let items ={};
+
+
+    
+
+    console.log("app");
+    console.log(app);
+
+
+    if( !app.store.getters['getIsExperienceArticles'] ){
+
+      console.log("app.store.getters['getIsExperienceArticles']"); 
+      console.log(app.store.getters['getIsExperienceArticles']); 
+
+
+      await db.collection("experience_articles").get()
+        .then((querySnapshot)=>{        
+          querySnapshot.forEach((doc)=>{          
+            const data = _.cloneDeep(doc.data());  
+
+            
+
+            app.store.dispatch('allArticlesForGraphGetAction', data);  
+             
+            //this.$store.dispatch('sessionStorageParameter/allArticlesForGraphGetAction', data);        
+
+          });     
+
+          
+
+
+          //グラフタイプ（初期はage）において、各項目のデータ数を取得
+          //例：２０代後・・・７人、３０代前半・・・５人
+          
+
+          //グラフ描画に必要なデータをすべてindex.jsに保存する場合
+          //app.store.dispatch('itemCountAction', app.store.getters['getGraphType']);
+          
+          
+
+
+          //グラフのラベル、データ、カラーの配列を準備
+          //グラフ描画に必要なデータをすべてindex.jsに保存する場合
+          //app.store.dispatch('createLabelQuantityColorAction');
+          
+
+
+          //dbからのデータ取得有無を表すflagを"取得済"に変更する
+
+          app.store.dispatch('changeIsExperienceArticlesAction',true);       
+
+
+
+
+          
+          console.log("getting data is finished of success-graph.vue");          
+           
+        })
+        .catch(function(error) {
+            alert(error.message)
+        });
+
+    } else {
+
+      console.log("app.store.getters['getIsExperienceArticles']"); 
+      console.log(app.store.getters['getIsExperienceArticles']);     
+    }
+
+    //const  items =  app.store.getters['getAllArticlesForGraph'];
+
+    //console.log("before return items of success-graph.vue");   
+
+    //return { items }; 
+
+
+  },
+  */
+
+ 
+  /**/
   created() {
+
+
+      
+
+
+
     
   },
-  mounted () {    
-
-    this.loading=false;  
-    //グラフ描画に必要な全データを取得
-    db.collection("experience_articles").get()
-      .then((querySnapshot)=>{        
-        querySnapshot.forEach((doc)=>{
-          const data = doc.data();                    
-          
-          this.$store.dispatch('allArticlesForGraphGetAction', data);          
-
-        });        
-        //グラフタイプ（初期はage）において、各項目のデータ数を取得
-        //例：２０代後・・・７人、３０代前半・・・５人
-        this.$store.dispatch('itemCountAction', this.$store.state.graphType);
-
-        //グラフのラベル、データ、カラーの配列を準備
-        this.$store.dispatch('createLabelQuantityColorAction');
-
-        //描画用オブジェクトに必要データを格納
-        this.datacollection = {                           
-          labels: this.$store.state.graphLabels,          
-          datasets: [
-            {                          
-              data: this.$store.state.graphQuantity,                          
-              backgroundColor: this.$store.state.graphColor,              
-            }
-          ]                    
-        }
-        //this.loading=false;        
-         
-      })
-      .catch(function(error) {
-          alert(error.message)
-      });
+  
+  /*
+  mounted () { 
+ 
+    
   },
+  */
+  /**/
   methods: {
-    //グラフタイプの切替時の再描画
-    redrawGraph(){            
-      this.datacollection = {                      
-        labels: this.$store.state.graphLabels,        
-        datasets: [
-          {                        
-            data: this.$store.state.graphQuantity,                        
-            backgroundColor: this.$store.state.graphColor,            
-          }
-        ]               
-      }                 
-    },    
-  }
+
+    
+    
+     
+  },
+  
 
 }	
 </script>

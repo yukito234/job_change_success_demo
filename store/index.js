@@ -3,6 +3,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 export const state = () => ({
+
+	isExperienceArticles: false,
 	currentUserName : "",	
 	allArticles: [],
 	allArticlesForGraph: [],
@@ -14,9 +16,44 @@ export const state = () => ({
 	//allProfileInStore:[],
 	//APIError:false,//qiitaやgoogleのAPI利用時のエラー発生有無
 
+	usedAPI:"",
+	
+
 })
 
 export const getters = {
+
+	getAllArticlesForGraph(state){
+		return state.allArticlesForGraph;
+
+
+	},
+	getGraphType(state){
+		return state.graphType;
+
+
+	},
+	getGraphLabels(state){
+		return state.graphLabels;
+
+
+	},
+	getGraphQuantity(state){
+		return state.graphQuantity;
+
+
+	},
+	getGraphColor(state){
+		return state.graphColor;
+
+
+	},
+	getIsExperienceArticles(state){		
+		return state.isExperienceArticles;
+	},
+
+
+
 	/*
 	getAPIError(state){
 		return state.APIError;
@@ -30,41 +67,10 @@ export const getters = {
 	*/
 }
 	
-export const actions = {		
-	/*
-	allProfileInStoreSetAction(context, data){		
-		context.commit('allProfileInStoreSet', data);
-	},
-	*/
-	nameSetAction(context, name){		
-		context.commit('nameSet', name);
-	},
-	allArticlesGetAction(context, data){		
-		context.commit('allArticlesGet', data);
-	},
-	allArticlesForGraphGetAction(context, data){			
-		context.commit('allArticlesForGraphGet', data);
-	},	
-	itemCountAction(context, graphType){				
-		context.commit('itemCount', graphType);
-	},
-	createLabelQuantityColorAction(context){		
-		context.commit('createLabelQuantityColor');
-	},	
-	graphTypeChangeAction(context, graphType){
-		context.commit('graphTypeChange', graphType);
 
-	},
-	/*
-	APIErrorSetAction(context, flag){
-		console.log("in APIErrorSetAction");
-		context.commit('APIErrorSet',flag);
-
-	},		
-	*/
-}
 
 export const mutations ={
+
 	/*
 	allProfileInStoreSet(state,data){
 		state.allProfileInStore.push(data);		
@@ -76,6 +82,16 @@ export const mutations ={
 		state.APIError = flag;
 	},
 	*/
+	changeIsExperienceArticles(state,flag){
+
+		state.isExperienceArticles = flag;
+
+	},
+	changeUsedAPI(state, name){
+		state.usedAPI=name;
+		//console.log("state.usedAPI");
+		//console.log(state.usedAPI);
+	},
 	nameSet(state, name){		
 		state.currentUserName = name;				
 	},
@@ -136,5 +152,44 @@ export const mutations ={
 			state.graphColor.push(colorPalette[i]);
 		}
 	},
+	
+}
+
+export const actions = {		
+	/*
+	allProfileInStoreSetAction(context, data){		
+		context.commit('allProfileInStoreSet', data);
+	},
+	*/
+	nameSetAction(context, name){		
+		context.commit('nameSet', name);
+	},
+	allArticlesGetAction(context, data){		
+		context.commit('allArticlesGet', data);
+	},
+	allArticlesForGraphGetAction(context, data){			
+		context.commit('allArticlesForGraphGet', data);
+	},	
+	itemCountAction(context, graphType){				
+		context.commit('itemCount', graphType);
+	},
+	createLabelQuantityColorAction(context){		
+		context.commit('createLabelQuantityColor');
+	},	
+	graphTypeChangeAction(context, graphType){
+		context.commit('graphTypeChange', graphType);
+
+	},
+	changeIsExperienceArticlesAction(context, flag){
+		context.commit('changeIsExperienceArticles', flag);
+
+	},
+	/*
+	APIErrorSetAction(context, flag){
+		console.log("in APIErrorSetAction");
+		context.commit('APIErrorSet',flag);
+
+	},		
+	*/
 	
 }

@@ -35,6 +35,8 @@ export default {
     '~/plugins/axios.js',
     '~/plugins/element-ui.js',
     { src: '~plugins/localStorage', ssr: false },
+    { src: '~plugins/sessionStorage', ssr: false },
+
 
   ],
   env: {

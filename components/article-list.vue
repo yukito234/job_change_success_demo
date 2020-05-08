@@ -2,14 +2,16 @@
   <div class="article-list-container">        
     
     <h3>上のグラフのデータ一覧</h3>    
-    <p>下表では、年齢・学歴、スクール有無、転職先の項目でフィルターできます。
-      <br>気になる項目でフィルターをかけて表のデータを比較してみると新たな発見があるかもしれません。
-      <br>また、勉強期間では昇順・降順で並び替えができます。
+    <p>下表では、フィルター機能が使えます。
+      <br>キーワード(文字列や数値)を入力することで、キーワードを含む行を抽出できます。
+      <br>チェックボックスでは、フィルタリングする列を指定できます。（複数指定可）
+      <br>勉強期間では昇順・降順で並び替えができます。
       <br>※空白はデータなしです。
     </p>    
 
+
     <b-form-group
-      label="Filter"
+      label="フィルター："
       label-cols-sm="3"
       label-align-sm="right"
       label-size="sm"
@@ -21,24 +23,33 @@
           v-model="filter"
           type="search"
           id="filterInput"
-          placeholder="Type to Search"
+          placeholder="文字列や数値を入力してください"
         ></b-form-input>
         <b-input-group-append>
-          <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+          <b-button :disabled="!filter" @click="filter = ''">クリア</b-button>
         </b-input-group-append>
       </b-input-group>
     </b-form-group>
 
+    <!--
+    label="フィルター対象の列"
+    label="検索対象の列："
+    description="チェックを入れない場合は、すべての列がフィルター対象となります"
+    -->
     <b-form-group
-      label="Filter On"
+      label="フィルタリングする列："
       label-cols-sm="3"
       label-align-sm="right"
       label-size="sm"
-      description="Leave all unchecked to filter on all data"
+      description="※チェックを入れない場合は、すべての列が検索対象となります"
       class="mb-0">
       <b-form-checkbox-group v-model="filterOn" class="mt-1">
+
+        <b-form-checkbox value="title">記事タイトル</b-form-checkbox>
+
         <b-form-checkbox value="age">年齢</b-form-checkbox>
         <b-form-checkbox value="educational_background">学歴</b-form-checkbox>
+        <b-form-checkbox value="study_term">勉強期間</b-form-checkbox>
         <b-form-checkbox value="school_presence">スクール有無</b-form-checkbox>
         <b-form-checkbox value="company">転職先</b-form-checkbox>        
       </b-form-checkbox-group>
@@ -129,6 +140,27 @@ export default {
 
   },
   created:function(){ 
+
+
+    //storeに保存する場合
+    this.tableData = this.$store.getters['getAllArticlesForGraph'];
+    console.log("this.tableData in article-list");
+    console.log(this.tableData);
+
+    /*
+    //sessionStorageに保存する場合
+    this.tableData = this.$store.getters['sessionStorageParameter/getAllArticlesForGraph'];
+    console.log("this.tableData in article-list");
+    console.log(this.tableData);
+    */
+
+
+    this.totalRows = this.tableData.length;
+    console.log("this.totalRows in article-list");
+    console.log(this.totalRows);
+
+
+    /*
     //firebaseから記事データ一覧を取得
     db.collection("experience_articles").get()
       .then((querySnapshot)=>{        
@@ -151,6 +183,7 @@ export default {
       .catch(function(error) {
           alert(error.message)
       });
+      */
   },
   methods:{
     onFiltered(filteredItems) {

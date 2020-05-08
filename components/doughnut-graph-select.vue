@@ -2,10 +2,17 @@
 	<div>    
     <p>グラフタイプを選択してください。</p>
     <b-form-select v-model="graphSelection" :options="optionsOfgraphSelection"></b-form-select>
-    <span>{{graphChange}}</span>
+    <!--
+      
+      <span>{{graphSelection}}</span>
+      <span>{{graphChange}}</span>
+    -->
+    
+    
     
 	</div>
 </template>
+
 
 <script>
 /* eslint-disable */
@@ -22,42 +29,66 @@ export default {
 
 
       ],
-    	graphSelection: 'age',
+
+      //グラフ描画に必要なデータをindex.jsに保存しない場合
+    	//
+      graphSelection: 'age',
 
     }
   },  
+  created(){
+    this.$emit('graphChangeNoticeToDoughnutGraphSection', this.graphSelection);
+  },
   methods: {
   },
   computed:{
+    //グラフ描画に必要なデータをすべてindex.jsに保存する場合
+    /*
+    graphSelection:{        
+        get:function(){
+            console.log("this.$store.getters['getGraphType'] in doughnut-graph-select");
+            console.log(this.$store.getters['getGraphType']);
+
+
+            return this.$store.getters['getGraphType'];
+        },        
+        set:function( graphType ){
+          //グラフタイプが切り替わったときの挙動
+          console.log("graphType in doughnut-graph-select");
+          console.log(graphType);
+
+          //storeのgraphTypeを切り替える
+          this.$store.dispatch('graphTypeChangeAction', graphType);
+
+          //選択されたgraphTypeのデータ数を集計
+          this.$store.dispatch('itemCountAction', this.graphSelection);
+          //円グラフの描画に必要なラベル、データ、配色を用意する
+          this.$store.dispatch('createLabelQuantityColorAction');
+
+
+
+        },        
+    },
+    */
     //現在のグラフタイプを返す
+    /*
   	graphChange(){ 				
   		return this.graphSelection;
 
   	},
-    graphChangeOfBootstrap(){
-      return this.graphSelectionOfBootstrap;
-
-    },
+    */
+    
     
   },
   watch:{
-    //グラフタイプが切り替わったときの挙動
-  	graphChange:function(){
-  		console.log("graphChange called in watch");
-  		
-  		//storeのgraphTypeを切り替える
-  		this.$store.dispatch('graphTypeChangeAction', this.graphSelection);
+    //グラフ描画に必要なデータをindex.jsに保存しない場合
+    graphSelection:function(){
+      this.$emit('graphChangeNoticeToDoughnutGraphSection', this.graphSelection);
 
-  		//選択されたgraphTypeのデータ数を集計
-  		this.$store.dispatch('itemCountAction', this.graphSelection);
 
-  		//円グラフの描画に必要なラベル、データ、配色を用意する
-  		this.$store.dispatch('createLabelQuantityColorAction');
+    },
 
-  		//再描画の準備が整ったことを、親のsuccess-graph.vueに知らせる
-  		this.$emit('graphChangeNotice');
-
-  	}
+    
   },
 }
 </script>
