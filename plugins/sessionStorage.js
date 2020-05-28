@@ -1,3 +1,5 @@
+// prettier-ignore
+/* eslint-disable */
 import createPersistedState from 'vuex-persistedstate'
 
 export default ({ store }) => {

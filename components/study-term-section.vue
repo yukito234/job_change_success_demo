@@ -1,4 +1,5 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+  
   <div class="study-term-container">
     <b-form-group
       label-cols-sm="3"
@@ -13,6 +14,7 @@
 </template>
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 export default { 
   data () {
@@ -34,7 +36,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+/* prettier-ignore */
 .study-term-container {
   margin: 10px;  
 }

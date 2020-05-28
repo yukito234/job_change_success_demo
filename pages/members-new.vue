@@ -1,4 +1,5 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+  
   <div class="member-container">    
     <!---->
     
@@ -10,6 +11,7 @@
 
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
@@ -86,7 +88,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+/* prettier-ignore */
 .member-container {
   margin: 20px;  
 }

@@ -1,4 +1,5 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+  
   <el-menu mode="horizontal" :router="true">    
     <el-menu-item index="1" :route="{ path: '/' }">
       トップ
@@ -25,6 +26,8 @@
 </template>
 
 <script>
+// prettier-ignore
+/* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
 
@@ -40,6 +43,30 @@ export default {
     
   },
   methods:{
+    async signOut() { 
+
+      await this.$store.dispatch('signOutAction');
+      
+      //this.$store.getters['sessionStorageParameter/getLoginUserData'];
+      //console.log("global-naviでログアウトが完了しました");
+      //this.$router.push('/');  
+
+      //signin.vueでも、usersコレクションからのデータ取得に失敗した場合はログアウトさせるので、以下はindex.jsに記述した方がいいかも
+
+      //sessionの全ユーザデータを初期化する
+      //this.$store.dispatch('sessionStorageParameter/allUsersDataInitAction');
+
+      //sessionのログインユーザ情報を初期化する
+      //this.$store.dispatch('sessionStorageParameter/loginUserDataInitAction');
+
+      //sessionのログイン状態をfalseにする
+      //this.$store.dispatch('sessionStorageParameter/changeIsLoginUserAction', false);
+
+
+      //ログアウトする
+
+    },
+    /*
     signOut() {           
       //ログアウトが押されたのでアニメーション開始
       //this.$store.dispatch('persistedParameter/changeIsShowAllAction',true);  
@@ -66,14 +93,14 @@ export default {
         this.$router.push('/');        
       })
     }, 
+    */
 
   },
   computed: {    
     checkUser(){
-     
-      return this.$store.getters['persistedParameter/getIsLoginUser'];            
-      //gettersを使わずに直接stateを参照しても問題なかった
-      //return this.$store.state.persistedParameter.isLoginUser;
+      return this.$store.getters['sessionStorageParameter/getIsLoginUser'];   
+      //return this.$store.getters['persistedParameter/getIsLoginUser'];            
+      
     }        
   }
 }

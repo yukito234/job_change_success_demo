@@ -1,4 +1,5 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+  
 	<div>
     <h2>Qiitaにて体験記を探す</h2>
     <p>検索キーワードのヒント</p>
@@ -97,6 +98,7 @@
 </template>
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 
 export default {  

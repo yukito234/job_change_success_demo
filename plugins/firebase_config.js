@@ -1,4 +1,5 @@
 /* eslint-disable */
+// prettier-ignore
 import firebase from 'firebase'
 
 const config = {

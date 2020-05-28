@@ -7,7 +7,7 @@ export default function ({ store, redirect }) {
 		firebase.auth().onAuthStateChanged(function (user) {
 
 			if(user){				
-			    store.dispatch('nameSetAction', firebase.auth().currentUser.displayName);
+			    //store.dispatch('nameSetAction', firebase.auth().currentUser.displayName);
 			    return resolve();
 			}			
 

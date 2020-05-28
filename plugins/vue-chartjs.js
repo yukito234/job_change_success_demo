@@ -1,3 +1,6 @@
+// prettier-ignore
+/* eslint-disable */
+
 //成功 ドーナツ
 /*
 import Vue from 'vue';

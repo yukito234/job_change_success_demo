@@ -1,28 +1,29 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+  
   <div>    
-    <global-navi></global-navi>
-    <span>ここは、{{loginUserName}}さんのダッシュボードページです</span>            
-    <br>
-    <br>      
+    
+    <!--<span>ここは、{{loginUserName}}さんのダッシュボードページです</span>  -->          
+          
     <profile-registration></profile-registration>
-    <br>
-    <br>
+    
     <like-article-registration></like-article-registration>
-    <br>
-    <br>
+    
     <article-registration></article-registration> 
     
   </div>
 </template>
 
+
 <script>
+// prettier-ignore
 /* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
 import ArticleRegistration from '~/components/article-registration.vue'
 import ProfileRegistration from '~/components/profile-registration.vue'
-import globalNavi from '~/components/global-navi.vue';
+
 import LikeArticleRegistration from '~/components/like-article-registration.vue';
+import _cloneDeep from 'lodash/cloneDeep';
 
 export default {
   middleware: 'authenticated',  
@@ -30,23 +31,68 @@ export default {
   components: {    
      'article-registration': ArticleRegistration,    
      'profile-registration': ProfileRegistration,
-     "global-navi": globalNavi,
+     
      "like-article-registration": LikeArticleRegistration,
 
   },  
+
   data () {
     return {
       //likeArticleCount:null,            
     }
   },
+
+  async fetch ({ store }) {
+    
+
+
+    //member.vueで全プロフィールデータを取得していない場合や
+    //リロード等により全プロフィールデータが消失している場合
+    //再度DBと通信してデータを取得する
+    if( !store.getters['getIsAllProfiles'] ){
+
+      console.log("enter !store.getters['getIsAllProfiles'] in dashboard.vue");
+      store.dispatch('allProfilesInitAction');
+      
+      //全プロフィールデータを取得してindex.jsに保存する
+      await store.dispatch('allProfilesGetAction');
+
+      //取得が完了したら、フラグをtrueにして、2回目以降のアクセスではDBとのやり取りが発生しないようにする
+      store.dispatch('changeIsAllProfilesAction',true);
+
+    
+    } 
+
+    //全プロフィールデータの中からログインユーザのデータを見つけ出し、sessionに保存
+    store.dispatch('loginUserProfileGetAction');
+
+
+    if( !store.getters['getIsAllLikeArticles'] ){
+
+      console.log("enter !store.getters['getIsAllLikeArticles'] in dashboard.vue");
+      await store.dispatch('likeArticlesGetAction');
+
+       store.dispatch('changeIsAllLikeArticlesAction', true);
+
+
+    }
+
+
+    
+
+  },
   computed:{
+    /*
     loginUserName(){
       return this.$store.state.currentUserName;       
      
     },
+    */
   },
+  /*
   created:function(){
     //ログインユーザのお気に入り記事の数を取得し、永続化させる
+    //以下はmember.vueにて行う
     db.collection("users").get()
       .then((querySnapshot)=>{        
         querySnapshot.forEach((doc)=>{
@@ -87,13 +133,15 @@ export default {
       });
     
   },  
+  */
   methods: {
      
   }
 }
 </script>
 
-<style>
+<style scoped>
+/* prettier-ignore */
 .member-container {
   margin: 20px;  
 }

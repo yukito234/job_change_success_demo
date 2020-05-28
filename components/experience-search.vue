@@ -28,7 +28,7 @@
 	    <h3>step3.検索を開始</h3>
 	    <p>step2で選んだドメインを対象に検索を行います。<br>ここでは検索したいキーワードを直接入力することもできます。<br>こちらの検索ボックスに入力されているキーワードをすべてタイトルに含む記事が表示されます。</p>	    
 
-	    <b-form-input v-model.trim="searchBox" v-on:blur="doOnBlur()" placeholder="検索ワードを直接入力できます"></b-form-input>
+	    <b-form-input v-model.trim="searchBox" v-on:blur="doOnBlur()" v-on:focus="doOnFocus()" placeholder="検索ワードを直接入力できます"></b-form-input>
 	    
 	    <b-icon icon="x" v-on:click="deleteSearchBoxContent()"></b-icon>       	    	        	
 
@@ -56,10 +56,15 @@
 						<h3>上記のキーワードをタイトルに含む記事は見つかりませんでした。</h3>
 						<p>検索キーワードを減らしたり、別のキーワードを選ぶなどして再検索してください！</p>
 					</div>
+
+					-->
+
+					<!--
+						:items="allArticleDataSorted" 
 					-->
 					<div v-if="!getIsSearchResult">
 			    		<b-table 			      
-					      :items="allArticleDataSorted" 
+					      :items="allArticlesOfSearchResult" 
 					      :fields="fieldsOfGoogleSearch"
 					      responsive="sm"			      			      
 					    >
@@ -98,6 +103,8 @@
 							<h3>検索結果: {{allArticleDataSorted.length}} 件のデータを取得しました</h3>
 							<h3>検索結果: {{getNumberOfSearchResult}} 件のデータを取得しました</h3>
 						-->
+
+						<!--:items="allArticleDataSorted" -->
 						<b-pagination
 					      v-model="currentPage"
 					      :total-rows="rows"
@@ -109,7 +116,7 @@
 
 						<b-table
 						  id="my-table" 			      
-					      :items="allArticleDataSorted" 
+					      :items="allArticlesOfSearchResult" 
 					      :per-page="perPageOfBootstrap"
 					      :current-page="currentPage"
 					      :fields="fieldsOfQiitaSearch"
@@ -184,6 +191,7 @@
 </template>
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 //import _ from 'lodash';
 
@@ -204,7 +212,10 @@ export default {
 	
 	data () {
 	    return {
-	      isAPIError:false,
+
+
+
+
           fieldsOfStockedArticles:[
           	{
 	          key:'titleLink',
@@ -216,9 +227,7 @@ export default {
 	        },
 
           ],
-          loading:false,//検索ボタンクリック時のアニメーションや結果表示タイミングの制御用
-	      currentPage: 1,
-	      perPageOfBootstrap: 8,
+          
 	      fieldsOfQiitaSearch:[
 	      		
 	      		{
@@ -283,6 +292,10 @@ export default {
 	          { text: 'バックエンド', value: 'バックエンド' },
 
 	      ],
+	      isAPIError:false,
+	      loading:false,//検索ボタンクリック時のアニメーションや結果表示タイミングの制御用
+	      currentPage: 1,
+	      perPageOfBootstrap: 8,
 	     
 	      perPageOfUserInput:10,//ユーザが入力した表示数の一時保存用
 	      suggestKeywords: [], //キーワード候補の格納用
@@ -291,7 +304,9 @@ export default {
 	      searchBox:"", //検索ボックスの内容
 	      searchBoxContentArray:[],//検索ボックスの複合キーワードを分割して格納する配列
 	      
-	      allArticleDataSorted: [],//記事データ格納用
+	      //allArticleDataSorted: [],//記事データ格納用
+	      //allExperienceArticles:[],
+	      allArticlesOfSearchResult:[],
 	      
 	      //allArticleDataStocked: [],//isStockプロパティを含むQiitaから取得した全データ格納用(この変数は不要かも) 
 	      
@@ -413,10 +428,14 @@ export default {
 	},
 	computed:{    
 		rows() {
-	        return this.allArticleDataSorted.length;
+	        //return this.allArticleDataSorted.length;
+	        return this.allArticlesOfSearchResult.length;
+
+
 	    },
 	    getIsSearchResult(){
-	    	if( this.allArticleDataSorted.length > 0 ){
+	    	//if( this.allArticleDataSorted.length > 0 ){
+	    	if( this.allArticlesOfSearchResult.length > 0 ){
 	    		return false;
 
 	    	} else {
@@ -488,9 +507,32 @@ export default {
 			//全件表示ボタンがクリックされたとき、１ページ目に全データを表示させる
 
 			//1ページあたりの表示数をqiita取得の全データ数とする			
-			this.perPageOfBootstrap = this.allArticleDataSorted.length;
+			//this.perPageOfBootstrap = this.allArticleDataSorted.length;
+
+			this.perPageOfBootstrap = this.allArticlesOfSearchResult.length;
 			
 			
+
+		},
+		doOnFocus(){
+
+			console.log("enter doOnFocus");
+
+			//一時保存配列を初期化
+			this.storedSearchKeywords.splice(-this.storedSearchKeywords.length);
+
+			//検索ボックスの内容を保存
+			for(let j=0; j<this.searchBoxContentArray.length; j++){	
+				this.storedSearchKeywords.push(this.searchBoxContentArray[j]);
+		    }	
+
+		    //検索ヒント配列を初期化
+		    this.suggestKeywords.splice(-this.suggestKeywords.length);
+
+
+
+
+
 
 		},
 		doOnBlur(){
@@ -588,14 +630,31 @@ export default {
 	    addStockArrayInGoogleSearch(element){
 
 	    	//Googleの記事をストックする
-	    	for(let i=0; i<this.allArticleDataSorted.length; i++){
-	          if(this.allArticleDataSorted[i].cacheId === element.cacheId){	            
+	    	/*for(let i=0; i<this.allArticleDataSorted.length; i++){
+	    	  if(this.allArticleDataSorted[i].cacheId === element.cacheId){	            
 	          	//押下された要素のディープコピーをとる
 	            //let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
 	            let changeData = _cloneDeep(this.allArticleDataSorted[i]);
 
 	            console.log(`this.allArticleDataSorted[${i}] in addStockArrayInGoogleSearch`);
     			console.log(this.allArticleDataSorted[i]);
+
+	            this.$store.commit('persistedParameter/changeStockedArticlesInGoogleSearch',changeData);
+	            
+	          }
+	        }
+
+	    	*/
+
+
+	    	for(let i=0; i<this.allArticlesOfSearchResult.length; i++){	
+	          if(this.allArticlesOfSearchResult[i].cacheId === element.cacheId){	            
+	          	//押下された要素のディープコピーをとる
+	            //let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
+	            let changeData = _cloneDeep(this.allArticlesOfSearchResult[i]);
+
+	            console.log(`this.allArticlesOfSearchResult[${i}] in addStockArrayInGoogleSearch`);
+    			console.log(this.allArticlesOfSearchResult[i]);
 
 	            this.$store.commit('persistedParameter/changeStockedArticlesInGoogleSearch',changeData);
 	            
@@ -612,6 +671,7 @@ export default {
 	    	//Qiitaの記事をストックする
 
 	    	//押下された要素を特定する
+	    	/*
 	    	for(let i=0; i<this.allArticleDataSorted.length; i++){
 	          if(this.allArticleDataSorted[i].id === element.id){	            
 	          	//押下された要素のディープコピーをとる
@@ -625,6 +685,26 @@ export default {
 	            
 	          }
 	        }
+	        */
+
+	        for(let i=0; i<this.allArticlesOfSearchResult.length; i++){
+	          if(this.allArticlesOfSearchResult[i].id === element.id){	            
+	          	//押下された要素のディープコピーをとる
+	            //let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
+	            let changeData = _cloneDeep(this.allArticlesOfSearchResult[i]);
+
+	            console.log(`this.allArticlesOfSearchResult[${i}] in addStockArray`);
+    			console.log(this.allArticlesOfSearchResult[i]);
+
+	            this.$store.commit('persistedParameter/changeStockedArticles',changeData);
+	            
+	          }
+	        }
+
+
+
+
+
 	    },
 	    	    
 	    
@@ -642,7 +722,7 @@ export default {
 		async doSearch(){	
 
 			
-
+			console.log("enter doSearch")
 
 			//検索ボックスが空の場合はアラートを出す
 			if(this.searchBoxContentArray.length === 0){
@@ -666,19 +746,25 @@ export default {
 			this.isOtherDomainSearchResultDisplay=false;
 
 
+			
 
-			let urlParameter ='';
-		    let url ='';
+			//let urlParameter ='';
+		    //let url ='';
 
 		   
 		    //APIから取得したデータの格納用
-		    let result=[];
+		    //let result=[];
 
 		     //resultのコピー用
-		    let resultAddedIsStock_3=[];
+		    //let resultAddedIsStock_3=[];
+
 
 		    //配列の初期化
-		    this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);
+		    //this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);
+
+		    //配列の初期化
+		    //連続での検索に対応
+		    this.$store.commit('allExperienceArticlesInit');
 
 
 
@@ -708,118 +794,31 @@ export default {
 		      this.$store.commit("changeUsedAPI","qiita");
 
 
+		      //QiitaAPIを利用して検索を行い、結果を取得
+		      //let isError = await this.$store.dispatch('doSearchInQiitaAction', _cloneDeep(this.searchBoxContentArray) );
 
-		            
-		      const pageMax = 5;
-		      //pageMaxの決め方
-		      /*
-		      Qiitaから取得する体験記の記事数の最大値(予想)は、現状で約500件
-		      以下はQiitaで実際に検索をかけたときの検索キーワードと取得記事数
-		      title:未経験・・・478件
-		      title:転職・・・269件
-		      実際には500件を超える可能性もあるが、ユーザが表示方法や検索キーワードを変えずに
-		      すべての（500件以上の）記事をチェックする可能性は低いので、これで問題ないと考える
+		      this.isAPIError= await this.$store.dispatch('doSearchInQiitaAction', _cloneDeep(this.searchBoxContentArray) );
 
-		      QiitaAPIマニュアルよりper_page=100(MAX)なので、pageMax=5としておけば必要な記事をすべて取得できる
-		      pageMax=5
-		      per_page=100 
-		      */
-		      
-		    
-
-
-		      /**/
-		      //検索ボックスのキーワードを取得
-		      //タイトルにすべてのキーワードを含む記事のみを検索対象とする
-		      for(let i=0; i<this.searchBoxContentArray.length; i++){
-		        if(i === this.searchBoxContentArray.length-1 ){
-		          urlParameter = urlParameter + "title:" + this.searchBoxContentArray[i];
-		        } else{
-		          urlParameter = urlParameter + "title:" + this.searchBoxContentArray[i] + "+";
-		        }        
-		      }   
 		      
 
-		      url = "https://qiita.com/api/v2/items?query=" + urlParameter;      
-		      
-		      console.log("url:");
-		      console.log(url);
-
-		      //APIを利用して検索結果を取得する
-		      for(let i=0; i<pageMax; i++){
-		        //     
-		        url = "https://qiita.com/api/v2/items?query=" + urlParameter + `&page=${i+1}&per_page=100`;
-
-		       
-
-				let status = await this.$axios.$get(url)
-					.then(response =>{
-						//responseオブジェクトからstatusを取得できないので、
-						//axiosの処理が正常に終了した場合は200を返す
-						result = response;
-						return 200;
-					})
-		        	.catch(err => {
-		        	  console.log("err");
-				      console.log(err);
-				      this.isAPIError=true;
-				      //result = null;
-				      return err.response.status;
-				    });
+	      	  //this.allArticleDataSorted = _cloneDeep( this.$store.getters['getAllExperienceArticles'];
 
 
-				console.log("status of qiita search");
-	      	  	console.log(status);    
-
-		        console.log("result of qiita search");
-	      	  	console.log(result);
-
-
-	      	  	if(status === 200){
-
-			        //取得数が上限の500件未満の場合は、途中でQiitaから空配列が返ってくるので、
-			        //その時点で、必要なデータをゲットできたと判断し、取得処理を中止する
-			        if(result===[]){
-			          break;
-			        }
-
-			        
-
-			        for(let j=0; j<result.length; j++){         
-			          //isStockプロパティを付与した配列を作成          	          		                
-
-			          //qiitaから取得したデータをディープコピーする
-			          //resultAddedIsStock_3[j] = _.cloneDeep(result[j]);
-
-			          resultAddedIsStock_3[j] = _cloneDeep(result[j]);
-
-			          //ストック記事を削除する際に使うフラグ 		          
-			          resultAddedIsStock_3[j].isDelete = false;
-			         
-
-			          //ストック記事テーブルから記事を削除する際に、このプロパティを設定しておくと便利なため
-	  				  resultAddedIsStock_3[j].domain = "qiita";
-
-			          this.allArticleDataSorted.push(resultAddedIsStock_3[j]);		          
-			        }		        			                      
-
-			      
-			      console.log("this.allArticleDataSorted of qiita");
-			      console.log(this.allArticleDataSorted);
-
-			    } else {
-			    	break;
-
-			    }
-
-			  }
-
-		     
+		      ///////////////////////////////////////////////
 		      
 		       
 
 		    //検索対象のドメインがqiita以外の場合  
 			} else {
+
+				//doSearchInGoogleActionに渡すデータ
+				let dataForGoogle ={
+
+					domain:"",
+					searchBoxContentArray:[],
+
+
+				};
 
 
 				//googleのAPIを用いて、指定したドメインにおける検索結果を取得する
@@ -831,105 +830,37 @@ export default {
 
 				
 
+				
+
 	      		//this.$store.commit("persistedParameter/changeUsedAPI","google");  
 
-	      		this.$store.commit("changeUsedAPI","google");    		
+	      		this.$store.commit("changeUsedAPI","google");   
+
+	      		
+	      		dataForGoogle.domain = this.domain;
+
 
 	      		for(let i=0; i<this.searchBoxContentArray.length; i++){
-			        if(i === this.searchBoxContentArray.length-1 ){
-			          urlParameter = urlParameter +  this.searchBoxContentArray[i];
-			        } else{
-			          urlParameter = urlParameter +  this.searchBoxContentArray[i] + "+";
-			        }        
-		      	}   	      	
 
-		      	switch(this.domain){
-		      		case "hatenablog":
-		      			urlParameter = urlParameter + "+" + "site:hatenablog.com" + "+" + "-site:paiza.hatenablog.com";
-		      			break;
-		      		case "note":
-		      			urlParameter = urlParameter + "+" + "site:note.com";
-		      			break;
-		      		case "others":
-		      			urlParameter = urlParameter + "+" + 
-		      			"-site:note.com" + "+" + 
-		      			"-site:hatenablog.com" + "+" + 
-		      			"-site:qiita.com";
-		      			break;
-		      	}	      	
+	      			dataForGoogle.searchBoxContentArray.push(this.searchBoxContentArray[i]);
 
-		      	//
-		      	url = "https://www.googleapis.com/customsearch/v1?key=" + process.env.GOOGLE_API + "&cx=" + process.env.SEARCH_ENGINE_ID + "&q=allintitle:" + "+" + urlParameter;
-
-		      	
-
-	      		console.log("url");
-	      		console.log(url);
-
-	      		    		
-
-	      		let status = await this.$axios.$get(url)
-					.then(response =>{
-
-						result = response;
-						return 200;
-					})
-		        	.catch(err => {
-		        	  console.log("err");
-				      console.log(err);
-				      this.isAPIError=true;
-				      //result = null;
-				      return err.response.status;
-				    });
+	      		}
 
 
-				console.log("status of google search");
-	      	  	console.log(status);    
 
-		        console.log("result of google search");
-	      	  	console.log(result);	      	  	
+	      		//let isError = await this.$store.dispatch('doSearchInGoogleAction', _cloneDeep(dataForGoogle) );
+
+	      		this.isAPIError= await this.$store.dispatch('doSearchInGoogleAction', _cloneDeep(dataForGoogle) );
+
+
+	      		//this.allArticleDataSorted = _cloneDeep( this.$store.getters['getAllExperienceArticles']; 	
 
 
 
 
-	      	  	if(status === 200){	      	  		
+	      		///////////////////////////////////////////////	
 
-	      	  		//result.searchInformation.totalResults === "0" の場合はresult.itemsが存在しない
-	      	  		//よってresult.items.lengthでエラーが出る
-	      	  		//そこで検索結果が0でない場合にのみ以下の処理を行うこととする
-	      	  		//検索結果が0の場合は、this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);で配列allArticleDataSortedは初期化されるので、lengthは0となる
-	      	  		if(result.searchInformation.totalResults !== "0"){
-
-	      	  		
-
-		      	  		for(let i=0; i<result.items.length; i++){		            
-					       
-
-					       //resultAddedIsStock_3[i] = _.cloneDeep(result.items[i]);
-					       resultAddedIsStock_3[i] = _cloneDeep(result.items[i]);
-
-					       //ストック記事を削除する際に使うフラグを設定 		          
-		  				   resultAddedIsStock_3[i].isDelete = false;
-
-		  				   //QiitaのAPI取得データと同じurlプロパティを設定
-		  				   //ストック記事をテーブルに表示する際に、urlというプロパティが必要になるため  				   
-		  				   resultAddedIsStock_3[i].url = resultAddedIsStock_3[i].link;
-
-		  				   //ストック記事テーブルから記事を削除する際に、このプロパティを設定しておくと便利なため
-		  				   resultAddedIsStock_3[i].domain = "otherThanQiita";
-
-
-
-					       
-					       this.allArticleDataSorted.push(resultAddedIsStock_3[i]);
-				      	} 
-
-				      	console.log("this.allArticleDataSorted of google search");
-			      		console.log(this.allArticleDataSorted);
-			      	}
-			      	
-
-	      	  	}
+	      		
 
 
 	      		
@@ -939,7 +870,33 @@ export default {
 	      			      		
 
 		    }
-		    //アニメーションを停止
+
+		    //APIの利用時にエラーが発生した場合
+		    /*
+		      if(isError){
+
+		      	this.isAPIError = true;
+
+	      	  }
+	      	  */
+
+	      	//
+		    //this.allArticleDataSorted = _cloneDeep( this.$store.getters['getAllExperienceArticles'] );
+
+
+		    this.allArticlesOfSearchResult = _cloneDeep( this.$store.getters['getAllExperienceArticles'] );
+		    
+		    //let array = _cloneDeep( this.$store.getters['getAllExperienceArticles'] );
+
+		    /*
+		    for(let i=0; i<array.length; i++){
+
+	      			this.allArticleDataSorted.push(array[i]);
+
+      		}
+      		*/
+		    
+		     //アニメーションを停止
 		    this.loading = false;
 
 		},

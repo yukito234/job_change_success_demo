@@ -1,13 +1,13 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+  
 	<div>    
-    <p>グラフタイプを選択してください。</p>
-    <b-form-select v-model="graphSelection" :options="optionsOfgraphSelection"></b-form-select>
+    <p>グラフタイプ:</p>
+    <b-form-select v-model="graphSelection" :options="optionsOfgraphSelection" class="select-element"></b-form-select>
     <!--
       
       <span>{{graphSelection}}</span>
       <span>{{graphChange}}</span>
-    -->
-    
+    -->    
     
     
 	</div>
@@ -15,6 +15,7 @@
 
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 export default {  
   data () {
@@ -92,3 +93,16 @@ export default {
   },
 }
 </script>
+
+
+
+<style scoped>
+/* prettier-ignore */
+
+.select-element{
+
+  width: 300px;
+  display:block;
+}
+
+</style>

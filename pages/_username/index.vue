@@ -1,4 +1,5 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+  
 	<div>
     
     <b-spinner small v-show="loading"></b-spinner>
@@ -119,6 +120,7 @@
 </template>
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 import firebase from 'firebase'
 import db from '../../plugins/firebase_config'

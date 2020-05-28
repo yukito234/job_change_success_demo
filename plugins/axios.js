@@ -1,3 +1,5 @@
+// prettier-ignore
+/* eslint-disable */
 export default function({ $axios, store }){
 
 	$axios.onRequest(( config ) => {				

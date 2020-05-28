@@ -1,4 +1,5 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+  
   <div >        
     <b-spinner small v-show="loading"></b-spinner>
     <div  v-show="!loading">
@@ -30,6 +31,7 @@
 </template>
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
@@ -121,7 +123,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+/* prettier-ignore */
 .profileimage{
   width: 150px;
 }

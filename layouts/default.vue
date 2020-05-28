@@ -1,4 +1,4 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
   <div>
     <!--
     <b-overlay :show="this.$store.getters['persistedParameter/getIsShowAll']" rounded="sm">
@@ -15,7 +15,8 @@
 </template>
 
 <script>
-
+/* eslint-disable */
+// prettier-ignore
 import globalNavi from '~/components/global-navi.vue';
 import headerArea from '~/components/header-area.vue';
 export default {     
@@ -50,6 +51,7 @@ export default {
 </script>
 
 <style>
+/* prettier-ignore */
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif;

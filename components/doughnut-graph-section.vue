@@ -1,10 +1,24 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+	
+
+	// prettier-ignore
+	/* prettier-ignore */
 	<div>
-		<h2>未経験から転職に成功した人のデータ</h2>
-        <p>転職成功者のデータ（年齢・学歴・勉強期間・スクール有無・転職先）をまとめたので、
-          <br>あなたが気になる項目をチェックしてみてください。
-        </p>
+		<div>  
+			<h2 class="h2title">未経験から転職に成功した人のデータ</h2>
+			<b-icon icon="question-circle" v-b-modal.modal-success-graph-title></b-icon>
+	        <b-modal id="modal-success-graph-title" ok-only>
+	          <p class="my-4">転職成功者のデータ（年齢・学歴・勉強期間・スクール有無・転職先）をまとめたので、
+	          <br>あなたが気になる項目をチェックしてみてください。</p>
+	        </b-modal>
+	        
+	    </div>
+	    
+        
       	<!--
+      		<p>転職成功者のデータ（年齢・学歴・勉強期間・スクール有無・転職先）をまとめたので、
+	          <br>あなたが気になる項目をチェックしてみてください。
+	        </p>
       	<doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>  
 		{{datacollection}}
 		<span>datacollectionChange:{{datacollectionChange}}	</span>
@@ -12,7 +26,8 @@
 		<doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>
       	 -->
       	
-      	<doughnut-graph class="small" v-bind:chart-data="datacollectionChange" v-bind:graph-type="graphType" ></doughnut-graph>
+      	<doughnut-graph id="doughnut-graph" v-bind:chart-data="datacollectionChange" v-bind:graph-type="graphType" ></doughnut-graph>
+
 
         <!--
         	<doughnut-graph-select v-on:graphChangeNotice="redrawGraph"></doughnut-graph-select>
@@ -31,17 +46,23 @@
 </template>
 
 <script>
+// prettier-ignore
+/* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
 
 import DoughnutGraph from '~/components/doughnut.vue'
 import DoughnutGraphSelect from '~/components/doughnut-graph-select.vue'
 
+import {  BIcon, BIconX, BIconQuestionCircle  } from 'bootstrap-vue';
+
 export default {
 	//props: ['chartData'], 
 	components: {        
     
-
+		BIcon,
+	    BIconX,
+	    BIconQuestionCircle,
 	    'doughnut-graph': DoughnutGraph,
 	    'doughnut-graph-select': DoughnutGraphSelect,    
 	    
@@ -163,6 +184,8 @@ export default {
 			}
 		},
 		itemCount(graphType){
+
+			console.log("enter itemCount");	
 			//グラフデータを格納するオブジェクトを初期化
 			this.graphItemData = {};						
 
@@ -171,8 +194,24 @@ export default {
 
 			const allArticlesForGraph = this.$store.getters['getAllArticlesForGraph'];
 
+			console.log("allArticlesForGraph");	
+			console.log(allArticlesForGraph);
+
 			for(let i=0; i < allArticlesForGraph.length; i++){
-				key = eval(`allArticlesForGraph[${i}].` + graphType + ";");			
+
+
+				key = allArticlesForGraph[i][graphType];
+
+				
+
+
+
+				console.log("key");
+				console.log(key);
+
+				
+				
+
 				if( key !== "" ){
 					if( graphType === "study_term"){					
 						key = key + "ヶ月";
@@ -198,3 +237,19 @@ export default {
 
 
 </script>
+
+<style scoped>
+/* prettier-ignore */
+
+#doughnut-graph{
+
+	width:60%;
+
+}
+
+.h2title{
+
+  display: inline-block;
+}
+
+</style>

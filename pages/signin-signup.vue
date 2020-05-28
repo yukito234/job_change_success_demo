@@ -1,4 +1,4 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
   <div >        
     <signin></signin>
     <signup></signup>
@@ -6,6 +6,8 @@
 </template>
 
 <script>
+/* prettier-ignore *//* eslint-disable */
+
 import Signup from '~/components/signup.vue'
 import Signin from '~/components/signin.vue'
 

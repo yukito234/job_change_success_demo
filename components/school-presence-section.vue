@@ -1,4 +1,4 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
   <div class="school-presence-container">
     <b-form-group
       label-cols-sm="3"
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 export default {  
   data () {

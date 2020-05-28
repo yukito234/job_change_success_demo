@@ -1,8 +1,10 @@
-<template>
+<template><!-- eslint-disable --><!-- prettier-ignore -->
+  
   <div >        
     <b-spinner small v-show="loading"></b-spinner>
     <div  v-show="!loading">
       <h2>ユーザ一覧</h2>
+      <p>ダッシュボードにて、あなたのプロフィールを作成できます。</p>
       
 
       <b-table        
@@ -28,6 +30,7 @@
 </template>
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
@@ -59,6 +62,7 @@ export default {
       ],      
     }
   },
+
   mounted () {    
     //全会員のプロフィールデータを取得
     db.collection("user_profile").get()
@@ -119,7 +123,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+/* prettier-ignore */
 .profileimage{
   width: 150px;
 }

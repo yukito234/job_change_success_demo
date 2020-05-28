@@ -1,59 +1,74 @@
 <template>
   <div class="article-list-container">        
-    
-    <h3>上のグラフのデータ一覧</h3>    
+    <div>
+      <h3 class="h3title">上のグラフのデータ一覧</h3> 
+      <b-icon icon="question-circle" v-b-modal.modal-graph-data-list-title></b-icon>
+      <b-modal id="modal-graph-data-list-title" ok-only>
+        <p class="my-4">下表では、フィルター機能が使えます。
+        <br>キーワード(文字列や数値)を入力することで、キーワードを含む行を抽出できます。
+        <br>チェックボックスでは、フィルタリングする列を指定できます。（複数指定可）        
+        <br>※空白はデータなしです。</p>
+      </b-modal>
+    </div>
+
+
+
+    <!--   
     <p>下表では、フィルター機能が使えます。
       <br>キーワード(文字列や数値)を入力することで、キーワードを含む行を抽出できます。
       <br>チェックボックスでは、フィルタリングする列を指定できます。（複数指定可）
       <br>勉強期間では昇順・降順で並び替えができます。
       <br>※空白はデータなしです。
-    </p>    
+    </p>   
+    --> 
 
+    <div>
+      <b-form-group
+        label="フィルター："
+        label-cols-sm="3"
+        label-align-sm="right"
+        label-size="sm"
+        label-for="filterInput"
+        class="mb-0"
+      >
+        
+        <b-input-group size="sm">
+          <b-form-input
+            v-model="filter"
+            type="search"
+            id="filterInput"
+            placeholder="文字列や数値を入力してください"
+          ></b-form-input>
+          <b-input-group-append>
+            <b-button :disabled="!filter" @click="filter = ''" variant="primary">クリア</b-button>
+          </b-input-group-append>
+        </b-input-group>
+      </b-form-group>
 
-    <b-form-group
-      label="フィルター："
-      label-cols-sm="3"
-      label-align-sm="right"
-      label-size="sm"
-      label-for="filterInput"
-      class="mb-0"
-    >
-      <b-input-group size="sm">
-        <b-form-input
-          v-model="filter"
-          type="search"
-          id="filterInput"
-          placeholder="文字列や数値を入力してください"
-        ></b-form-input>
-        <b-input-group-append>
-          <b-button :disabled="!filter" @click="filter = ''">クリア</b-button>
-        </b-input-group-append>
-      </b-input-group>
-    </b-form-group>
+      <!--
+      label="フィルター対象の列"
+      label="検索対象の列："
+      description="チェックを入れない場合は、すべての列がフィルター対象となります"
+      -->
+      <b-form-group
+        label="フィルタリングする列："
+        label-cols-sm="3"
+        label-align-sm="right"
+        label-size="sm"
+        description="※チェックを入れない場合は、すべての列が検索対象となります"
+        class="mb-0">
+        <b-form-checkbox-group v-model="filterOn" class="mt-1">
 
-    <!--
-    label="フィルター対象の列"
-    label="検索対象の列："
-    description="チェックを入れない場合は、すべての列がフィルター対象となります"
-    -->
-    <b-form-group
-      label="フィルタリングする列："
-      label-cols-sm="3"
-      label-align-sm="right"
-      label-size="sm"
-      description="※チェックを入れない場合は、すべての列が検索対象となります"
-      class="mb-0">
-      <b-form-checkbox-group v-model="filterOn" class="mt-1">
+          <b-form-checkbox value="title">記事タイトル</b-form-checkbox>
 
-        <b-form-checkbox value="title">記事タイトル</b-form-checkbox>
-
-        <b-form-checkbox value="age">年齢</b-form-checkbox>
-        <b-form-checkbox value="educational_background">学歴</b-form-checkbox>
-        <b-form-checkbox value="study_term">勉強期間</b-form-checkbox>
-        <b-form-checkbox value="school_presence">スクール有無</b-form-checkbox>
-        <b-form-checkbox value="company">転職先</b-form-checkbox>        
-      </b-form-checkbox-group>
-    </b-form-group>
+          <b-form-checkbox value="age">年齢</b-form-checkbox>
+          <b-form-checkbox value="educational_background">学歴</b-form-checkbox>
+          <b-form-checkbox value="study_term">勉強期間</b-form-checkbox>
+          <b-form-checkbox value="school_presence">スクール有無</b-form-checkbox>
+          <b-form-checkbox value="company">転職先</b-form-checkbox>        
+        </b-form-checkbox-group>
+      </b-form-group>
+    </div>
 
     <b-table 
       striped hover 
@@ -84,12 +99,26 @@
 </template>
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
-import _ from 'lodash';
+//import _ from 'lodash';
+//import _cloneDeep from 'lodash/cloneDeep';
+
+import {  BIcon, BIconX, BIconQuestionCircle  } from 'bootstrap-vue';
 
 export default {
+
+  components: {        
+    
+      BIcon,
+      BIconX,
+      BIconQuestionCircle,
+         
+      
+
+  },
   data(){
 
     return {
@@ -142,7 +171,8 @@ export default {
   created:function(){ 
 
 
-    //storeに保存する場合
+
+    //DBから取得した全体験記をテーブル配列に挿入
     this.tableData = this.$store.getters['getAllArticlesForGraph'];
     console.log("this.tableData in article-list");
     console.log(this.tableData);
@@ -160,30 +190,7 @@ export default {
     console.log(this.totalRows);
 
 
-    /*
-    //firebaseから記事データ一覧を取得
-    db.collection("experience_articles").get()
-      .then((querySnapshot)=>{        
-        querySnapshot.forEach((doc)=>{
-               
-          const data = _.cloneDeep(doc.data());
-          const dataForElementTable = _.cloneDeep(doc.data());          
-         
-          //体験記の一覧データを取得
-          //this.$store.dispatch('allArticlesGetAction', data);          
-          this.tableData.push(dataForElementTable);
-        });
-        //console.log("this.tableData");
-        //console.log(this.tableData);
-        this.totalRows = this.tableData.length;
-        console.log("this.totalRows");
-        console.log(this.totalRows);        
-                
-      })
-      .catch(function(error) {
-          alert(error.message)
-      });
-      */
+    
   },
   methods:{
     onFiltered(filteredItems) {
@@ -257,8 +264,14 @@ export default {
 
 </script>
 
-<style>
-.article-list-container {
-  margin: 20px;  
+
+<style scoped>
+
+
+
+.h3title{
+
+  display: inline-block;
 }
+
 </style>

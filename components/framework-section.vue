@@ -29,6 +29,7 @@
 </template>
 
 <script>
+// prettier-ignore
 /* eslint-disable */
 export default {
   data () {

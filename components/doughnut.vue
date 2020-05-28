@@ -1,9 +1,11 @@
-<script>
+<script>// prettier-ignore
+/* eslint-disable */
 import firebase from 'firebase'
 import db from '../plugins/firebase_config'
 import { Doughnut, mixins } from 'vue-chartjs'
 const { reactiveProp } = mixins
 import Vue from 'vue';
+
 
 
 export default {
