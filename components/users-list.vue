@@ -1,6 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
-  <div >        
+<template>  
+  <div >  
+  <!-- eslint-disable --><!-- prettier-ignore -->      
     <b-spinner small v-show="loading"></b-spinner>
     <div  v-show="!loading">
       <h2>ユーザ一覧</h2>

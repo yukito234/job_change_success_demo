@@ -1,6 +1,11 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
+<template>  
 	<div>
+    <!-- eslint-disable --><!-- prettier-ignore -->
+
+
+    <!--
+      <nuxt-link v-on:click.native="setUserData(data.item)" v-bind:to="{ path: `/id` }">{{data.item.nick_name}}</nuxt-link>
+    -->
 		<h2>コメント一覧</h2>    
       <b-table 
      	 v-if="!getIsCommentMessage"           
@@ -11,11 +16,27 @@
         <template v-slot:cell(content)="data" :style="{width:'100px'}">
           <div v-bind:style="{marginLeft:getMarginLeft(data.item)}">
             <b-img :src="data.item.image_url" v-bind="mainProps" ></b-img>
+
+
             <span>{{data.item.nick_name_from}}</span>
+
+            <!--
+            <nuxt-link v-on:click.native="setUserData(data.item)" v-bind:to="{ path: `/id` }">{{data.item.nick_name_from}}</nuxt-link>
+            -->
+
+
             <p>{{data.item.comment}}</p>
             <span>{{data.item.createdAt}}</span>
             
+            <!--
+            URL設計前
             <nuxt-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/reply` }">返信する</nuxt-link>
+            -->
+
+            <!--URL設計後-->   
+            <nuxt-link v-if="data.item.replyButtonFlag" v-on:click.native="setCommentData(data.item)" v-bind:to="{ path: `/members/${$store.getters['sessionStorageParameter/getClickedProfileData'].user_id}/comments/${data.item.commentId}` }">返信する</nuxt-link>
+
+
             <p>commentId:  {{data.item.commentId}}</p>
             <p>reply_comment_id:  {{data.item.reply_comment_id}}</p>
 
@@ -78,12 +99,12 @@ created(){
 },
 watch:{
 	isCallGetComments:function(){
-		console.log("enter isCallGetComments");
+		//console.log("enter isCallGetComments");
 		
 
 		if(this.isCallGetComments){	
-			console.log("this.isCallGetComments");
-			console.log(this.isCallGetComments);
+			//console.log("this.isCallGetComments");
+			//console.log(this.isCallGetComments);
 			this.getComments();
 
 		}
@@ -106,10 +127,24 @@ computed:{
 
 },
 methods:{ 
-    
+    /*
+    setUserData(element){
+      //クリックされたプロフィールページのユーザ情報を保存
+      console.log("element");
+      console.log(element);
+      //this.$store.commit('userDataSet',element);
+      
+      //ユーザのデータはsessionに保存する
+      //URLパラメータで渡す方法だと、個別ページでリロードされたときにデータが消失してしまう
+      //ログアウトするときにデータを全部削除する
+      this.$store.commit('sessionStorageParameter/clickedProfileDataSet',element);
+      //this.$store.commit('persistedParameter/userDataSet',element);
+
+    },
+    */
 
     getComments(){
-      console.log("enter getComments");
+      //console.log("enter getComments");
       //ここでは、このページに表示すべきコメントデータを取得し、表示用に並べ替え、リターンする処理を行う
       
       //1:必要なデータを取得 + 初期化
@@ -120,18 +155,18 @@ methods:{
       const profileDataOfThisPage = this.$store.getters['sessionStorageParameter/getClickedProfileData'];
       const loginUserData = this.$store.getters['sessionStorageParameter/getLoginUserData'];
 
-      console.log("allProfiles");
-      console.log(allProfiles);
+      //console.log("allProfiles");
+      //console.log(allProfiles);
 
-      console.log("profileDataOfThisPage");
-      console.log(profileDataOfThisPage);
+      //console.log("profileDataOfThisPage");
+      //console.log(profileDataOfThisPage);
 
       //test0~test5までのユーザでログインした場合、以下が空となる
       //これはindex.jsのgetUsersCollectionActionにて
       //uidプロパティを持たないユーザはsessionにログインユーザ情報が保存されないため
       //コメントと返信機能が正しく動作するか確かめるにはtest6となる新たなユーザを登録する
-      console.log("loginUserData");
-      console.log(loginUserData);
+      //console.log("loginUserData");
+      //console.log(loginUserData);
 
 
       //:初回コメントを取得する
@@ -155,8 +190,8 @@ methods:{
       }  
 
 
-      console.log("firstCommentsOfThisPage");
-      console.log(firstCommentsOfThisPage);
+      //console.log("firstCommentsOfThisPage");
+      //console.log(firstCommentsOfThisPage);
 
       //5:初回コメントを時系列の古い順に並べ替える
       firstCommentsOfThisPage.sort(sortFunc);
@@ -177,22 +212,22 @@ methods:{
       let commentsOfThisPage2 = [];
       let allComments2 = _cloneDeep(allComments);
 
-      console.log("************************************************");
+      //console.log("************************************************");
 
       //
-      console.log("firstCommentsOfThisPage2");
+      //console.log("firstCommentsOfThisPage2");
       //
-      console.log(firstCommentsOfThisPage2);
+      //console.log(firstCommentsOfThisPage2);
 
       
 
 
-      //
-      console.log("allComments2");
-      //
-      console.log(allComments2);
+      //console.log("allComments2");
+      
+      //console.log(allComments2);
+      
 
-      console.log("************************************************");
+      //console.log("************************************************");
 
 
 
@@ -281,20 +316,20 @@ methods:{
         }
       } 
 
-      console.log("commentsOfThisPage");
-      console.log(commentsOfThisPage);
+      //console.log("commentsOfThisPage");
+      //console.log(commentsOfThisPage);
 
 
-      console.log("--------------------------------------------------------");
+      //console.log("--------------------------------------------------------");
 
       for(let i=0; i<commentsOfThisPage.length; i++){
 
-        console.log(`commentsOfThisPage[${i}]`);
-        console.log(commentsOfThisPage[i]);
+        //console.log(`commentsOfThisPage[${i}]`);
+        //console.log(commentsOfThisPage[i]);
 
       }
 
-      console.log("--------------------------------------------------------");
+      //console.log("--------------------------------------------------------");
 
 
 
@@ -310,12 +345,12 @@ methods:{
 
 
       
-      console.log("commentsOfThisPage2 before");
+      //console.log("commentsOfThisPage2 before");
       //commentsOfThisPage2はこの時点では空のはず
       //念の為に中身を確認
       for(let j=0; j<commentsOfThisPage2.length; j++){
-        console.log(`commentsOfThisPage2[${j}]`);
-        console.log(commentsOfThisPage2[j]);
+        //console.log(`commentsOfThisPage2[${j}]`);
+        //console.log(commentsOfThisPage2[j]);
       }
 
 
@@ -330,11 +365,11 @@ methods:{
 
         
 
-        console.log("after pushed to commentsOfThisPage2 in head");
+        //console.log("after pushed to commentsOfThisPage2 in head");
         //commentsOfThisPage2の中身を確認
         for(let j=0; j<commentsOfThisPage2.length; j++){
-          console.log(`commentsOfThisPage2[${j}]`);
-          console.log(commentsOfThisPage2[j]);
+          //console.log(`commentsOfThisPage2[${j}]`);
+          //console.log(commentsOfThisPage2[j]);
         }
 
 
@@ -347,7 +382,7 @@ methods:{
       //ネスト数１以上のコメントを見つける
       function getNestCommet(index, currentNestCount){
 
-        console.log("enter getNestCommet");
+        //console.log("enter getNestCommet");
 
         //allComments2[x].reply_comment_idの比較対象が、ネスト数２以上の場合とは異なることに注意
         
@@ -358,9 +393,9 @@ methods:{
 
             //ネスト０のコメントIDにリプライIDが一致するコメントがあるかチェック
             if( allComments2[j].reply_comment_id === firstCommentsOfThisPage2[index].commentId ){
-              console.log("nest=111111111111111111111111111111111111111111111111111111111111");
-              console.log(`allComments2[${j}]`);
-              console.log(allComments2[j].comment);
+              //console.log("nest=111111111111111111111111111111111111111111111111111111111111");
+              //console.log(`allComments2[${j}]`);
+              //console.log(allComments2[j].comment);
               //console.log(`firstCommentsOfThisPage2[${index}]`);
 
               //ネスト１のコメントを表示用配列に挿入
@@ -383,9 +418,9 @@ methods:{
         //つまり、ネスト数２以降のコメントを検索する場合は、以下の処理を行う
         for(let i=0; i<allComments2.length; i++){
           if(allComments2[i].reply_comment_id === allComments2[index].commentId ){ 
-            console.log(`nest=${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}`);
-            console.log("allComments2[i].reply_comment_id");
-            console.log(allComments2[i].reply_comment_id);
+            //console.log(`nest=${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}`);
+            //console.log("allComments2[i].reply_comment_id");
+            //console.log(allComments2[i].reply_comment_id);
             //console.log(`allComments2[i=${i}]`);
             //console.log(`allComments2[index=${index}]`);
 
@@ -412,12 +447,12 @@ methods:{
       
       function setNestCount(index, currentNestCount){
 
-        console.log(`seeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeet`);
+        //console.log(`seeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeet`);
 
         //console.log(`index=${index}`);
-        console.log(`currentNestCount=${currentNestCount}`);
-        console.log(`allComments2[${index}]=`);
-        console.log(allComments2[index].comment);
+        //console.log(`currentNestCount=${currentNestCount}`);
+        //console.log(`allComments2[${index}]=`);
+        //console.log(allComments2[index].comment);
 
         //初回コメントの次のインデックスにネスト数１の返信データを格納する
         //見つかったネスト数１のコメントのisAdditionがfalseであり、まだネスト配列に格納されていないことをチェック        
@@ -757,17 +792,20 @@ methods:{
 
 
 
+      
 
-      console.log("last--------------------------------------------------------");
+      //console.log("last--------------------------------------------------------");
 
       for(let i=0; i<commentsOfThisPage2.length; i++){
 
-        console.log(`commentsOfThisPage2[${i}]`);
-        console.log(commentsOfThisPage2[i]);
+        //console.log(`commentsOfThisPage2[${i}]`);
+        //console.log(commentsOfThisPage2[i]);
 
       }
 
-      console.log("--------------------------------------------------------");
+      //console.log("--------------------------------------------------------");
+
+      
 
 
 
@@ -892,8 +930,8 @@ methods:{
       }  
 
 
-      console.log("this.commentsForTable");
-      console.log(this.commentsForTable);
+      //console.log("this.commentsForTable");
+      //console.log(this.commentsForTable);
 
 
       
@@ -916,8 +954,8 @@ methods:{
     },
     
     setCommentData(element){  
-      console.log("element:");       
-      console.log(element); 
+      //console.log("element:");       
+      //console.log(element); 
       //返信ボタンが押されたら、そのコメントを取得し、sessoinに保存
       //reply.vueでリロードされた場合を想定し、データはsessionに保存しておく
       //reply.vueにて、この保存されたコメントデータを呼び出す

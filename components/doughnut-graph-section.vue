@@ -1,9 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-	
-
-	// prettier-ignore
-	/* prettier-ignore */
+<template>
 	<div>
+		<!-- eslint-disable --><!-- prettier-ignore -->
 		<div>  
 			<h2 class="h2title">未経験から転職に成功した人のデータ</h2>
 			<b-icon icon="question-circle" v-b-modal.modal-success-graph-title></b-icon>
@@ -25,8 +22,11 @@
 
 		<doughnut-graph class="small" v-bind:chart-data="datacollection"></doughnut-graph>
       	 -->
-      	
+      	<doughnut-graph-select id="doughnut-graph-selection" v-on:graphChangeNoticeToDoughnutGraphSection="changeGraphData"></doughnut-graph-select>
+
+
       	<doughnut-graph id="doughnut-graph" v-bind:chart-data="datacollectionChange" v-bind:graph-type="graphType" ></doughnut-graph>
+
 
 
         <!--
@@ -36,7 +36,7 @@
         	<doughnut-graph-select ></doughnut-graph-select>
 
         -->
-        <doughnut-graph-select v-on:graphChangeNoticeToDoughnutGraphSection="changeGraphData"></doughnut-graph-select>
+        
         
 
 
@@ -245,11 +245,28 @@ export default {
 
 	width:60%;
 
+	
+
 }
+
+
+#doughnut-graph-selection{
+	
+
+
+}
+
+
+
 
 .h2title{
 
   display: inline-block;
 }
+
+/*
+display:inline-block;
+display:inline-block;
+*/
 
 </style>

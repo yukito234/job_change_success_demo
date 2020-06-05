@@ -1,14 +1,19 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
+<template>  
   <el-menu mode="horizontal" :router="true">    
+    <!-- eslint-disable --><!-- prettier-ignore -->
     <el-menu-item index="1" :route="{ path: '/' }">
       トップ
     </el-menu-item>
     <el-menu-item index="2" :route="{ path: '/success-graph' }">
       成功者グラフ
     </el-menu-item>
-    
-    <el-menu-item index="3" :route="{ path: '/member' }" v-if="checkUser">
+    <!--
+      URL設計前
+      <el-menu-item index="3" :route="{ path: '/member' }" v-if="checkUser">
+        ユーザ一覧
+      </el-menu-item>
+    -->
+    <el-menu-item index="3" :route="{ path: '/members' }" v-if="checkUser">
       ユーザ一覧
     </el-menu-item>
     <el-menu-item index="4" :route="{ path: '/dashboard' }" v-if="checkUser">
@@ -20,6 +25,11 @@
     <el-menu-item index="6" :route="{ path: '/' }" v-if="checkUser" v-on:click="signOut">
       ログアウト
     </el-menu-item>       
+    <!--
+    <el-menu-item index="7" :route="{ path: '/' }"  >
+      {{ displayRoute }}
+    </el-menu-item>
+    -->
     
     
   </el-menu>
@@ -40,6 +50,24 @@ export default {
   },
   //
   mounted() {
+    
+  },
+  created() {
+
+    /*
+    console.log("----------------------------------");
+    console.log("in global-navi.vue");
+    //console.log("this");
+    //console.log(this);
+
+    console.log("this.$route.name");
+    console.log(this.$route.name);
+    */
+
+      
+
+
+
     
   },
   methods:{
@@ -101,7 +129,25 @@ export default {
       return this.$store.getters['sessionStorageParameter/getIsLoginUser'];   
       //return this.$store.getters['persistedParameter/getIsLoginUser'];            
       
-    }        
+    },
+    displayRoute(){
+      /*
+      console.log("----------------------------------");
+      console.log("in global-navi.vue");
+      //console.log("this");
+      //console.log(this);
+
+      console.log("this.$route");
+      console.log(this.$route);
+
+      console.log("this.$route.name");
+      console.log(this.$route.name);
+      */
+
+      return this.$route.name;
+
+
+    },       
   }
 }
 </script>

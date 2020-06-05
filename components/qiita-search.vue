@@ -1,6 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
+<template>  
 	<div>
+    <!-- eslint-disable --><!-- prettier-ignore -->
     <h2>Qiitaにて体験記を探す</h2>
     <p>検索キーワードのヒント</p>
 		<label>

@@ -19,9 +19,24 @@
                 max-rows="6"
               ></b-form-textarea>
             <div>
-              <b-button v-on:click="registerComment" class="submit-button" variant="primary">コメントを送信</b-button>
+              <b-button v-on:click="registerComment" v-bind:disabled="loading" class="submit-button" variant="primary">                                
+                <b-spinner small v-show="loading"></b-spinner>
+                <span v-show="loading">送信中...</span>
+                <span v-show="!loading">コメントを送信</span>
+              </b-button>
             </div>
         </b-card>
+        <!--
+
+          <b-button v-on:click="registerComment" class="submit-button" variant="primary">コメントを送信</b-button>
+
+          <b-button variant="primary" v-bind:disabled="loading" v-on:click="doSearch" id="search-button">
+            <b-spinner small v-show="loading"></b-spinner>
+            <span v-show="loading">Loading...</span>
+            <span v-show="!loading">検索</span>
+          </b-button>
+
+        -->
         <b-card bg-variant="light" v-else>
               <p>コメントを残すには、ダッシュボードページでプロフィール登録をしてください！</p>
               <b-form-textarea
@@ -52,6 +67,7 @@ data(){
 	return {
 		//show:false,
 		userComment:"",
+    loading:false,
 
 
 	}
@@ -70,6 +86,7 @@ computed:{
 
 methods:{ 
 	async registerComment(){
+    this.loading = true;
 		//this.show=true;
       console.log("this.userComment in registerComment");
       console.log(this.userComment);
@@ -104,6 +121,10 @@ methods:{
 
 
       this.userComment = '';
+
+      this.loading= false;
+
+      alert("コメントの登録完了");
 
       //this.show=false;
       //リロードする

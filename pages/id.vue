@@ -1,11 +1,13 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
-  <div>
+<template>  
+  <div class="page-container">
+    <!-- eslint-disable --><!-- prettier-ignore -->
 
     
     
-    <div >
-      <profile></profile>
+    
+    <div class="individual-section">
+      <profile ></profile>
+    </div>
       <!--    
       <h2>{{ getProfile.nick_name }}さんのプロフィール</h2>    
       
@@ -30,8 +32,9 @@
       </b-card>
       -->
 
-
-      <like-articles></like-articles>
+    <div class="individual-section">  
+      <like-articles ></like-articles>
+    </div>
       <!--
       <h2>お気に入り記事</h2>
       <p>あなたのお気に入り記事を他のメンバーに紹介できます。<br>
@@ -81,8 +84,10 @@
         </template>
       </b-table>  
       --> 
+    <div class="individual-section">
+      <do-comment  v-on:commentRegisteredNotice="changeIsCallGetComments"></do-comment>
+    </div>
 
-      <do-comment v-on:commentRegisteredNotice="changeIsCallGetComments"></do-comment>
       <!--    
       <h2>コメントを残す</h2>    
       <b-overlay :show="show" rounded="sm">
@@ -115,9 +120,10 @@
         </b-card>
       </b-overlay>
       -->
-     
+    <div class="individual-section">
 
-      <comment-list v-bind:is-call-get-comments="obtainIsCallGetComments"></comment-list>
+      <comment-list  v-bind:is-call-get-comments="obtainIsCallGetComments"></comment-list>
+    </div>
      <!--
       <h2>コメント一覧</h2>    
       <b-table            
@@ -146,7 +152,7 @@
     -->
 
 
-    </div>
+    
   </div>
 </template>
 
@@ -1351,3 +1357,15 @@ export default {
   */
 }
 </script>
+
+<style scoped>
+/* prettier-ignore */
+
+.individual-section{
+
+  margin-bottom: 20px;
+}
+
+
+
+</style>

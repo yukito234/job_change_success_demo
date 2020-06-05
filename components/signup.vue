@@ -1,6 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
+<template>  
   <div class="signup-container">
+    <!-- eslint-disable --><!-- prettier-ignore -->
     <b-card bg-variant="light">
             
       <b-form-group
@@ -42,7 +42,14 @@
           
         >
         <!--ボタンクリック時にローディングアニメーションを入れる-->
-          <b-button v-on:click="signUp">新規登録</b-button>
+        <div>
+          <b-button v-on:click="signUp" variant="primary" v-bind:disabled="loading" id="signup-button">
+          
+            <b-spinner small v-show="loading"></b-spinner>
+            <span v-show="loading">会員登録中...</span>
+            <span v-show="!loading">新規登録</span>
+          </b-button>
+        </div>
         </b-form-group>
       </b-form-group>
     </b-card>
@@ -116,6 +123,7 @@ export default {
         userName: '',
         email: '',
         password: '',
+        loading:false,
 
       },
       //userName: '',
@@ -129,6 +137,8 @@ export default {
 
     //コードの大半をindex.jsに記述する場合
     async signUp(){ 
+
+      this.loading = true;
 
       console.log("this.userData before");
       console.log(this.userData);
@@ -169,6 +179,8 @@ export default {
         
 
       }
+
+      this.loading = false;
 
 
 
@@ -278,4 +290,11 @@ export default {
 .signup-container {
   margin: 20px;  
 }
+
+#signup-button{
+
+  display:block;
+  margin-left:auto;
+}
+
 </style>

@@ -1,13 +1,16 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-	
+<template>	
   <div>
+  	<!-- eslint-disable --><!-- prettier-ignore -->
   	<!--
 		<b-button v-b-toggle.collapse-4 variant="primary">お気に入り記事の登録・編集・削除</b-button>
   	<b-collapse id="collapse-4" class="mt-2">
   	-->
 
 
-  	<b-button v-b-toggle.collapse-like variant="primary" id="like-open-close-button">お気に入り記事の登録・編集・削除<b-icon icon="chevron-down" ></b-icon></b-button>
+  	<b-button v-b-toggle.collapse-like variant="primary" id="like-open-close-button" v-on:click="changeIsLikeModalDisplay">お気に入り記事の登録・編集・削除
+  		<b-icon icon="chevron-down" v-if="!isLikeModalDisplay"></b-icon>
+        <b-icon icon="chevron-up" v-if="isLikeModalDisplay"></b-icon>
+  	</b-button>
   	<b-collapse id="collapse-like" class="mt-2">
   		<!--  			
   			this.$store.getters['persistedParameter/getisAdditionOfLikeArticle']はdashboard.vueで設定している
@@ -83,7 +86,12 @@
 		            
 		          >
 		          	<div>
-		            	<b-button v-on:click="registerLikeArticle()" id="like-article-registration-button" variant="primary">お気に入り記事を登録</b-button>
+		            	<b-button v-on:click="registerLikeArticle()" v-bind:disabled="loading" id="like-article-registration-button" variant="primary">
+		            		
+		            		<b-spinner small v-show="loading"></b-spinner>
+			                <span v-show="loading">登録中...</span>
+			                <span v-show="!loading">お気に入り記事を登録</span>
+		            	</b-button>
 		            </div>
 		          </b-form-group>
 		        </b-form-group>
@@ -120,14 +128,17 @@
 				    </template>
 
 				    <template v-slot:cell(deleteButton)="data">
-				        <b-button v-on:click="deleteLikeArticles(data.item)">削除</b-button>
+				        <b-button v-on:click="deleteLikeArticles(data.item)" variant="primary">削除</b-button>
 				        
 				    </template>
 
 			      	<template v-slot:cell(editButton)="row">
-				        <b-button size="sm" @click="row.toggleDetails" class="mr-2">
+				        <b-button size="sm" @click="row.toggleDetails" class="mr-2" variant="primary">
 				         
 				          {{ row.detailsShowing ? '閉じる' : '開く'}}
+				          <b-icon v-if="!row.detailsShowing" icon="chevron-down" ></b-icon>
+              			  <b-icon v-if="row.detailsShowing" icon="chevron-up" ></b-icon>
+
 				        </b-button>				        
 				        
 				    </template>
@@ -181,7 +192,7 @@ import db from '../plugins/firebase_config'
 //import _ from 'lodash';
 import _cloneDeep from 'lodash/cloneDeep';
 
-import {  BIcon, BIconX, BIconQuestionCircle, BIconChevronDown  } from 'bootstrap-vue';
+import {  BIcon, BIconX, BIconQuestionCircle, BIconChevronDown, BIconChevronUp  } from 'bootstrap-vue';
 
 export default {
 	middleware: 'authenticated', 
@@ -190,9 +201,11 @@ export default {
 	    BIconX,
 	    BIconQuestionCircle,
 	    BIconChevronDown,
+	    BIconChevronUp,
     }, 
 	data () {
-		return {			            
+		return {
+
 			fields:[		        
 		        {
 		          key:'titleLink',
@@ -228,6 +241,8 @@ export default {
 			likeArticlesData:[],//ログインユーザのお気に入りデータを格納
 			likeArticleCount:this.$store.getters['persistedParameter/getLikeArticleCount'],//現在登録しているお気に入り記事数を監視する。各ユーザがお気に入りに登録できる記事数は３記事まで。
 			allUsersData:[],
+			isLikeModalDisplay: false,
+			loading:false,
 
 	    }
 	},
@@ -356,6 +371,18 @@ export default {
 
 	},
 	methods:{
+		changeIsLikeModalDisplay(){
+			if( this.isLikeModalDisplay ){
+
+	        	this.isLikeModalDisplay = false;
+
+	      	} else {
+
+	        	this.isLikeModalDisplay = true;
+	      	}	  
+
+
+		},
 		confirm(item){
 
 			console.log("enter confirm");
@@ -564,6 +591,8 @@ export default {
 		*/
 		registerLikeArticle(){
 
+			this.loading = true;
+
 			console.log("enter registerLikeArticle");
 
 			if(this.url ==="" || this.title ===""){
@@ -615,6 +644,8 @@ export default {
 
 		    this.$store.dispatch('registerLikeArticleAction', _cloneDeep( data) );
 			
+
+			this.loading = false;
 
 			/*
 			//今後の課題：同じ記事を登録できないように改良する

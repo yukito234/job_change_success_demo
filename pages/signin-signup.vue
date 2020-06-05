@@ -1,5 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  <div >        
+<template>
+  <div class="page-container">
+  <!-- eslint-disable --><!-- prettier-ignore -->        
     <signin></signin>
     <signup></signup>
   </div>

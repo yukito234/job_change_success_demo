@@ -1,5 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
+<template>
   <div>
+    <!-- eslint-disable --><!-- prettier-ignore -->
     <!--
     <b-overlay :show="this.$store.getters['persistedParameter/getIsShowAll']" rounded="sm">
     </b-overlay>
@@ -7,6 +8,7 @@
     -->
       <header-area ></header-area>
       <global-navi ></global-navi>
+      <bread-crumb id="bread-crumb"></bread-crumb>
       
       
       <nuxt />
@@ -19,11 +21,16 @@
 // prettier-ignore
 import globalNavi from '~/components/global-navi.vue';
 import headerArea from '~/components/header-area.vue';
+import breaCrumb from '~/components/bread-crumb.vue';
+
+
+
 export default {     
   components: {
   //    
   "global-navi": globalNavi,
-    "header-area": headerArea,
+  "header-area": headerArea,
+  "bread-crumb": breaCrumb,
 
   },
   data () {
@@ -52,6 +59,10 @@ export default {
 
 <style>
 /* prettier-ignore */
+
+
+
+
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -99,4 +110,16 @@ html {
   color: #fff;
   background-color: #35495e;
 }
+
+
+
+#bread-crumb{
+
+  width:80%;
+  margin-top:16px;
+}
+
+/*width:60%;*/
+
+
 </style>

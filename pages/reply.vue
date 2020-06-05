@@ -1,6 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-	
-	<div>			
+<template>	
+	<div class="page-container">
+	<!-- eslint-disable --><!-- prettier-ignore -->			
 		
 		
 		<h2>返信する</h2>

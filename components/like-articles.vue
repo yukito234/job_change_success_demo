@@ -1,6 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
+<template>  
 	<div>
+    <!-- eslint-disable --><!-- prettier-ignore -->
     <div>
 		  <h2 class="h2title">お気に入り記事</h2>
       <b-icon icon="question-circle" v-b-modal.modal-like-article-title></b-icon>
@@ -31,11 +31,17 @@
             
         </template>
         
-        <!--'開く<b-icon icon="question-circle" ></b-icon>'-->
+        <!--
+          '開く<b-icon icon="question-circle" ></b-icon>'
+          <span v-if="row.detailsShowing">aa</span>
+
+        -->
         <template v-slot:cell(detailButton)="row" >
             <b-button size="sm" @click="row.toggleDetails" class="mr-2" variant="primary">
             
-              {{ row.detailsShowing ? '閉じる' : '開く'}}<b-icon icon="chevron-down" ></b-icon>
+              {{ row.detailsShowing ? '閉じる' : '開く'}}<b-icon v-if="!row.detailsShowing" icon="chevron-down" ></b-icon>
+              <b-icon v-if="row.detailsShowing" icon="chevron-up" ></b-icon>
+              
             </b-button>               
             
         </template>
@@ -71,7 +77,7 @@
 /* eslint-disable */
 import _cloneDeep from 'lodash/cloneDeep';
 
-import {  BIcon, BIconX, BIconQuestionCircle, BIconChevronDown  } from 'bootstrap-vue';
+import {  BIcon, BIconX, BIconQuestionCircle, BIconChevronDown, BIconChevronUp  } from 'bootstrap-vue';
 
 export default { 
   components: {
@@ -79,6 +85,7 @@ export default {
       BIconX,
       BIconQuestionCircle,
       BIconChevronDown,
+      BIconChevronUp,
       
 
   },

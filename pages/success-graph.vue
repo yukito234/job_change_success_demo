@@ -1,7 +1,6 @@
-<template>
-  <!-- prettier-ignore -->
-  <!-- eslint-disable -->
-  <div > 	
+<template>  
+  <div class="page-container"> 	
+     <!-- eslint-disable --><!-- prettier-ignore --> 
     
     
     
@@ -13,7 +12,7 @@
       <doughnut-graph-section v-bind:chart-data="datacollection" v-on:graphChangeNoticeToSuccessGraph="redrawGraph"></doughnut-graph-section>
 
       -->
-      
+       
       <doughnut-graph-section ></doughnut-graph-section>      
       
       <article-list></article-list>
@@ -50,7 +49,6 @@ export default {
   data () {
     return {
      
-
       
       
     }
@@ -93,6 +91,10 @@ export default {
  
   /**/
   created() {
+
+    //console.log("----------------------------------");
+    //console.log("this");
+    //console.log(this);
 
 
       

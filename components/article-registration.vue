@@ -1,5 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
+<template>
   <div>
+    <!-- eslint-disable --><!-- prettier-ignore -->
     
     <!--
 
@@ -11,8 +12,11 @@
 
 
     -->
-    <b-button v-b-toggle.collapse-experience variant="primary" id="experience-open-close-button">体験記の登録
-        <b-icon icon="chevron-down" ></b-icon></b-button>
+    <b-button v-b-toggle.collapse-experience variant="primary" id="experience-open-close-button" v-on:click="changeIsExperienceModalDisplay">
+        体験記の登録
+        <b-icon icon="chevron-down" v-if="!isExperienceModalDisplay"></b-icon>
+        <b-icon icon="chevron-up" v-if="isExperienceModalDisplay"></b-icon>
+    </b-button>
 
     <b-collapse id="collapse-experience" class="mt-2">
         <b-card bg-variant="light">
@@ -113,7 +117,12 @@
                 <div>{{ $store.state.articleAddition.company }}</div>
                 -->
                 <div>
-                    <b-button v-on:click="registerArticle" id="experience-article-registration-button" variant="primary">記事を登録</b-button>
+                    <b-button v-on:click="registerArticle" id="experience-article-registration-button" variant="primary" v-bind:disabled="loading">
+                        
+                        <b-spinner small v-show="loading"></b-spinner>
+                        <span v-show="loading">登録中...</span>
+                        <span v-show="!loading">記事を登録</span>
+                    </b-button>
                 </div>
 
 
@@ -142,7 +151,7 @@ import db from '../plugins/firebase_config'
 import sanitizeHTML from 'sanitize-html';
 import _cloneDeep from 'lodash/cloneDeep';
 
-import {  BIcon, BIconX, BIconQuestionCircle, BIconChevronDown  } from 'bootstrap-vue';
+import {  BIcon, BIconX, BIconQuestionCircle, BIconChevronDown, BIconChevronUp  } from 'bootstrap-vue';
 
 export default {
   name: 'ArticleRegistration',
@@ -151,6 +160,7 @@ export default {
     BIconX,
     BIconQuestionCircle,
     BIconChevronDown,
+    BIconChevronUp,
     //'article-url': ArticleUrl,
     //'article-title': ArticleTitle,
     //'age-section': AgeSection,
@@ -163,6 +173,7 @@ export default {
   },
   data () {
     return {
+        loading:false,
         editFlag:false,  
         /**/
         url:"",
@@ -215,6 +226,7 @@ export default {
             
           
         ],
+        isExperienceModalDisplay:false,
 
     }
   }, 
@@ -289,12 +301,26 @@ export default {
     */
   },   
   methods: {
+    changeIsExperienceModalDisplay(){
+        if( this.isExperienceModalDisplay ){
+
+             this.isExperienceModalDisplay = false;
+
+          } else {
+
+            this.isExperienceModalDisplay = true;
+          } 
+
+
+    },
     addExperience(){
         //体験記の追加ボタンが押されたときの挙動
         this.editFlag = true;
 
     },
     async registerArticle(){   
+
+        this.loading=true;
 
         const articleData = {
             url: sanitizeHTML(this.url),
@@ -324,10 +350,14 @@ export default {
             this.schoolPresence=null;
             this.company=null;
 
-            alert("記事の登録完了");
+            
 
             //success-graph.vueが表示されたとき、新たにDBと通信して最新の体験記データを取得する
             this.$store.dispatch('changeIsExperienceArticlesAction',false);
+
+
+            this.loading=false;
+            alert("記事の登録完了");
 
 
         } else {

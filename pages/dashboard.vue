@@ -1,14 +1,19 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
-  <div>    
+<template>  
+  <div class="page-container">   
+  <!-- eslint-disable --><!-- prettier-ignore --> 
     
     <!--<span>ここは、{{loginUserName}}さんのダッシュボードページです</span>  -->          
-          
-    <profile-registration></profile-registration>
+    <div class="dashboard-section">      
+      <profile-registration></profile-registration>
+    </div>
+
+    <div class="dashboard-section">
+      <like-article-registration></like-article-registration>
+    </div>
     
-    <like-article-registration></like-article-registration>
-    
-    <article-registration></article-registration> 
+    <div class="dashboard-section">
+      <article-registration></article-registration> 
+    </div>
     
   </div>
 </template>
@@ -142,7 +147,14 @@ export default {
 
 <style scoped>
 /* prettier-ignore */
+
 .member-container {
   margin: 20px;  
 }
+
+.dashboard-section{
+
+  margin-bottom: 30px;
+}
+
 </style>

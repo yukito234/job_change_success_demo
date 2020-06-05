@@ -1,7 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
-  <div class="member-container">    
-    
+<template>  
+  <div class="page-container">    
+    <!-- eslint-disable --><!-- prettier-ignore -->
     <!--
       <span>{{loginUserName}}さん、ようこそ！！</span>
       <users-list></users-list>   

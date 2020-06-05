@@ -1,6 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
+<template>  
   <div class="study-term-container">
+    <!-- eslint-disable --><!-- prettier-ignore -->
     <b-form-group
       label-cols-sm="3"
       label="勉強期間(ヶ月):"

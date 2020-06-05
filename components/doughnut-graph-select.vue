@@ -1,10 +1,12 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
-	<div>    
-    <p>グラフタイプ:</p>
+<template>  
+	<div id="doughnut-graph-select-area">
+  <!-- eslint-disable --><!-- prettier-ignore -->    
+
+
+    <span>グラフタイプ:</span>
     <b-form-select v-model="graphSelection" :options="optionsOfgraphSelection" class="select-element"></b-form-select>
     <!--
-      
+      <p>グラフタイプ:</p>
       <span>{{graphSelection}}</span>
       <span>{{graphChange}}</span>
     -->    
@@ -102,7 +104,16 @@ export default {
 .select-element{
 
   width: 300px;
-  display:block;
+  
 }
+
+#doughnut-graph-select-area{
+
+  
+}
+
+/*
+display:inline-block;
+*/
 
 </style>

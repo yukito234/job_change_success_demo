@@ -1,6 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
+<template>  
   <div>	  
+    <!-- eslint-disable --><!-- prettier-ignore -->
 
     <!--
       <p>{{$store.state.persistedParameter.isEmpty}}</p>
@@ -17,10 +17,17 @@
       <b-button v-b-toggle.collapse-11 variant="primary" >プロフィールを登録する</b-button>
      
       <b-collapse id="collapse-11" class="mt-2">
+
+        プロフィールを編集
+        <b-icon icon="chevron-down" v-if="!isProfileModalDisplay"></b-icon>
+        <b-icon icon="chevron-up" v-if="isProfileModalDisplay"></b-icon>
     -->
 
   	<div v-if="!getIsProfileRegistration">
-      <b-button v-b-toggle.collapse-profile variant="primary" id="profile-open-close-button">プロフィールを登録<b-icon icon="chevron-down" ></b-icon></b-button>
+      <b-button v-b-toggle.collapse-profile variant="primary" id="profile-open-close-button" v-on:click="changeIsProfileModalDisplay">プロフィールを登録
+        <b-icon icon="chevron-down" v-if="!isProfileModalDisplay"></b-icon>
+        <b-icon icon="chevron-up" v-if="isProfileModalDisplay"></b-icon>
+      </b-button>
      
       <b-collapse id="collapse-profile" class="mt-2">
         <b-card bg-variant="light">
@@ -98,7 +105,13 @@
               
             >
             <div>
-              <b-button v-on:click="registerProfile" id="profile-registration-button" variant="primary">プロフィールを新規登録</b-button>
+              <b-button v-on:click="registerProfile" v-bind:disabled="loading" id="profile-registration-button" variant="primary">
+                
+                <b-spinner small v-show="loading"></b-spinner>
+                <span v-show="loading">登録中...</span>
+                <span v-show="!loading">プロフィールを新規登録</span>
+
+              </b-button>
             </div> 
             </b-form-group>
           </b-form-group>
@@ -122,7 +135,13 @@
        -->
   	<div v-else>    
       
-      <b-button v-b-toggle.collapse-profile variant="primary" id="profile-open-close-button">プロフィールを編集<b-icon icon="chevron-down" ></b-icon></b-button>
+      <b-button v-b-toggle.collapse-profile variant="primary" id="profile-open-close-button" v-on:click="changeIsProfileModalDisplay">
+        プロフィールを編集
+        <b-icon icon="chevron-down" v-if="!isProfileModalDisplay"></b-icon>
+        <b-icon icon="chevron-up" v-if="isProfileModalDisplay"></b-icon>
+
+      </b-button>
+
       <b-collapse id="collapse-profile" class="mt-2">
         <b-card bg-variant="light">
           <b-form-group
@@ -184,7 +203,11 @@
               
             >
             <div>
-              <b-button v-on:click="updateProfile" id="profile-update-button" variant="primary">プロフィールを更新</b-button>
+              <b-button v-on:click="updateProfile" v-bind:disabled="loading" id="profile-update-button" variant="primary">
+                <b-spinner small v-show="loading"></b-spinner>
+                <span v-show="loading">更新中...</span>
+                <span v-show="!loading">プロフィールを更新</span>
+              </b-button>
             </div>
             </b-form-group>
           </b-form-group>
@@ -204,7 +227,7 @@ import firebase from 'firebase'
 import db from '../plugins/firebase_config'
 import _cloneDeep from 'lodash/cloneDeep';
 
-import {  BIcon, BIconX, BIconQuestionCircle, BIconChevronDown  } from 'bootstrap-vue';
+import {  BIcon, BIconX, BIconQuestionCircle, BIconChevronDown, BIconChevronUp  } from 'bootstrap-vue';
 
 export default {  
   components: {    
@@ -212,9 +235,11 @@ export default {
     BIconX,
     BIconQuestionCircle,
     BIconChevronDown,
+    BIconChevronUp,
   }, 
   data () {
     return {
+      loading:false,
       file: null,
     	//file: "",//左のように空で初期化すると、エラーが出るInvalid prop: type check failed for prop "value". Expected File, Array, got String with value ""
 
@@ -226,6 +251,9 @@ export default {
     	//isEmptyChange:true,
     	editFlag:false,
     	documentId:"", 
+      isProfileModalDisplay: false,
+      
+      isExperienceModalDisplay: false,
 
       //storedImage: "",
       //storedFile: "",
@@ -497,6 +525,21 @@ export default {
 
     },  
     */
+    changeIsProfileModalDisplay(){
+
+      if( this.isProfileModalDisplay ){
+
+         this.isProfileModalDisplay = false;
+
+      } else {
+
+        this.isProfileModalDisplay = true;
+      } 
+    },
+
+
+
+
     
   	editProfile(){
   		this.editFlag = true;
@@ -504,6 +547,7 @@ export default {
   	},
     async updateProfile(){  
 
+      this.loading = true;
 
       let data = {};
       data.profile={};
@@ -632,8 +676,10 @@ export default {
       console.log("this.$store.getters['sessionStorageParameter/getLoginUserProfile']");
       console.log(this.$store.getters['sessionStorageParameter/getLoginUserProfile']);
 
-
+      this.loading = false;
       this.editFlag = false;
+
+      alert("プロフィールの更新完了");
 
 
     },
@@ -664,7 +710,7 @@ export default {
     async registerProfile(){
 
 
-      
+      this.loading=true;
 
 
 
@@ -746,7 +792,9 @@ export default {
       console.log(this.$store.getters['sessionStorageParameter/getLoginUserProfile']);
 
 
-      
+      this.loading=false;
+
+      alert("プロフィールの登録完了");
 
 
 

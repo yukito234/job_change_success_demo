@@ -599,7 +599,7 @@ export const actions = {
 
         })
         .then(() => {
-            alert("プロフィールの登録完了");	
+            //alert("プロフィールの登録完了");	
 
             //プロフィールの登録状態をtrueに変更
            	context.dispatch('sessionStorageParameter/changeIsProfileRegistrationAction', true); 
@@ -685,7 +685,7 @@ export const actions = {
 		        .then(async () => {
 
 		        	console.log("finish  db.collection(user_profile).doc(data.documentId) "); 
-		            alert("プロフィールの登録完了");	            
+		            //alert("プロフィールの登録完了");	            
 		           
 		            //リロードして、プロフィール編集の画面に切り替える
 		            //this.$router.go({path: this.$router.currentRoute.path, force: true});	            
@@ -1407,6 +1407,7 @@ export const actions = {
 
 	async registerCommentAction(context,comment){
 
+		console.log("enter registerCommentAction");
 		//usersコレクションから取得
 		//uidが存在しないユーザーもいるので注意
 		const userIdFrom = context.getters['sessionStorageParameter/getLoginUserData'].uid;
@@ -1414,6 +1415,9 @@ export const actions = {
 		//user_profileコレクションから取得
 		//user_idが存在しないユーザーもいるので注意
 		const userIdTo = context.getters['sessionStorageParameter/getClickedProfileData'].user_id;
+
+		console.log("userIdFrom:");
+		console.log(userIdFrom);
 
 		await db.collection("user_comments").add({
   			user_id_from:userIdFrom,
@@ -1425,7 +1429,7 @@ export const actions = {
         })
         .then(() => {
             
-            alert("コメントの登録完了"); 
+            //alert("コメントの登録完了"); 
             //DBへのコメントの登録が完了したら、storeのisAllCommentsをfalseにする
             //これにより、id.vueに戻ったときfetchで再度DBと通信して最新のコメントデータを取得する
             //本来は  user_id_toで設定したユーザのページに戻ったときのみDBと通信して、他のユーザのページに移動したときはコメント一覧に変更はないので通信はしない方がいい
@@ -1565,7 +1569,12 @@ export const actions = {
 	    	context.dispatch('sessionStorageParameter/changeIsLoginUserAction', true);
 
         	//this.$router.push('/member');
-        	$nuxt.$router.push('/member');
+
+        	//URL設計前
+        	//$nuxt.$router.push('/member');
+
+        	//URL設計後
+        	$nuxt.$router.push('/members');
 
 
         	//usersコレクションからのデータ取得に失敗した場合は、エラーを表示してログアウトさせる

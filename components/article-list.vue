@@ -1,5 +1,6 @@
 <template>
-  <div class="article-list-container">        
+  <div id="article-list-container">       
+    <!-- eslint-disable --><!-- prettier-ignore -->
     <div>
       <h3 class="h3title">上のグラフのデータ一覧</h3> 
       <b-icon icon="question-circle" v-b-modal.modal-graph-data-list-title></b-icon>
@@ -22,7 +23,7 @@
     </p>   
     --> 
 
-    <div>
+    <div >
       <b-form-group
         label="フィルター："
         label-cols-sm="3"
@@ -273,5 +274,19 @@ export default {
 
   display: inline-block;
 }
+
+
+#article-list-container{
+
+   width:95%;
+
+}
+
+/*
+#experience-table-area{
+
+  width:80%;
+}
+*/
 
 </style>

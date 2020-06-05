@@ -1,5 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
+<template>
   <div class="school-presence-container">
+    <!-- eslint-disable --><!-- prettier-ignore -->
     <b-form-group
       label-cols-sm="3"
       label="スクール有無:"

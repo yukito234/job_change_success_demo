@@ -1,6 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-	
+<template>	
 	<div>
+		<!-- eslint-disable --><!-- prettier-ignore -->
 		<h3>上記のキーワードをタイトルに含む記事は見つかりませんでした。</h3>
 		<p>検索キーワードを減らしたり、別のキーワードを選ぶなどして再検索してください！</p>
 	</div>

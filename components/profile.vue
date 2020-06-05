@@ -1,6 +1,6 @@
-<template><!-- eslint-disable --><!-- prettier-ignore -->
-  
+<template>  
 	<div>
+    <!-- eslint-disable --><!-- prettier-ignore -->
 		<h2>{{ getProfile.nick_name }}さんのプロフィール</h2>    
       
       <b-card no-body  style="max-width: 540px;">
