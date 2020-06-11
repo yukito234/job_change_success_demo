@@ -1,11 +1,8 @@
-// prettier-ignore
-/* eslint-disable */
-import createPersistedState from 'vuex-persistedstate'
+import createPersistedState from "vuex-persistedstate";
 
 export default ({ store }) => {
-  createPersistedState({
-    paths: ['sessionStorageParameter'],  // sessionStorageに保存したいstoreを入れる
-    storage: window.sessionStorage,
-  })(store);
-  
+	createPersistedState({
+		paths: ["sessionStorageParameter"], //sessionStorageに保存したいstoreを入れる
+		storage: window.sessionStorage,
+	})(store);
 };

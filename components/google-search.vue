@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<!-- eslint-disable --><!-- prettier-ignore -->
     	<h2>Googleにて体験記を探す</h2>    	
     	<p>検索キーワードのヒント</p>
 		<label>

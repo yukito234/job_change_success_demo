@@ -1,10 +1,7 @@
-// prettier-ignore
-/* eslint-disable */
-
-import createPersistedState from 'vuex-persistedstate'
+import createPersistedState from "vuex-persistedstate";
 
 export default ({ store }) => {
-  createPersistedState({
-    paths: ['persistedParameter'],  // localStorageに保存したいstoreを入れる
-  })(store);
+	createPersistedState({
+		paths: ["persistedParameter"], //localStorageに保存したいstoreを入れる
+	})(store);
 };
