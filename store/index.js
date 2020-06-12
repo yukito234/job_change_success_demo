@@ -568,7 +568,7 @@ export const actions = {
 						context.dispatch("sessionStorageParameter/changeIsLoginUserAction", true);
 					})
 					.catch((error) => {
-						console.error("Error updating document: ", error);
+						alert(error.message);
 					});
 			})
 			.catch((error) => {
@@ -588,14 +588,17 @@ export const actions = {
 		console.log(newLikeArticleCount);
 		console.log("documentId");
 		console.log(documentId);
+		console.log("item.documentId");
+		console.log(item.documentId);
 
 		await db
 			.collection("like_articles")
 			.doc(item.documentId)
 			.delete()
-			.then(() => {
+			.then(async () => {
 				//記事の削除に成功したら、DBのお気に入り記事数カウントを更新
-				db.collection("users")
+				await db
+					.collection("users")
 					.doc(documentId)
 					.update({
 						like_article_count: newLikeArticleCount,

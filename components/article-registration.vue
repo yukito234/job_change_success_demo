@@ -23,12 +23,16 @@
 					<p>
 						ここで登録された記事は、成功者グラフページに反映されます。
 					</p>
-					<b-form-group label-cols-sm="3" label="記事URL:" label-align-sm="right">
-						<b-form-input v-model="url" />
+					<b-form-group
+						label-cols-sm="3"
+						label="記事タイトル(必須):"
+						label-align-sm="right"
+					>
+						<b-form-input v-model.trim="title" />
 					</b-form-group>
 
-					<b-form-group label-cols-sm="3" label="記事タイトル:" label-align-sm="right">
-						<b-form-input v-model="title" />
+					<b-form-group label-cols-sm="3" label="記事URL(必須):" label-align-sm="right">
+						<b-form-input v-model.trim="url" />
 					</b-form-group>
 
 					<b-form-group label-cols-sm="3" label="年齢:" label-align-sm="right">
@@ -149,12 +153,29 @@ export default {
 		async registerArticle() {
 			this.loading = true;
 
+			console.log("enter registerArticle");
+			this.url = sanitizeHTML(this.url);
+			this.title = sanitizeHTML(this.title);
+
+			if (this.url === "" || this.title === "") {
+				alert("記事タイトルとURLは入力必須です");
+				this.loading = false;
+				return;
+			}
+
+			//urlの簡易チェック
+			if (this.url.match(/^(http|https):\/\//i) === null) {
+				alert("URLを正しく入力してください");
+				this.loading = false;
+				return;
+			}
+
 			const articleData = {
-				url: sanitizeHTML(this.url),
-				title: sanitizeHTML(this.title),
+				url: this.url,
+				title: this.title,
 				age: this.age,
 				educationalBackground: this.educationalBackground,
-				studyTerm: sanitizeHTML(this.studyTerm),
+				studyTerm: this.studyTerm,
 				schoolPresence: this.schoolPresence,
 				company: this.company,
 			};

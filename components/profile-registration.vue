@@ -21,9 +21,22 @@
 						label-class="font-weight-bold pt-0"
 						class="mb-0"
 					>
+						<!--
+						<p>
+							<span>
+								すべて
+							</span>
+							<span id="text-input-required">
+								入力必須
+							</span>
+							<span>
+								です。
+							</span>
+						</p>
+						-->
 						<b-form-group
 							label-cols-sm="3"
-							label="ニックネーム:"
+							label="ニックネーム(必須):"
 							label-align-sm="right"
 						>
 							<b-form-input v-model.trim="getAndSetNickName" />
@@ -31,7 +44,7 @@
 
 						<b-form-group
 							label-cols-sm="3"
-							label="プロフィール画像:"
+							label="プロフィール画像(必須):"
 							label-align-sm="right"
 						>
 							<b-form-file
@@ -46,7 +59,11 @@
 							<img :src="uploadedImage" />
 						</b-form-group>
 
-						<b-form-group label-cols-sm="3" label="自己紹介文:" label-align-sm="right">
+						<b-form-group
+							label-cols-sm="3"
+							label="自己紹介文(必須):"
+							label-align-sm="right"
+						>
 							<b-form-textarea
 								id="textarea"
 								v-model.trim="getAndSetSelfIntroduction"
@@ -202,21 +219,22 @@ export default {
 			get() {
 				//プロフィール未登録の場合
 				//getIsProfileRegistrationはtrueだが、DBからのプロフィール情報のダウンロードに失敗することもある
+				//この場合、DBにプロフィールは登録されている
+				//Object.keys:指定されたオブジェクトが持つプロパティの名前の配列を返す
+				//この配列のlengthが０のとき、プロフィールデータが存在しないと判断する
 				//console.log("Object.keys( this.$store.getters['sessionStorageParameter/getLoginUserProfile'] )");
 				//console.log(Object.keys( this.$store.getters['sessionStorageParameter/getLoginUserProfile'] ));
 
 				if (
-					Object.keys(
-						this.$store.getters["sessionStorageParameter/getLoginUserProfile"]
-					) === 0
+					Object.keys(this.$store.getters["sessionStorageParameter/getLoginUserProfile"])
+						.length === 0
 				) {
 					console.log("ログインユーザのプロフィール情報はありません");
 					return "";
 				}
 
-				const nickName = sanitizeHTML(
-					this.$store.getters["sessionStorageParameter/getLoginUserProfile"].nick_name
-				);
+				const nickName = this.$store.getters["sessionStorageParameter/getLoginUserProfile"]
+					.nick_name;
 
 				//nickName = sanitizeHTML(nickName);
 				console.log("nickName");
@@ -237,19 +255,17 @@ export default {
 				//共通の処理はミックスインに切り出す
 				//プロフィール未登録の場合
 				if (
-					Object.keys(
-						this.$store.getters["sessionStorageParameter/getLoginUserProfile"]
-					) === 0
+					Object.keys(this.$store.getters["sessionStorageParameter/getLoginUserProfile"])
+						.length === 0
 				) {
 					console.log("ログインユーザのプロフィール情報はありません");
 					return "";
 				}
 				//const selfIntroduction = _cloneDeep( this.$store.getters['sessionStorageParameter/getLoginUserProfile'].self_introduction );
 
-				const selfIntroduction = sanitizeHTML(
-					this.$store.getters["sessionStorageParameter/getLoginUserProfile"]
-						.self_introduction
-				);
+				const selfIntroduction = this.$store.getters[
+					"sessionStorageParameter/getLoginUserProfile"
+				].self_introduction;
 
 				//selfIntroduction = sanitizeHTML(selfIntroduction);
 				console.log("selfIntroduction");
@@ -295,6 +311,9 @@ export default {
 
 			console.log("this.selfIntroduction:");
 			console.log(this.selfIntroduction);
+
+			this.nickName = sanitizeHTML(this.nickName);
+			this.selfIntroduction = sanitizeHTML(this.selfIntroduction);
 
 			//ニックネームと自己紹介文は1文字以上が入力されていること
 			//v-modelのtrimを使っているので空白の入力は防げるはず
@@ -377,9 +396,14 @@ export default {
 
 		async registerProfile() {
 			this.loading = true;
+
+			this.nickName = sanitizeHTML(this.nickName);
+			this.selfIntroduction = sanitizeHTML(this.selfIntroduction);
+
 			//ニックネームと自己紹介文は1文字以上が入力されていること
 			if (this.nickName === "" || this.selfIntroduction === "" || this.file === null) {
 				alert("すべての項目が入力必須です");
+				this.loading = false;
 				return;
 			}
 
@@ -465,5 +489,9 @@ export default {
 #profile-update-button {
 	display: block;
 	margin-left: auto;
+}
+
+#text-input-required {
+	color: red;
 }
 </style>
