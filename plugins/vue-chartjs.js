@@ -1,5 +1,6 @@
-// prettier-ignore
 /* eslint-disable */
+// prettier-ignore
+
 
 //成功 ドーナツ
 /*

@@ -1,6 +1,10 @@
 <template>
 	<div>
-		<b-breadcrumb v-if="isDisplay" :items="items" />
+		<b-breadcrumb v-if="isDisplay" id="breadcrumb" :items="items" />
+		<!--
+			<b-breadcrumb v-if="isDisplay" :items="items" />
+			<b-breadcrumb v-if="isDisplay" id="breadcrumb" :items="items" />
+		-->
 	</div>
 </template>
 
@@ -190,7 +194,7 @@ export default {
 </script>
 
 <style scoped>
-#bread-crumb {
-	color: red;
+#breadcrumb {
+	background-color: white;
 }
 </style>

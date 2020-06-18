@@ -798,11 +798,9 @@ export const actions = {
 		if (resultOfUsersCollectionTreatment === "success") {
 			//ログイン有無はsessionに保存する
 			context.dispatch("sessionStorageParameter/changeIsLoginUserAction", true);
-
-			this.app.router.push("/members");
+			//this.app.router.push("/members");
 			//this.$nuxt.$router.push("/members");
 			//$nuxt.$router.push("/members");
-
 			//usersコレクションからのデータ取得に失敗した場合は、エラーを表示してログアウトさせる
 			//like_article_countはログイン後に更新される可能性があるので、取得に失敗した場合は即退出させる
 		} else {
@@ -903,6 +901,8 @@ export const actions = {
 		//this.$nuxt.$router.push("/");
 		console.log("this.app");
 		console.log(this.app);
+		//context.dispatch("changeIsFinishedSignInMethodAction", false);
+		//this.$store.dispatch("changeIsFinishedSignInMethodAction", false);
 		this.app.router.push("/");
 	},
 	loginUserProfileGetAction(context) {

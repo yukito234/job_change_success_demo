@@ -1,9 +1,9 @@
 <template>
-	<div id="article-list-container">
+	<div id="article-list-container" class="section-container">
 		<div>
-			<h3 class="h3title">
-				上のグラフのデータ一覧
-			</h3>
+			<h2 class="h2title">
+				転職成功者のデータ一覧表
+			</h2>
 			<b-icon v-b-modal.modal-graph-data-list-title icon="question-circle" />
 			<b-modal id="modal-graph-data-list-title" ok-only>
 				<p class="my-4">
@@ -211,11 +211,9 @@ export default {
 </script>
 
 <style scoped>
-.h3title {
-	display: inline-block;
-}
-
 #article-list-container {
-	width: 95%;
 }
+/* 素材
+width: 95%;
+*/
 </style>

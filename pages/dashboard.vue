@@ -1,15 +1,22 @@
 <template>
 	<div class="page-container">
-		<div class="dashboard-section">
-			<profile-registration />
-		</div>
+		<div class="section-container">
+			<div>
+				<h2 class="h2title">
+					ダッシュボードの機能を使う
+				</h2>
+			</div>
+			<div class="dashboard-section">
+				<profile-registration />
+			</div>
 
-		<div class="dashboard-section">
-			<like-article-registration />
-		</div>
+			<div class="dashboard-section">
+				<like-article-registration />
+			</div>
 
-		<div class="dashboard-section">
-			<article-registration />
+			<div class="dashboard-section">
+				<article-registration />
+			</div>
 		</div>
 	</div>
 </template>

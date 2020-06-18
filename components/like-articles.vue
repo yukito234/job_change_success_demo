@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="section-container">
 		<div>
 			<h2 class="h2title">
 				お気に入り記事
@@ -135,9 +135,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-.h2title {
-	display: inline-block;
-}
-</style>

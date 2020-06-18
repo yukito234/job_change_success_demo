@@ -1,9 +1,10 @@
 <template>
-	<div>
+	<div class="section-container">
 		<div>
 			<h2 class="h2title">
-				未経験から転職に成功した人のデータ
+				転職成功者のグラフ
 			</h2>
+			<!-- 未経験から転職に成功した人のデータ -->
 			<b-icon v-b-modal.modal-success-graph-title icon="question-circle" />
 			<b-modal id="modal-success-graph-title" ok-only>
 				<p class="my-4">

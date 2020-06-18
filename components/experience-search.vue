@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="section-container">
 		<div>
 			<h2 class="h2title">
 				体験記を探す
@@ -708,10 +708,8 @@ export default {
 </script>
 
 <style scoped>
-.h2title {
-	display: inline-block;
-}
-
+/* 素材
+*/
 .select-element {
 	width: 300px;
 	display: block;

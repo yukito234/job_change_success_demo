@@ -2,8 +2,14 @@
 	<div>
 		<header-area />
 		<global-navi />
+		<div id="main-contents-wrapper">
+			<bread-crumb id="bread-crumb" />
+			<nuxt />
+		</div>
+		<!--
 		<bread-crumb id="bread-crumb" />
 		<nuxt />
+		-->
 	</div>
 </template>
 
@@ -69,8 +75,23 @@ html {
 	color: #fff;
 	background-color: #35495e;
 }
+
 #bread-crumb {
-	width: 80%;
-	margin-top: 16px;
 }
+/* 素材
+margin-left: 5%;
+margin-right: 5%;
+width: 80%;
+margin-top: 16px;
+*/
+#main-contents-wrapper {
+	padding-top: 2%;
+	padding-bottom: 5%;
+	padding-left: 5%;
+	padding-right: 5%;
+	background-color: #ececec;
+}
+/* 素材
+padding: 5%;
+*/
 </style>

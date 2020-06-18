@@ -1,33 +1,35 @@
 <template>
 	<div class="page-container">
-		<div>
-			<h2 class="h2title">
-				ユーザ一覧
-			</h2>
-			<b-icon v-b-modal.modal-user-list-title icon="question-circle" />
-			<b-modal id="modal-user-list-title" ok-only>
-				<p class="my-4">
-					ニックネームをクリックすると詳細ページに移動できます。
-					<br />ダッシュボードで、あなたもプロフィールを作成できるので、ぜひ使ってみてください！
-				</p>
-			</b-modal>
+		<div class="section-container">
+			<div>
+				<h2 class="h2title">
+					ユーザ一覧
+				</h2>
+				<b-icon v-b-modal.modal-user-list-title icon="question-circle" />
+				<b-modal id="modal-user-list-title" ok-only>
+					<p class="my-4">
+						ニックネームをクリックすると詳細ページに移動できます。
+						<br />ダッシュボードで、あなたもプロフィールを作成できるので、ぜひ使ってみてください！
+					</p>
+				</b-modal>
+			</div>
+			<b-table :items="getTableData" :fields="fields" :outlined="true">
+				<template v-slot:cell(userImage)="data">
+					<img :src="getImage(data.item.image_url)" class="profileimage" />
+				</template>
+				<template v-slot:cell(titleLink)="data">
+					<nuxt-link
+						:to="{ path: `/members/${data.item.user_id}` }"
+						@click.native="setUserData(data.item)"
+					>
+						{{ data.item.nick_name }}
+					</nuxt-link>
+					<p>
+						{{ data.item.self_introduction }}
+					</p>
+				</template>
+			</b-table>
 		</div>
-		<b-table :items="getTableData" :fields="fields" :outlined="true">
-			<template v-slot:cell(userImage)="data">
-				<img :src="getImage(data.item.image_url)" class="profileimage" />
-			</template>
-			<template v-slot:cell(titleLink)="data">
-				<nuxt-link
-					:to="{ path: `/members/${data.item.user_id}` }"
-					@click.native="setUserData(data.item)"
-				>
-					{{ data.item.nick_name }}
-				</nuxt-link>
-				<p>
-					{{ data.item.self_introduction }}
-				</p>
-			</template>
-		</b-table>
 	</div>
 </template>
 
@@ -127,9 +129,5 @@ export default {
 <style scoped>
 .profileimage {
 	width: 150px;
-}
-
-.h2title {
-	display: inline-block;
 }
 </style>

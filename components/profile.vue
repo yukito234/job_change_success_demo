@@ -1,12 +1,15 @@
 <template>
-	<div>
-		<h2>
-			{{ getProfile.nick_name }}
-			<span>
-				さんのプロフィール
-			</span>
-		</h2>
-		<b-card no-body style="max-width: 540px;">
+	<div class="section-container">
+		<div>
+			<h2 class="h2title">
+				{{ getProfile.nick_name }}
+				<span>
+					さんのプロフィール
+				</span>
+			</h2>
+		</div>
+		<!--<b-card no-body style="max-width: 540px;">-->
+		<b-card no-body>
 			<b-row>
 				<b-col md="6">
 					<b-img :src="getProfile.image_url" alt="" class="profileimage" />

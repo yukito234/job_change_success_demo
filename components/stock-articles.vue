@@ -1,5 +1,5 @@
 <template>
-	<div id="stock-articles-container">
+	<div id="stock-articles-container" class="section-container">
 		<div>
 			<h2 class="h2title">
 				ストック記事の一覧
@@ -205,6 +205,7 @@ export default {
 }
 
 #stock-articles-container {
-	margin-top: 20px;
 }
+/* 素材
+*/
 </style>

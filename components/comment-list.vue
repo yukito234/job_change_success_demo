@@ -1,8 +1,10 @@
 <template>
-	<div>
-		<h2>
-			コメント一覧
-		</h2>
+	<div class="section-container">
+		<div>
+			<h2 class="h2title">
+				コメント一覧
+			</h2>
+		</div>
 		<b-table
 			v-if="!getIsCommentMessage"
 			:items="commentsForTable"
@@ -33,7 +35,7 @@
 					>
 						返信する
 					</nuxt-link>
-					<!---->
+					<!--
 					<p>
 						<span>
 							commentId:
@@ -46,6 +48,7 @@
 						</span>
 						{{ data.item.reply_comment_id }}
 					</p>
+					-->
 				</div>
 			</template>
 		</b-table>

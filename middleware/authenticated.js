@@ -4,7 +4,7 @@ export default function ({ redirect }) {
 	return new Promise((resolve) => {
 		firebase.auth().onAuthStateChanged(function (user) {
 			if (user) {
-			    return resolve();
+				return resolve();
 			}
 			return redirect("/");
 		});

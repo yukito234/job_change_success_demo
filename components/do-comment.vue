@@ -1,8 +1,10 @@
 <template>
-	<div>
-		<h2>
-			コメントを残す
-		</h2>
+	<div class="section-container">
+		<div>
+			<h2 class="h2title">
+				コメントを残す
+			</h2>
+		</div>
 		<b-card v-if="getIsProfileRegistration" bg-variant="light">
 			<b-form-textarea
 				id="textarea"
