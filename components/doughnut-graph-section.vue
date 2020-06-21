@@ -1,6 +1,6 @@
 <template>
 	<div class="section-container">
-		<div>
+		<div class="h2title-area">
 			<h2 class="h2title">
 				転職成功者のグラフ
 			</h2>

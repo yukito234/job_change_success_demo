@@ -60,6 +60,7 @@
 					<div>
 						<b-button
 							id="experience-article-registration-button"
+							class="button-with-gradation"
 							variant="primary"
 							:disabled="loading"
 							@click="registerArticle"

@@ -1,7 +1,7 @@
 <template>
 	<div class="page-container">
 		<div class="section-container">
-			<div>
+			<div class="h2title-area">
 				<h2 class="h2title">
 					ユーザ一覧
 				</h2>

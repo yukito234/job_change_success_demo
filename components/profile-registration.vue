@@ -3,6 +3,7 @@
 		<div v-if="!getIsProfileRegistration">
 			<b-button
 				id="profile-open-close-button"
+				class="button-with-gradation"
 				v-b-toggle.collapse-profile
 				variant="primary"
 				@click="changeIsProfileModalDisplay"
@@ -156,6 +157,7 @@
 							<div>
 								<b-button
 									id="profile-update-button"
+									class="button-with-gradation"
 									variant="primary"
 									:disabled="loading"
 									@click="updateProfile"

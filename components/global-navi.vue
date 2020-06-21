@@ -1,62 +1,102 @@
 <template>
 	<el-menu :default-active="activeIndex" mode="horizontal" :router="true">
-		<!--
-			<el-menu-item
-				:style="{ borderBottomColor: getTopPageMenuColor() }"
-				index="index1"
-				:route="{ path: '/' }"
-			>
-			<el-menu-item
-				:class="{ activeMenu: getIsActiveMenu() }"
-				index="index1"
-				:route="{ path: '/' }"
-			>
-			<el-menu-item :id="{ activeMenu: getIsActiveMenu() }" index="index1" :route="{ path: '/' }">
-				<el-menu-item :id="{ active: getIsActiveMenu() }" index="index1" :route="{ path: '/' }">
-		-->
 		<el-menu-item
 			:style="{ borderBottomColor: getTopBottomColor(), color: getTopColor() }"
 			index="index1"
 			:route="{ path: '/' }"
 		>
-			トップ
-		</el-menu-item>
-		<el-menu-item index="index2" :route="{ path: '/success-graph' }">
-			成功者グラフ
+			<b-icon icon="house-door" class="menu-icon" />
+			<span class="menu-text">
+				トップ
+			</span>
 		</el-menu-item>
 		<!--
-			<el-menu-item
-				v-if="checkUser"
-				:style="{ borderBottomColor: getMembersMenuColor() }"
-				index="index3"
-				:route="{ path: '/members' }"
-			>
+			<p>
+				トップ
+			</p>
+			<span>
+				トップ
+			</span>
 		-->
+		<el-menu-item
+			index="index2"
+			:style="{ borderBottomColor: getSuccessBottomColor(), color: getSuccessColor() }"
+			:route="{ path: '/success-graph' }"
+		>
+			<b-icon icon="pie-chart-fill" class="menu-icon" />
+			<span class="menu-text">
+				成功者グラフ
+			</span>
+		</el-menu-item>
 		<el-menu-item
 			v-if="checkUser"
 			:style="{ borderBottomColor: getMembersBottomColor(), color: getMembersColor() }"
 			index="index3"
 			:route="{ path: '/members' }"
 		>
-			ユーザ一覧
+			<b-icon icon="list-ol" class="menu-icon" />
+			<span class="menu-text">
+				ユーザ一覧
+			</span>
 		</el-menu-item>
 		<el-menu-item v-if="checkUser" index="index4" :route="{ path: '/dashboard' }">
-			ダッシュボード
+			<b-icon icon="clipboard" class="menu-icon" />
+			<span class="menu-text">
+				ダッシュボード
+			</span>
 		</el-menu-item>
-		<el-menu-item v-if="!checkUser" index="index5" :route="{ path: '/signin-signup' }">
-			ログイン
+		<el-menu-item
+			v-if="!checkUser"
+			:style="{ borderBottomColor: getSigninBottomColor(), color: getSigninColor() }"
+			index="index5"
+			:route="{ path: '/signin-signup' }"
+		>
+			<b-icon icon="box-arrow-in-right" class="menu-icon" />
+			<span class="menu-text">
+				ログイン
+			</span>
 		</el-menu-item>
 		<el-menu-item v-if="checkUser" index="index6" :route="{ path: '/' }" @click="signOut">
-			ログアウト
+			<b-icon icon="arrow-bar-right" class="menu-icon" />
+			<span class="menu-text">
+				ログアウト
+			</span>
 		</el-menu-item>
 	</el-menu>
 </template>
 
 <script>
+import {
+	BIcon,
+	BIconHouseDoor,
+	BIconPieChartFill,
+	BIconBoxArrowInRight,
+	BIconArrowBarRight,
+	BIconClipboard,
+	BIconListOl,
+} from "bootstrap-vue";
+
 export default {
+	components: {
+		BIcon,
+		BIconHouseDoor,
+		BIconPieChartFill,
+		BIconBoxArrowInRight,
+		BIconArrowBarRight,
+		BIconClipboard,
+		BIconListOl,
+	},
 	data() {
 		return {
 			activeIndex: "",
+			routeNameChange: {
+				new: "",
+				old: "",
+			},
+			checkUserChange: {
+				new: "",
+				old: "",
+			},
 		};
 	},
 	computed: {
@@ -69,26 +109,77 @@ export default {
 		},
 	},
 	watch: {
-		$route: function () {
+		$route: function (newVal, oldVal) {
 			console.log("enter $route watch in global-navi");
+			this.routeNameChange.new = newVal.name;
+			this.routeNameChange.old = oldVal.name;
 			this.setActiveIndex();
+		},
+		checkUser: function (newVal, oldVal) {
+			console.log("enter checkUser watch in global-navi");
+			this.checkUserChange.new = newVal;
+			this.checkUserChange.old = oldVal;
 		},
 	},
 	mounted() {
 		this.setActiveIndex();
 	},
 	methods: {
-		/*
-		getMembersMenuColor() {
-			//ログイン後にmembersページのメニューボタンがアクティブにならず、青色下線が表示されない
-			//また、その後の操作でもこのボタンだけアクティブにならない
-			//そこでactiveIndexをチェックして強制的に青色下線を表示させるようにした
-			if (this.activeIndex === "index3") {
+		getSigninBottomColor() {
+			if (this.activeIndex === "index5") {
 				//return "red";
 				return "rgb(64, 158, 255)";
 			}
 		},
-		*/
+		getSigninColor() {
+			if (this.activeIndex === "index5") {
+				//return "red";
+				return "#303133";
+			}
+		},
+		getSuccessBottomColor() {
+			//ログイン状態でsuccess-graphページにてログアウトすると、このページのグローバルメニューボタンがアクティブな状態(青色下線表示、文字色濃いめ)のままとなってしまう
+			//この問題の解決策として、上記条件のときにログアウトしたときだけ、success-graphページのグローバルメニューボタンをインアクティブな状態とする
+			console.log("enter getSuccessBottomColorrrrrrrrrrrrrr");
+
+			console.log("this.routeNameChange.new");
+			console.log(this.routeNameChange.new);
+
+			console.log("this.routeNameChange.old");
+			console.log(this.routeNameChange.old);
+
+			console.log("this.checkUserChange.new");
+			console.log(this.checkUserChange.new);
+
+			console.log("this.checkUserChange.old");
+			console.log(this.checkUserChange.old);
+			if (this.activeIndex === "index1") {
+				if (
+					this.routeNameChange.new === "index" &&
+					this.routeNameChange.old === "success-graph" &&
+					!this.checkUserChange.new &&
+					this.checkUserChange.old
+				) {
+					console.log("Meets all requirements in getSuccessBottomColor");
+					//return "red";
+					return "transparent";
+				}
+				//return "rgb(64, 158, 255)";
+			}
+		},
+		getSuccessColor() {
+			if (this.activeIndex === "index1") {
+				if (
+					this.routeNameChange.new === "index" &&
+					this.routeNameChange.old === "success-graph" &&
+					!this.checkUserChange.new &&
+					this.checkUserChange.old
+				) {
+					console.log("Meets all requirements in getSuccessColor");
+					return "#909399";
+				}
+			}
+		},
 		getMembersBottomColor() {
 			if (this.activeIndex === "index3") {
 				//return "red";
@@ -113,25 +204,6 @@ export default {
 				return "#303133";
 			}
 		},
-		/*
-		getTopPageMenuColor() {
-			//ログアウト後にトップページのメニューボタンがアクティブにならず、青色下線が表示されない
-			//そこでactiveIndexをチェックして強制的に青色下線を表示させるようにした
-			if (this.activeIndex === "index1") {
-				//return "red";
-				return "rgb(64, 158, 255)";
-			}
-		},
-		*/
-		/*
-		getIsActiveMenu() {
-			console.log("enter getIsActiveMenuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu");
-			if (this.activeIndex === "index1") {
-				//return "red";
-				return true;
-			}
-		},
-		*/
 		setActiveIndex() {
 			console.log("enter setActiveIndex in global-navi");
 			switch (this.$route.name) {
@@ -162,35 +234,24 @@ export default {
 </script>
 
 <style scoped>
+.menu-icon {
+	font-size: 18px;
+	/*
+	b-iconではデフォルトでvertical-align: -0.15em;が設定されている
+	そのため、デフォルトのままだとアイコンとテキストの下端が揃わない
+	そこで以下を設定して下端が揃うように修正をかけている
+	*/
+	vertical-align: -0.3em;
+}
 /*
-#active {
-	border-bottom-color: red;
-	color: #303133;
-}
-#active {
-	border-bottom-color: red;
-	color: #303133;
-}
-ケバブを使わなくても失敗
-#active {
-	border-bottom-color: rgb(64, 158, 255) !important;
-	color: #303133 !important;
-	font-size: 40px;
-	background-color: red;
-}
-idでは失敗
-#active-menu {
-	border-bottom-color: rgb(64, 158, 255) !important;
-	color: #303133 !important;
-}
-クラスでは失敗
-.active-menu {
-	border-bottom-color: rgb(64, 158, 255);
-	color: #303133;
-}
+font-size: 1.5rem;
+font-size: 2rem;
+font-size: 20px;
 */
-.inactive-menu {
-	border-bottom-color: transparent;
-	color: #909399;
+.menu-text {
+	font-size: 18px;
 }
+/*
+height: 20px;
+*/
 </style>

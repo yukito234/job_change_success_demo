@@ -28,7 +28,10 @@ export default {
 			this.checkIsDisplay();
 		},
 	},
-
+	created() {
+		this.getItems();
+		this.checkIsDisplay();
+	},
 	methods: {
 		checkIsDisplay() {
 			if (this.items.length >= 1) {

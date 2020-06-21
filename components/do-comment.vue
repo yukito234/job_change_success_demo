@@ -1,6 +1,6 @@
 <template>
 	<div class="section-container">
-		<div>
+		<div class="h2title-area">
 			<h2 class="h2title">
 				コメントを残す
 			</h2>
@@ -15,7 +15,7 @@
 			/>
 			<div>
 				<b-button
-					class="submit-button"
+					class="submit-button button-with-gradation"
 					variant="primary"
 					:disabled="loading"
 					@click="registerComment"

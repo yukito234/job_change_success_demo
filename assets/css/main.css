@@ -9,32 +9,32 @@ margin:20px 5%;
 h2 {
 	padding: 0.4em 0.5em;
 	color: #494949;
-	border-bottom: solid 5px #7db4e6;
+	border-left: solid 5px #7db4e6;
 }
 .h2title {
 	display: inline-block;
 }
-/* 素材
-border-top: solid 5px #7db4e6;
-text-align: center;
-*/
-/* 左線：青、下線：灰、立体的ボタン
-h2 {
-	padding: 0.4em 0.5em;
-	color: #494949;
-	background: #f4f4f4;
-	border-left: solid 5px #7db4e6;
-	border-bottom: solid 3px #d7d7d7;
+.h2title-area {
+	margin-bottom: 30px;
 }
-*/
+.button-with-gradation {
+	background: linear-gradient(to right, #0069d9, #50a5ff);
+}
 
 h3 {
-	padding: 0.25em 0.5em;
+	padding-top: 0.25em;
+	padding-bottom: 0.25em;
 	color: #494949;
 	background: transparent;
-	border-left: solid 5px #7db4e6;
+	border-bottom: solid 2px #7db4e6;
+	display: inline-block;
+	line-height: 33px;
+	margin-bottom: 15px;
 }
-
+/*
+padding: 0.25em 0.5em;
+border-left: solid 5px #7db4e6;
+*/
 .section-container {
 	padding: 2%;
 	margin-bottom: 2%;

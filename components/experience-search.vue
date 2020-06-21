@@ -1,41 +1,68 @@
 <template>
 	<div class="section-container">
-		<div>
+		<div class="h2title-area">
 			<h2 class="h2title">
 				体験記を探す
 			</h2>
 		</div>
 
-		<span>
-			1.検索するサイト
-		</span>
+		<div class="elements-area">
+			<div class="search-steps-title-area">
+				<span class="search-steps-number">
+					1
+				</span>
+				<span class="search-steps-title">
+					検索するサイト
+				</span>
+				<b-icon v-b-modal.modal-search-domain icon="question-circle" />
+				<b-modal id="modal-search-domain" ok-only>
+					<p class="my-4">
+						体験記を探すサイト（ドメイン）を指定してください。
+					</p>
+				</b-modal>
+			</div>
+			<b-form-select v-model="domain" class="select-element" :options="optionsOfDomain" />
+		</div>
 
-		<b-form-select v-model="domain" class="select-element" :options="optionsOfDomain" />
+		<div class="elements-area">
+			<div class="search-steps-title-area">
+				<span class="search-steps-number">
+					2
+				</span>
+				<span class="search-steps-title">
+					検索のヒント
+				</span>
+				<b-icon v-b-modal.modal-search-hint icon="question-circle" />
+				<b-modal id="modal-search-hint" ok-only>
+					<p class="my-4">
+						キーワードにチェックを入れると、検索ボックスに反映されます。
+					</p>
+				</b-modal>
+			</div>
 
-		<span>
-			2.検索のヒント
-		</span>
-		<b-icon v-b-modal.modal-search-hint icon="question-circle" />
-		<b-modal id="modal-search-hint" ok-only>
-			<p class="my-4">
-				キーワードにチェックを入れると、検索ボックスに反映されます。
-			</p>
-		</b-modal>
+			<b-form-group>
+				<b-form-checkbox-group
+					v-model="suggestKeywords"
+					:options="optionsOfsuggestKeywords"
+				/>
+			</b-form-group>
+			<!--<p>チェックを入れたキーワード:{{suggestKeywords}}</p>-->
+		</div>
 
-		<b-form-group>
-			<b-form-checkbox-group v-model="suggestKeywords" :options="optionsOfsuggestKeywords" />
-		</b-form-group>
-		<!--<p>チェックを入れたキーワード:{{suggestKeywords}}</p>-->
-
-		<span>
-			3.検索を実行
-		</span>
-		<b-icon v-b-modal.modal-do-search icon="question-circle" />
-		<b-modal id="modal-do-search" ok-only>
-			<p class="my-4">
-				すべてのキーワードをタイトルに含む記事が表示されます。
-			</p>
-		</b-modal>
+		<div class="search-steps-title-area">
+			<span class="search-steps-number">
+				3
+			</span>
+			<span class="search-steps-title">
+				検索を実行
+			</span>
+			<b-icon v-b-modal.modal-do-search icon="question-circle" />
+			<b-modal id="modal-do-search" ok-only>
+				<p class="my-4">
+					すべてのキーワードをタイトルに含む記事が表示されます。
+				</p>
+			</b-modal>
+		</div>
 
 		<div id="search-box-area">
 			<b-form-input
@@ -47,8 +74,16 @@
 			/>
 
 			<b-icon id="x-button" icon="x" @click="deleteSearchBoxContent()" />
-
-			<b-button id="search-button" variant="primary" :disabled="loading" @click="doSearch">
+			<!--
+				<b-button id="search-button" class="button-with-gradation" variant="primary" :disabled="loading" @click="doSearch">
+			-->
+			<b-button
+				id="search-button"
+				class="button-with-gradation"
+				variant="primary"
+				:disabled="loading"
+				@click="doSearch"
+			>
 				<b-spinner v-show="loading" small />
 				<span v-show="loading">
 					Loading...
@@ -215,6 +250,7 @@
 							</span>
 							<b-button
 								id="display-number-all-button"
+								class="button-with-gradation"
 								variant="primary"
 								@click="displayAllArticles()"
 							>
@@ -298,7 +334,7 @@ export default {
 				{ value: "qiita", text: "qiita" },
 				{ value: "hatenablog", text: "hatenablog" },
 				{ value: "note", text: "note" },
-				{ value: "others", text: "qiita,hatenablog,note以外" },
+				{ value: "others", text: "その他" },
 			],
 			optionsOfsuggestKeywords: [
 				{ text: "未経験", value: "未経験" },
@@ -736,7 +772,16 @@ export default {
 	right: 0;
 	width: 25%;
 }
-
+/*
+明るすぎ
+background: linear-gradient(to right, #0069d9, #8bc3ff);
+暗すぎ
+background: linear-gradient(to right, #0069d9, #278fff);
+left: 75%;
+width: 202.48px;
+right: 0;
+width: 25%;
+*/
 #display-number-paragraph {
 	display: inline-block;
 }
@@ -771,5 +816,46 @@ export default {
 
 #google-search-container {
 	margin-top: 20px;
+}
+
+.elements-area {
+	margin-bottom: 15px;
+}
+
+.search-steps-title {
+	font-size: 20px;
+	font-weight: 400;
+	color: #303133;
+	display: block;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+/*
+font-weight: bold;
+color: #303133;
+color: #212529;
+*/
+.search-steps-number {
+	font-size: 20px;
+	color: white;
+	display: block;
+	height: 30px;
+	width: 30px;
+	border-radius: 50%;
+	line-height: 30px;
+	text-align: center;
+	background-color: #d97000;
+}
+/*
+color: #909399;
+color: #303133;
+border: 1px solid;
+border: 1px solid;
+width: 10px;
+text-align: center;
+*/
+.search-steps-title-area {
+	display: flex;
+	margin-bottom: 5px;
 }
 </style>

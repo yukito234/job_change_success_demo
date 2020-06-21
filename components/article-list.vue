@@ -1,6 +1,6 @@
 <template>
 	<div id="article-list-container" class="section-container">
-		<div>
+		<div class="h2title-area">
 			<h2 class="h2title">
 				転職成功者のデータ一覧表
 			</h2>

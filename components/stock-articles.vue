@@ -1,6 +1,6 @@
 <template>
 	<div id="stock-articles-container" class="section-container">
-		<div>
+		<div class="h2title-area">
 			<h2 class="h2title">
 				ストック記事の一覧
 			</h2>
@@ -21,7 +21,12 @@
 					</b-button>
 				</template>
 			</b-table>
-			<b-button id="all-delete-button" variant="primary" @click="deleteStock">
+			<b-button
+				id="all-delete-button"
+				class="button-with-gradation"
+				variant="primary"
+				@click="deleteStock"
+			>
 				ストック記事を全部削除
 			</b-button>
 		</div>

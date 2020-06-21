@@ -43,6 +43,7 @@
 						<div>
 							<b-button
 								id="signup-button"
+								class="button-with-gradation"
 								variant="primary"
 								:disabled="loading"
 								@click="signUp"

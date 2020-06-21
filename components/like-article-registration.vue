@@ -76,6 +76,7 @@
 								<div>
 									<b-button
 										id="like-article-registration-button"
+										class="button-with-gradation"
 										variant="primary"
 										:disabled="loading"
 										@click="registerLikeArticle()"

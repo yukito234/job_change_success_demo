@@ -1,6 +1,6 @@
 <template>
 	<div class="section-container">
-		<div>
+		<div class="h2title-area">
 			<h2 class="h2title">
 				お気に入り記事
 			</h2>
