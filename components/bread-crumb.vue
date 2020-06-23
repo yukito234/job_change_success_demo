@@ -1,10 +1,6 @@
 <template>
 	<div>
 		<b-breadcrumb v-if="isDisplay" id="breadcrumb" :items="items" />
-		<!--
-			<b-breadcrumb v-if="isDisplay" :items="items" />
-			<b-breadcrumb v-if="isDisplay" id="breadcrumb" :items="items" />
-		-->
 	</div>
 </template>
 
@@ -18,41 +14,34 @@ export default {
 			isDisplay: false,
 		};
 	},
-
 	watch: {
 		$route: function () {
-			console.log("enter watch in bread-crumb");
-			console.log("this.$route");
-			console.log(this.$route);
 			this.getItems();
 			this.checkIsDisplay();
 		},
 	},
 	created() {
+		//リロード後もパンくずを表示させるために必要
 		this.getItems();
 		this.checkIsDisplay();
 	},
 	methods: {
 		checkIsDisplay() {
+			//トップページ以外ではパンくずを表示
 			if (this.items.length >= 1) {
 				this.isDisplay = true;
-				//return true;
 			} else {
 				this.isDisplay = false;
-				//return false;
 			}
 		},
 		async getItems() {
-			console.log("enter getItems in bread-crumb.vue");
+			//ここでは、パンくず表示に必要なデータを生成し、this.itemsに入れる
 			this.items.splice(-this.items.length);
 
 			let array = [];
 			let nickName = "";
 			let urlOfThisUser = "";
 			let allProfiles = [];
-
-			console.log("this.$route.name");
-			console.log(this.$route.name);
 
 			switch (this.$route.name) {
 				case "success-graph":
@@ -80,26 +69,20 @@ export default {
 					];
 					break;
 				case "members-userid":
-					console.log("enter case members-userid");
-
+					//プロフィールページにアクセスしてきた場合、パンくずにニックネームを入れる
+					//ニックネームは、全プロフィールデータから検索する
+					//よって、まだDBから全プロフィールデータを取得していない場合は、通信して取得する
 					if (!this.$store.getters["getIsAllProfiles"]) {
-						console.log("enter !this.$store.getters['getIsAllProfiles']");
-
 						this.$store.dispatch("allProfilesInitAction");
 						//全プロフィールデータを取得してindex.jsに保存する
 						await this.$store.dispatch("allProfilesGetAction");
 
-						//取得が完了したら、フラグをtrueにして、2回目以降のアクセスではDBとのやり取りが発生しないようにする
+						//取得が完了したら、フラグをtrueにして、
+						//2回目以降のアクセスではDBとのやり取りが発生しないようにする
 						this.$store.dispatch("changeIsAllProfilesAction", true);
 					}
 
-					console.log("this.$route.params.userid:");
-					console.log(this.$route.params.userid);
-
 					allProfiles = _cloneDeep(this.$store.getters["getAllProfiles"]);
-
-					console.log("allProfiles:");
-					console.log(allProfiles);
 
 					for (let i = 0; i < allProfiles.length; i++) {
 						if (allProfiles[i].user_id === this.$route.params.userid) {
@@ -130,8 +113,6 @@ export default {
 						"/members/" +
 						this.$store.getters["sessionStorageParameter/getClickedProfileData"]
 							.user_id;
-					console.log("urlOfThisUser");
-					console.log(urlOfThisUser);
 
 					array = [
 						{
@@ -177,20 +158,10 @@ export default {
 					];
 					break;
 			}
-
+			//生成したパンくずデータを配列に入れる
 			for (let i = 0; i < array.length; i++) {
 				this.items.push(array[i]);
 			}
-
-			console.log("this.items:");
-			console.log(this.items);
-
-			//this.checkIsDisplay();
-
-			//console.log("this.isDisplay:");
-			//console.log(this.isDisplay);
-
-			//return this.items;
 		},
 	},
 };

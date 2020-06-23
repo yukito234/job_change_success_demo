@@ -10,14 +10,6 @@
 				トップ
 			</span>
 		</el-menu-item>
-		<!--
-			<p>
-				トップ
-			</p>
-			<span>
-				トップ
-			</span>
-		-->
 		<el-menu-item
 			index="index2"
 			:style="{ borderBottomColor: getSuccessBottomColor(), color: getSuccessColor() }"
@@ -101,22 +93,16 @@ export default {
 	},
 	computed: {
 		checkUser() {
-			console.log("enter checkUser in global-navi");
-			console.log("this.activeIndex");
-			console.log(this.activeIndex);
-			//this.setActiveIndex();
 			return this.$store.getters["sessionStorageParameter/getIsLoginUser"];
 		},
 	},
 	watch: {
 		$route: function (newVal, oldVal) {
-			console.log("enter $route watch in global-navi");
 			this.routeNameChange.new = newVal.name;
 			this.routeNameChange.old = oldVal.name;
 			this.setActiveIndex();
 		},
 		checkUser: function (newVal, oldVal) {
-			console.log("enter checkUser watch in global-navi");
 			this.checkUserChange.new = newVal;
 			this.checkUserChange.old = oldVal;
 		},
@@ -127,32 +113,19 @@ export default {
 	methods: {
 		getSigninBottomColor() {
 			if (this.activeIndex === "index5") {
-				//return "red";
 				return "rgb(64, 158, 255)";
 			}
 		},
 		getSigninColor() {
 			if (this.activeIndex === "index5") {
-				//return "red";
 				return "#303133";
 			}
 		},
 		getSuccessBottomColor() {
-			//ログイン状態でsuccess-graphページにてログアウトすると、このページのグローバルメニューボタンがアクティブな状態(青色下線表示、文字色濃いめ)のままとなってしまう
-			//この問題の解決策として、上記条件のときにログアウトしたときだけ、success-graphページのグローバルメニューボタンをインアクティブな状態とする
-			console.log("enter getSuccessBottomColorrrrrrrrrrrrrr");
-
-			console.log("this.routeNameChange.new");
-			console.log(this.routeNameChange.new);
-
-			console.log("this.routeNameChange.old");
-			console.log(this.routeNameChange.old);
-
-			console.log("this.checkUserChange.new");
-			console.log(this.checkUserChange.new);
-
-			console.log("this.checkUserChange.old");
-			console.log(this.checkUserChange.old);
+			//ログイン状態でsuccess-graphページにてログアウトすると、
+			//このページのグローバルメニューボタンがアクティブな状態(青色下線表示、文字色濃いめ)のままとなってしまう
+			//この問題を解決するため、上記条件でログアウトしたときだけ、
+			//success-graphページのグローバルメニューボタンをインアクティブな状態とする
 			if (this.activeIndex === "index1") {
 				if (
 					this.routeNameChange.new === "index" &&
@@ -160,14 +133,12 @@ export default {
 					!this.checkUserChange.new &&
 					this.checkUserChange.old
 				) {
-					console.log("Meets all requirements in getSuccessBottomColor");
-					//return "red";
 					return "transparent";
 				}
-				//return "rgb(64, 158, 255)";
 			}
 		},
 		getSuccessColor() {
+			//getSuccessBottomColorと同様の理由で設定したメソッド
 			if (this.activeIndex === "index1") {
 				if (
 					this.routeNameChange.new === "index" &&
@@ -175,37 +146,40 @@ export default {
 					!this.checkUserChange.new &&
 					this.checkUserChange.old
 				) {
-					console.log("Meets all requirements in getSuccessColor");
 					return "#909399";
 				}
 			}
 		},
 		getMembersBottomColor() {
+			//ログインしたとき、membersページに遷移するが、
+			//membersのメニューがアクティブなスタイルにならない不具合がある
+			//この問題を解決するため、強制的にスタイルを設定している
 			if (this.activeIndex === "index3") {
-				//return "red";
 				return "rgb(64, 158, 255)";
 			}
 		},
 		getMembersColor() {
+			//getMembersBottomColorと同じ理由で設定
 			if (this.activeIndex === "index3") {
-				//return "red";
 				return "#303133";
 			}
 		},
 		getTopBottomColor() {
+			//ログアウト時にトップページに遷移するが、
+			//トップページのメニューがアクティブなスタイルにならない不具合がある
+			//この問題を解決するため、強制的にスタイルを設定している
 			if (this.activeIndex === "index1") {
-				//return "red";
 				return "rgb(64, 158, 255)";
 			}
 		},
 		getTopColor() {
+			//getTopColorと同じ理由で設定
 			if (this.activeIndex === "index1") {
-				//return "red";
 				return "#303133";
 			}
 		},
 		setActiveIndex() {
-			console.log("enter setActiveIndex in global-navi");
+			//現在のページをチェックして、アクティブなスタイルにさせるメニューを決定する
 			switch (this.$route.name) {
 				case "index":
 					this.activeIndex = "index1";
@@ -223,8 +197,6 @@ export default {
 					this.activeIndex = "index5";
 					break;
 			}
-			console.log("this.$route.name");
-			console.log(this.$route.name);
 		},
 		async signOut() {
 			await this.$store.dispatch("signOutAction");
@@ -237,21 +209,14 @@ export default {
 .menu-icon {
 	font-size: 18px;
 	/*
-	b-iconではデフォルトでvertical-align: -0.15em;が設定されている
-	そのため、デフォルトのままだとアイコンとテキストの下端が揃わない
-	そこで以下を設定して下端が揃うように修正をかけている
-	*/
+	 * b-iconではデフォルトでvertical-align: -0.15em;が設定されている
+	 * そのため、デフォルトのままだとアイコンとテキストの下端が揃わない
+	 * そこで以下を設定して下端が揃うように修正をかけている
+	 */
 	vertical-align: -0.3em;
 }
-/*
-font-size: 1.5rem;
-font-size: 2rem;
-font-size: 20px;
-*/
+
 .menu-text {
 	font-size: 18px;
 }
-/*
-height: 20px;
-*/
 </style>

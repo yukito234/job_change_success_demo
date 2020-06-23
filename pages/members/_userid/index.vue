@@ -35,9 +35,7 @@ export default {
 		//1:お気に入り記事のデータを取得
 		//全お気に入り記事のデータがstoreにない場合（初回アクセス時またはリロード後）
 		if (!store.getters["getIsAllLikeArticles"]) {
-			//console.log("enter !store.getters['getIsAllLikeArticles']");
 			//DBから全お気に入り記事のデータと、このページユーザのお気に入り記事を保管
-			//await store.dispatch('sessionStorageParameter/likeArticlesGetAction');
 			await store.dispatch("likeArticlesGetAction");
 
 			//取得が完了したら、フラグをtrueにして、2回目以降のアクセスではDBとのやり取りが発生しないようにする
@@ -49,7 +47,6 @@ export default {
 		if (!store.getters["getIsAllComments"]) {
 			console.log("enter !store.getters['getIsAllComments']");
 			//DBから全コメントデータを取得し、必要なプロパティを付与する
-			//await store.dispatch('sessionStorageParameter/likeArticlesGetAction');
 			await store.dispatch("commentsGetAction");
 
 			//取得が完了したら、フラグをtrueにして、2回目以降のアクセスではDBとのやり取りが発生しないようにする
@@ -81,16 +78,12 @@ export default {
 	},
 	computed: {
 		obtainIsCallGetComments() {
-			//console.log("enter obtainIsCallGetComments");
 			return this.isCallGetComments;
 		},
 	},
 	methods: {
 		changeIsCallGetComments() {
-			//console.log("enter changeIsCallGetComments");
 			this.isCallGetComments = true;
-			//console.log("this.isCallGetComments");
-			//console.log(this.isCallGetComments);
 		},
 	},
 };

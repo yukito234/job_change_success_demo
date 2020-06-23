@@ -10,7 +10,6 @@
 export default {
 	methods: {
 		closeButtonClicked() {
-			console.log("enter closeButtonClicked()");
 			this.$emit("closeButtonClickedNotice");
 		},
 	},

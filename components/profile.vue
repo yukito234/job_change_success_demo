@@ -8,7 +8,6 @@
 				</span>
 			</h2>
 		</div>
-		<!--<b-card no-body style="max-width: 540px;">-->
 		<b-card no-body>
 			<b-row>
 				<b-col md="6">

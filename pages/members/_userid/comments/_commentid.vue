@@ -65,11 +65,12 @@ export default {
 			);
 
 			if (result === "success") {
-				//id.vueに戻ったときに再度DBと通信して、最新のコメントデータを取得する
+				//個別ページに戻ったときに再度DBと通信して、最新のコメントデータを取得する
 				this.$store.dispatch("changeIsAllCommentsAction", false);
 
 				//ここでindex.jsのallCommentsを空にする
-				//そうしないと、id.vueに戻ったとき、再度DBから全コメントが取得されるので、allCommentsに重複が生じる
+				//そうしないと、個別ページに戻ったときに再度DBから全コメントが取得されるので、
+				//allCommentsに重複が生じる
 				this.$store.dispatch("allCommentsInitAction");
 				alert("コメントの返信完了");
 				this.replyComment = "";

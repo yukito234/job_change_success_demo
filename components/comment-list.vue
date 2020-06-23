@@ -35,20 +35,6 @@
 					>
 						返信する
 					</nuxt-link>
-					<!--
-					<p>
-						<span>
-							commentId:
-						</span>
-						{{ data.item.commentId }}
-					</p>
-					<p>
-						<span>
-							reply_comment_id:
-						</span>
-						{{ data.item.reply_comment_id }}
-					</p>
-					-->
 				</div>
 			</template>
 		</b-table>
@@ -62,7 +48,6 @@
 import _cloneDeep from "lodash/cloneDeep";
 
 export default {
-	//props: ["isCallGetComments"],
 	props: {
 		isCallGetComments: {
 			type: Boolean,
@@ -85,6 +70,7 @@ export default {
 	},
 	computed: {
 		getIsCommentMessage() {
+			//コメントのやり取りがある場合
 			if (this.commentsForTable.length >= 1) {
 				return false;
 			}
@@ -93,7 +79,8 @@ export default {
 	},
 	watch: {
 		isCallGetComments: function () {
-			//console.log("enter isCallGetComments");
+			//do-comment.vueでコメントが投稿された場合に
+			//このページに反映させる
 			if (this.isCallGetComments) {
 				this.getComments();
 			}
@@ -104,28 +91,18 @@ export default {
 	},
 	methods: {
 		getComments() {
-			//console.log("enter getComments");
-			//ここでは、このページに表示すべきコメントデータを取得し、表示用に並べ替え、リターンする処理を行う
+			//ここでは、このページに表示すべきコメントデータを取得し、表示用に並べ替え、
+			//テーブル配列に入れる処理を行う
 
-			//必要なデータを取得 + 初期化
-			let allComments = _cloneDeep(this.$store.getters["getAllComments"]);
 			let firstCommentsOfThisPage = [];
 			let commentsOfThisPage = [];
-			//const allProfiles = this.$store.getters["getAllProfiles"];
+			let allComments = _cloneDeep(this.$store.getters["getAllComments"]);
 			const profileDataOfThisPage = this.$store.getters[
 				"sessionStorageParameter/getClickedProfileData"
 			];
 			const loginUserData = this.$store.getters["sessionStorageParameter/getLoginUserData"];
 
-			//console.log("allProfiles");
-			//console.log(allProfiles);
-
-			//console.log("profileDataOfThisPage");
-			//console.log(profileDataOfThisPage);
-
-			//初回コメントを取得する
-			//他のユーザーによる初コメント
-
+			//・初回コメント(他のユーザーによる初コメント)を取得する
 			//全コメントの中から、このページに向けられた初回コメントを取得してくる
 			for (let i = 0; i < allComments.length; i++) {
 				//このページへの初回コメントか判定する
@@ -134,18 +111,15 @@ export default {
 					allComments[i].reply_comment_id === undefined &&
 					profileDataOfThisPage.user_id === allComments[i].user_id_to
 				) {
+					//後の処理を効率よく進めるために、以下２つのプロパティを設定しておく
 					allComments[i].isAddition = true;
 					allComments[i].nestCount = 0;
 
-					//push後にcommentsOfThisPageの要素を書き換えると、元のallCommentsのデータも更新されるので注意
 					firstCommentsOfThisPage.push(allComments[i]);
 				}
 			}
 
-			//console.log("firstCommentsOfThisPage");
-			//console.log(firstCommentsOfThisPage);
-
-			//初回コメントを時系列の古い順に並べ替える
+			//・初回コメントを時系列の古い順に並べ替える
 			firstCommentsOfThisPage.sort(sortFunc);
 
 			//コメント一覧を投稿日時でソートするための関数を定義
@@ -153,27 +127,22 @@ export default {
 				return a.createdAt - b.createdAt;
 			}
 
-			//ネスト1以上のコメントを取得し、整列させる
+			//・ネスト1以上のコメントを取得し、整列させる
 
-			//firstCommentsOfThisPageから初回コメントを１つずつ取り出し、
+			//firstCommentsOfThisPage[]から初回コメントを１つずつ取り出し、
 			//その返信コメントを順番に取得し、表示用配列commentsOfThisPageに格納していく
 			for (let i = 0; i < firstCommentsOfThisPage.length; i++) {
 				//初回コメントを表示用配列に入れる
 				commentsOfThisPage.push(firstCommentsOfThisPage[i]);
 
-				//commentsOfThisPageの中身を確認
-				for (let j = 0; j < commentsOfThisPage.length; j++) {
-					//console.log(`commentsOfThisPage[${j}]`);
-					//console.log(commentsOfThisPage[j]);
-				}
 				//ネスト数１以上の返信コメントを取得して、表示用配列に入れる
 				getNestCommet(i, 1);
 			}
 
-			//ネスト数１以上のコメントを見つける
+			//ネスト数１以上の返信コメントを取得して、
+			//表示用配列に入れる関数getNestCommetを定義
 			function getNestCommet(index, currentNestCount) {
-				//console.log("enter getNestCommet");
-				//allComments2[x].reply_comment_idの比較対象が、ネスト数２以上の場合とは異なることに注意
+				//allComments2[].reply_comment_idの比較対象が、ネスト数２以上の場合とは異なることに注意
 				if (currentNestCount === 1) {
 					//ネスト１のコメントが存在するかチェック
 					for (let j = 0; j < allComments.length; j++) {
@@ -182,33 +151,23 @@ export default {
 							allComments[j].reply_comment_id ===
 							firstCommentsOfThisPage[index].commentId
 						) {
-							//console.log(`allComments[${j}]`);
-							//console.log(allComments[j].comment);
-							//console.log(`firstCommentsOfThisPage[${index}]`);
-
 							//ネスト１のコメントを表示用配列に挿入
 							setNestCount(j, currentNestCount);
 
 							//挿入したネスト１のコメントに対して、ネスト２以上のコメントがぶら下がっていないか調べる
+							//再帰処理でネストをたどっていく
 							getNestCommet(j, currentNestCount + 1);
 						}
 					}
-					//ここに到達しているときは
-					//ネスト０のコメントに対して、返信がない場合
+					//ここに到達しているときは、ネスト０のコメントに対して返信がない場合か、
 					//ネスト０のコメントに対して、ネスト１以上のコメントをすべて探し出し、表示用に格納できた場合である
 					//いずれにせよ、これ以降の処理は必要がないのでリターンする
 					return;
 				}
 
-				//currentNestCount=2以上、
-				//つまり、ネスト数２以降のコメントを検索する場合は、以下の処理を行う
+				//ネスト数２以降(currentNestCount=2以上)のコメントを検索する場合は、以下の処理を行う
 				for (let i = 0; i < allComments.length; i++) {
 					if (allComments[i].reply_comment_id === allComments[index].commentId) {
-						//console.log(`nest=${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}${currentNestCount}`);
-						//console.log("allComments[i].reply_comment_id");
-						//console.log(allComments[i].reply_comment_id);
-						//console.log(`allComments[i=${i}]`);
-						//console.log(`allComments[index=${index}]`);
 						setNestCount(i, currentNestCount);
 
 						//ネスト数は３までとする
@@ -220,17 +179,16 @@ export default {
 					}
 				}
 			}
-			//setNestCount関数の役割
-			//表示用配列に格納する要素にネスト数を付与
-			//表示用配列に追加済みの要素にフラグを立てる
 
+			//setNestCount関数を定義
+			//この関数の役割
+			//表示用配列に追加済みの要素にフラグを立てる
+			//表示用配列に格納する要素にネスト数を付与
+			//表示用配列に返信コメントを格納する
 			function setNestCount(index, currentNestCount) {
-				//console.log(`index=${index}`);
-				//console.log(`currentNestCount=${currentNestCount}`);
-				//console.log(`allComments[${index}]=`);
-				//console.log(allComments[index].comment);
 				//初回コメントの次のインデックスにネスト数１の返信データを格納する
-				//見つかったネスト数１のコメントのisAdditionがfalseであり、まだネスト配列に格納されていないことをチェック
+				//見つかったネスト数１のコメントのisAdditionがfalseであり、
+				//まだcommentsOfThisPage配列に格納されていないことをチェック
 				if (!allComments[index].isAddition) {
 					//ネスト配列に格納される要素のisAdditionをtrueに変更
 					allComments[index].isAddition = true;
@@ -241,22 +199,13 @@ export default {
 					//commentsOfThisPageがallCommentsを参照しないように、ディープコピーをとる
 					let element = _cloneDeep(allComments[index]);
 
-					//firstCommentsOfThisPage[j].nestArray.push(nest1);
-					//ネスト０のfirstCommentsOfThisPage[i]に対する返信コメントnest1を表示用配列に挿入する
+					//ネスト０のfirstCommentsOfThisPage[i]に対する返信コメントを
+					//表示用配列に挿入する
 					commentsOfThisPage.push(element);
 				}
 			}
 
-			/*
-			console.log("--------------------------------------------------------");
-			for(let i=0; i<commentsOfThisPage.length; i++){
-				console.log(`commentsOfThisPage[${i}]`);
-				console.log(commentsOfThisPage[i]);
-			}
-			//console.log("--------------------------------------------------------");
-			*/
-
-			//7:日付の表示方法の変更
+			//・日付の表示方法の変更
 			for (let i = 0; i < commentsOfThisPage.length; i++) {
 				let month = String(Number(commentsOfThisPage[i].createdAt.getMonth()) + 1);
 				let dateInfo =
@@ -273,13 +222,13 @@ export default {
 				commentsOfThisPage[i].createdAt = dateInfo;
 			}
 
-			//8:返信ボタンの設置
-			//8-1:replyButtonFlagの初期化
+			//・返信ボタンの設置
+			//replyButtonFlagの初期化
 			for (let i = 0; i < commentsOfThisPage.length; i++) {
 				commentsOfThisPage[i].replyButtonFlag = false;
 			}
 
-			//8-2:replyButtonFlagを設定
+			//replyButtonFlagを設定
 			//このページを作成者本人である会員Aが閲覧している場合
 			if (loginUserData.uid === profileDataOfThisPage.user_id) {
 				//ネスト０とネスト２のコメントに返信ボタンをつける
@@ -318,8 +267,6 @@ export default {
 						) {
 							commentsOfThisPage[j].replyButtonFlag = true;
 						}
-					} else {
-						console.log("以下のコメントは、このプロフィールページの作成者のものです");
 					}
 				}
 				//このページを作成者(会員A)ではない会員Bが閲覧している場合
@@ -327,7 +274,7 @@ export default {
 				//ネスト１のコメントで、なおかつuser_id_toが会員Bのものは返信ボタンをつける
 				//ただし、その下にネストが存在する場合は返信をつけない
 				//プロフィールページでは、返信ボタンを使った作成者を介さないコメントのやり取りはできない
-				//そのため、会員Aのページで会員Bと会員Cが返信機能を使って筆談することはできない
+				//そのため、例えば会員Aのページで会員Bと会員Cが返信機能を使ってやり取りすることはできない
 				for (let j = 0; j < commentsOfThisPage.length; j++) {
 					//配列の最後の要素がネスト1の場合
 					if (
@@ -355,22 +302,18 @@ export default {
 			for (let i = 0; i < commentsOfThisPage.length; i++) {
 				this.commentsForTable.push(commentsOfThisPage[i]);
 			}
-			console.log("this.commentsForTable");
-			console.log(this.commentsForTable);
 		},
 		getMarginLeft(row) {
-			//コメントに返信する場合、元のコメントより右に少しずらす
+			//コメントに返信する場合、元のコメントより右に30xpずらす
 			//このマージンをコメントのネスト数から算出する
 			let value = Number(row.nestCount) * 30;
 			let marginLeft = value + "px";
 			return marginLeft;
 		},
 		setCommentData(element) {
-			//console.log("element:");
-			//console.log(element);
 			//返信ボタンが押されたら、そのコメントを取得し、sessoinに保存
-			//reply.vueでリロードされた場合を想定し、データはsessionに保存しておく
-			//reply.vueにて、この保存されたコメントデータを呼び出す
+			//返信ページでリロードされた場合を想定し、データはsessionに保存しておく
+			//返信ページにて、この保存されたコメントデータを呼び出す
 			this.$store.commit("sessionStorageParameter/commentDataSet", element);
 		},
 	},

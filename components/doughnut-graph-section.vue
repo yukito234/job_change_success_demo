@@ -4,7 +4,6 @@
 			<h2 class="h2title">
 				転職成功者のグラフ
 			</h2>
-			<!-- 未経験から転職に成功した人のデータ -->
 			<b-icon v-b-modal.modal-success-graph-title icon="question-circle" />
 			<b-modal id="modal-success-graph-title" ok-only>
 				<p class="my-4">
@@ -22,9 +21,6 @@
 			:chart-data="datacollectionChange"
 			:graph-type="graphType"
 		/>
-		<!--
-			<doughnut-graph id="doughnut-graph" :chart-data="datacollection" :graph-type="graphType" />
-		-->
 	</div>
 </template>
 
@@ -42,17 +38,6 @@ export default {
 	},
 	data() {
 		return {
-			/*
-			datacollection: {
-				labels: [],
-				datasets: [
-					{
-						data: [],
-						backgroundColor: [],
-					},
-				],
-			},
-			*/
 			datacollection: null,
 			graphLabels: [],
 			graphQuantity: [],
@@ -63,11 +48,10 @@ export default {
 	},
 	computed: {
 		datacollectionChange() {
-			console.log("this.datacollection of datacollectionChange in doughnut-graph-section");
+			//グラフタイプが変化したら、更新されたグラフデータを返す
 			if (this.graphType !== null) {
 				this.defineDatacollection();
 			}
-			//console.log(this.datacollection);
 			return this.datacollection;
 		},
 	},
@@ -84,20 +68,18 @@ export default {
 			};
 		},
 		changeGraphData(graphType) {
-			console.log("changeGraphData is called");
-			//再描画に必要な処理を行う
+			//グラフタイプの変化をキャッチしたら
+			//再描画に必要なデータを生成する
 			this.graphType = graphType;
-			console.log("this.graphType");
-			console.log(this.graphType);
 			this.itemCount(graphType);
 			this.createLabelQuantityColor();
 		},
 		createLabelQuantityColor() {
-			console.log("enter createLabelQuantityColor");
-			//ラベル配列とデータ配列を初期化
+			//ラベル配列と度数配列を初期化
 			this.graphLabels.splice(-this.graphLabels.length);
 			this.graphQuantity.splice(-this.graphQuantity.length);
-			//ラベル配列とデータ配列を生成
+
+			//ラベル配列と度数配列を生成
 			for (let graphLabel in this.graphItemData) {
 				this.graphLabels.push(graphLabel);
 				this.graphQuantity.push(this.graphItemData[graphLabel]);
@@ -134,23 +116,18 @@ export default {
 			for (let i = 0; i < this.graphLabels.length; i++) {
 				this.graphColor.push(colorPalette[i]);
 			}
-
-			console.log("this.datacollection");
-			console.log(this.datacollection);
 		},
 		itemCount(graphType) {
-			console.log("enter itemCount");
-			//グラフデータを格納するオブジェクトを初期化
+			//グラフデータ(項目と度数)を格納するオブジェクトを初期化
 			this.graphItemData = {};
 
-			//全グラフデータから選択されたグラフタイプにおいて、各項目のデータ数をカウントする
 			let key = "";
 			let keyCheckFlag = "";
 
+			//全体験記データを取得
 			const allArticlesForGraph = this.$store.getters["getAllArticlesForGraph"];
-			console.log("allArticlesForGraph");
-			console.log(allArticlesForGraph);
 
+			//選択されたグラフタイプにおいて、全体験記データから各項目のデータ数(度数)をカウントする
 			for (let i = 0; i < allArticlesForGraph.length; i++) {
 				key = allArticlesForGraph[i][graphType];
 				console.log("key");

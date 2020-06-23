@@ -6,10 +6,6 @@
 			<bread-crumb id="bread-crumb" />
 			<nuxt />
 		</div>
-		<!--
-		<bread-crumb id="bread-crumb" />
-		<nuxt />
-		-->
 	</div>
 </template>
 
@@ -48,50 +44,39 @@ html {
 }
 
 .button--green {
-	display: inline-block;
-	border-radius: 4px;
 	border: 1px solid #3b8070;
+	border-radius: 4px;
 	color: #3b8070;
-	text-decoration: none;
+	display: inline-block;
 	padding: 10px 30px;
+	text-decoration: none;
 }
 
 .button--green:hover {
-	color: #fff;
 	background-color: #3b8070;
+	color: #fff;
 }
 
 .button--grey {
-	display: inline-block;
-	border-radius: 4px;
 	border: 1px solid #35495e;
+	border-radius: 4px;
 	color: #35495e;
-	text-decoration: none;
-	padding: 10px 30px;
+	display: inline-block;
 	margin-left: 15px;
+	padding: 10px 30px;
+	text-decoration: none;
 }
 
 .button--grey:hover {
-	color: #fff;
 	background-color: #35495e;
+	color: #fff;
 }
 
-#bread-crumb {
-}
-/* 素材
-margin-left: 5%;
-margin-right: 5%;
-width: 80%;
-margin-top: 16px;
-*/
 #main-contents-wrapper {
-	padding-top: 2%;
+	background-color: #ececec;
 	padding-bottom: 5%;
 	padding-left: 5%;
 	padding-right: 5%;
-	background-color: #ececec;
+	padding-top: 2%;
 }
-/* 素材
-padding: 5%;
-*/
 </style>

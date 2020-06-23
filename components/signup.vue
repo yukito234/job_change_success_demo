@@ -5,7 +5,7 @@
 				会員登録（無料）
 			</h2>
 		</div>
-		<div class="signup-container">
+		<div>
 			<b-card bg-variant="light">
 				<b-form-group
 					label-cols-lg="3"
@@ -36,10 +36,13 @@
 						label-align-sm="right"
 						label-for="password-signup"
 					>
-						<b-form-input id="password-signup" v-model="userData.password" />
+						<b-form-input
+							id="password-signup"
+							v-model="userData.password"
+							type="password"
+						/>
 					</b-form-group>
 					<b-form-group label-cols-sm="3" label="" label-align-sm="right">
-						<!--ボタンクリック時にローディングアニメーションを入れる-->
 						<div>
 							<b-button
 								id="signup-button"
@@ -78,12 +81,8 @@ export default {
 		};
 	},
 	methods: {
-		//コードの大半をindex.jsに記述する場合
 		async signUp() {
 			this.loading = true;
-
-			console.log("this.userData before");
-			console.log(this.userData);
 
 			const dataForSignUp = {
 				userName: this.userData.userName,
@@ -100,31 +99,25 @@ export default {
 				this.userData[key] = "";
 			}
 
-			console.log("this.userData after");
-			console.log(this.userData);
-
 			//authenticationで会員登録の処理を行う
 			const resultOfSignUp = await this.$store.dispatch("signUpAction", dataForSignUp);
 
-			//正常に登録が完了した場合は、usersコレクションにユーザIDとお気に入り記事の登録数を入れる処理を実行する
+			//正常に会員登録が完了した場合は、そのままログインする
 			if (resultOfSignUp === "success") {
 				await this.$store.dispatch("signInAction", dataForSignIn);
+				this.$router.push("/members");
+				this.loading = false;
 				//登録に失敗した場合は、エラーを表示して終了
 			} else {
-				//alert("会員登録時にエラーが発生しました。");
 				alert(`${resultOfSignUp}`);
+				this.loading = false;
 			}
-			this.loading = false;
 		},
 	},
 };
 </script>
 
 <style scoped>
-.signup-container {
-	/*margin: 20px;*/
-}
-
 #signup-button {
 	display: block;
 	margin-left: auto;

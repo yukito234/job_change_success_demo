@@ -86,7 +86,6 @@ export default {
 				},
 				{
 					key: "detailButton",
-					//label:'詳細',
 					label: "コメント",
 				},
 			],
@@ -105,6 +104,7 @@ export default {
 	},
 	methods: {
 		getLikeArticles() {
+			//ここでは、このページユーザのお気に入り記事を取得する
 			//このページユーザのお気に入り記事を格納する配列を初期化
 			this.likeArticles.splice(-this.likeArticles.length);
 
@@ -112,12 +112,14 @@ export default {
 			//this.likeArticlesにpushするため、ディープコピーをとっておく
 			const allLikeArticles = _cloneDeep(this.$store.getters["getAllLikeArticles"]);
 
-			//このページユーザのプロフィール情報（ユーザーIDが必要）
+			//このページユーザのプロフィール情報を取得
+			//以下処理でユーザーIDが必要なため
 			const clickedProfileData = this.$store.getters[
 				"sessionStorageParameter/getClickedProfileData"
 			];
 
-			//storeの全お気に入り記事のデータより、このページのお気に入り記事データを抽出する
+			//storeの全お気に入り記事のデータより、このページのお気に入り記事データを抽出し
+			//this.likeArticlesに格納
 			for (let i = 0; i < allLikeArticles.length; i++) {
 				if (
 					allLikeArticles[i].user_id !== undefined &&
@@ -126,10 +128,6 @@ export default {
 					this.likeArticles.push(allLikeArticles[i]);
 				}
 			}
-
-			console.log("this.likeArticles");
-			console.log(this.likeArticles);
-
 			return this.likeArticles;
 		},
 	},

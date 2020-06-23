@@ -83,11 +83,9 @@
 <script>
 import sanitizeHTML from "sanitize-html";
 import _cloneDeep from "lodash/cloneDeep";
-
 import { BIcon, BIconChevronDown, BIconChevronUp } from "bootstrap-vue";
 
 export default {
-	//name: 'ArticleRegistration',
 	components: {
 		BIcon,
 		BIconChevronDown,
@@ -96,7 +94,6 @@ export default {
 	data() {
 		return {
 			loading: false,
-			editFlag: false,
 			url: "",
 			title: "",
 			age: "",
@@ -147,14 +144,8 @@ export default {
 				this.isExperienceModalDisplay = true;
 			}
 		},
-		addExperience() {
-			//体験記の追加ボタンが押されたときの挙動
-			this.editFlag = true;
-		},
 		async registerArticle() {
 			this.loading = true;
-
-			console.log("enter registerArticle");
 			this.url = sanitizeHTML(this.url);
 			this.title = sanitizeHTML(this.title);
 
@@ -171,6 +162,7 @@ export default {
 				return;
 			}
 
+			//DBに登録するデータ
 			const articleData = {
 				url: this.url,
 				title: this.title,
@@ -181,25 +173,21 @@ export default {
 				company: this.company,
 			};
 
-			console.log("articleData:");
-			console.log(articleData);
 			//firebaseに体験記データを追加
 			const result = await this.$store.dispatch(
 				"registerArticleAction",
 				_cloneDeep(articleData)
 			);
-			//入力欄の初期化
+
+			//DBへの登録に成功した場合
 			if (result === "success") {
+				//入力欄の初期化
 				this.url = "";
 				this.title = "";
-				//this.age = null;
 				this.age = "";
-				//this.educationalBackground = null;
 				this.educationalBackground = "";
 				this.studyTerm = "";
-				//this.schoolPresence = null;
 				this.schoolPresence = "";
-				//this.company = null;
 				this.company = "";
 
 				//success-graph.vueが表示されたとき、新たにDBと通信して最新の体験記データを取得する
@@ -207,6 +195,7 @@ export default {
 				this.loading = false;
 				alert("記事の登録完了");
 			} else {
+				this.loading = false;
 				alert(`記事登録時にエラーが発生しました。${result}`);
 			}
 		},

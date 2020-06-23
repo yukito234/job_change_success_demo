@@ -67,6 +67,7 @@ export default {
 	},
 	computed: {
 		getIsProfileRegistration() {
+			//プロフィール未登録の場合は、コメントできないようにする
 			return this.$store.getters["sessionStorageParameter/getLoginUserData"]
 				.is_profile_registration;
 		},
@@ -74,24 +75,16 @@ export default {
 	methods: {
 		async registerComment() {
 			this.loading = true;
-
-			console.log("this.userComment in registerComment");
-			console.log(this.userComment);
-
-			//コメント欄に文字が入力されていない場合はエラーを出す
-			//コメントが入力されていないときはボタンをdisabledの状態にしておく
-			//v-modelにtrimを設定しているが、全角空白と半角空白のみを入れて送信したときに
-			//以下にキャッチされるか確認する
-
 			if (sanitizeHTML(this.userComment) === "") {
 				alert("コメントを入力してください！");
 				this.loading = false;
 				return;
 			}
-
+			//コメントをfirebaseに登録する
 			await this.$store.dispatch("registerCommentAction", sanitizeHTML(this.userComment));
 
 			//DBから最新の全コメントを取得する
+			//コメント一覧に即表示させるため
 			await this.$store.dispatch("commentsGetAction");
 
 			this.$emit("commentRegisteredNotice");

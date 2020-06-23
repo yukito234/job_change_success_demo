@@ -34,17 +34,9 @@
 </template>
 
 <script>
-//import { BIcon, BIconX, BIconQuestionCircle } from "bootstrap-vue";
 import _cloneDeep from "lodash/cloneDeep";
 
 export default {
-	/*
-	components: {
-		BIcon,
-		BIconX,
-		BIconQuestionCircle,
-	},
-	*/
 	data() {
 		return {
 			isStockTableDisplay: false,
@@ -64,6 +56,7 @@ export default {
 		};
 	},
 	watch: {
+		//記事がストックされたら、即ストック一覧に表示させる
 		stockedDataInQiita: function () {
 			this.obtainStockedArticles();
 			this.checkIsStockTableDisplay();
@@ -74,12 +67,12 @@ export default {
 		},
 	},
 	created() {
-		console.log("before this.obtainStockedArticles in created");
 		this.obtainStockedArticles();
 		this.checkIsStockTableDisplay();
 
 		//ローカルストレージのストック配列を監視するため、シャローコピーをとっておく
-		//experience-search.vueにてストック配列に記事が追加されたら、こちらで検知してリアクティブにテーブルに反映させる
+		//experience-search.vueにてストック配列に記事が追加されたら、
+		//こちらで検知してリアクティブにテーブルに反映させる
 		this.stockedDataInQiita = this.$store.getters["persistedParameter/getStockedArticles"];
 
 		this.stockedDataInGoogle = this.$store.getters[
@@ -88,79 +81,50 @@ export default {
 	},
 	methods: {
 		checkIsStockTableDisplay() {
-			console.log("enter checkIsStockTableDisplay");
-
 			if (this.stockedArticles.length !== 0) {
 				this.isStockTableDisplay = true;
 			} else {
 				this.isStockTableDisplay = false;
 			}
-			console.log("this.isStockTableDisplay");
-			console.log(this.isStockTableDisplay);
 		},
 		obtainStockedArticles() {
-			console.log("enter obtainStockedArticles");
-
-			//ユーザがストックしている記事データを返す
+			//全ストック記事を取得する
 			//Qiitaのストック記事を取得
 			const stockedDataInQiita = _cloneDeep(
 				this.$store.getters["persistedParameter/getStockedArticles"]
 			);
-
-			console.log("stockedDataInQiita in obtainStockedArticles");
-			console.log(stockedDataInQiita);
 
 			//Googleからストックした記事を取得
 			const stockedDataInGoogle = _cloneDeep(
 				this.$store.getters["persistedParameter/getStockedArticlesInGoogleSearch"]
 			);
 
-			console.log("stockedDataInGoogle in obtainStockedArticles");
-			console.log(stockedDataInGoogle);
-
 			//全ストック記事
 			const concatArray = stockedDataInQiita.concat(stockedDataInGoogle);
 
 			this.stockedArticles.splice(-this.stockedArticles.length);
-
 			for (let i = 0; i < concatArray.length; i++) {
 				this.stockedArticles.push(concatArray[i]);
 			}
-
-			console.log("this.stockedArticles in obtainStockedArticles");
-			console.log(this.stockedArticles);
 		},
-
 		deleteStock() {
-			console.log("enter deleteStock");
 			//ストック記事をすべて削除する
 			this.$store.commit("persistedParameter/deleteStockedArticles");
-
 			this.isStockTableDisplay = false;
-			console.log("this.isStockTableDisplay");
-			console.log(this.isStockTableDisplay);
 		},
 		deleteStockArray(element) {
-			console.log("enter deleteStockArray");
-
 			//Qiitaの記事がクリックされた場合
 			if (element.domain === "qiita") {
 				//Qiitaのストック記事を取得
-
 				const stockedDataInQiita = _cloneDeep(
 					this.$store.getters["persistedParameter/getStockedArticles"]
 				);
-
-				console.log(`stockedDataInQiita in deleteStockArray`);
-				console.log(stockedDataInQiita);
 
 				//押下された要素を特定する
 				for (let i = 0; i < stockedDataInQiita.length; i++) {
 					if (stockedDataInQiita[i].id === element.id) {
 						//削除する要素のフラグをtrueに変更
 						stockedDataInQiita[i].isDelete = true;
-						console.log(`stockedDataInQiita[${i}] in deleteStockArray`);
-						console.log(stockedDataInQiita[i]);
 					}
 				}
 
@@ -176,16 +140,11 @@ export default {
 					this.$store.getters["persistedParameter/getStockedArticlesInGoogleSearch"]
 				);
 
-				console.log(`stockedDataInGoogle in deleteStockArray`);
-				console.log(stockedDataInGoogle);
-
 				//押下された要素を特定する
 				for (let i = 0; i < stockedDataInGoogle.length; i++) {
 					if (stockedDataInGoogle[i].cacheId === element.cacheId) {
 						//削除する要素のフラグをtrueに変更
 						stockedDataInGoogle[i].isDelete = true;
-						console.log(`stockedDataInGoogle[${i}] in deleteStockArray`);
-						console.log(stockedDataInGoogle[i]);
 					}
 				}
 
@@ -211,6 +170,4 @@ export default {
 
 #stock-articles-container {
 }
-/* 素材
-*/
 </style>

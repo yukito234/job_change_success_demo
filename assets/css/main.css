@@ -1,46 +1,38 @@
 .page-container {
 	background-color: #ececec;
 }
-/* 素材
-background-color: white;
-margin: 0 5%;
-margin:20px 5%;
-*/
-h2 {
-	padding: 0.4em 0.5em;
-	color: #494949;
-	border-left: solid 5px #7db4e6;
+
+.section-container {
+	background-color: white;
+	margin-bottom: 2%;
+	padding: 2%;
 }
+
+h2 {
+	border-left: solid 5px #7db4e6;
+	color: #494949;
+	padding: 0.4em 0.5em;
+}
+
 .h2title {
 	display: inline-block;
 }
+
 .h2title-area {
 	margin-bottom: 30px;
 }
-.button-with-gradation {
-	background: linear-gradient(to right, #0069d9, #50a5ff);
-}
 
 h3 {
-	padding-top: 0.25em;
-	padding-bottom: 0.25em;
-	color: #494949;
 	background: transparent;
 	border-bottom: solid 2px #7db4e6;
+	color: #494949;
 	display: inline-block;
 	line-height: 33px;
 	margin-bottom: 15px;
+	padding-bottom: 0.25em;
+	padding-top: 0.25em;
 }
-/*
-padding: 0.25em 0.5em;
-border-left: solid 5px #7db4e6;
-*/
-.section-container {
-	padding: 2%;
-	margin-bottom: 2%;
-	background-color: white;
-}
-/* 素材
-margin: 2%;
 
-*/
+.button-with-gradation {
+	background: linear-gradient(to right, #0069d9, #50a5ff);
+}

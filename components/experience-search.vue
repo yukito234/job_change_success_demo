@@ -46,7 +46,6 @@
 					:options="optionsOfsuggestKeywords"
 				/>
 			</b-form-group>
-			<!--<p>チェックを入れたキーワード:{{suggestKeywords}}</p>-->
 		</div>
 
 		<div class="search-steps-title-area">
@@ -74,9 +73,6 @@
 			/>
 
 			<b-icon id="x-button" icon="x" @click="deleteSearchBoxContent()" />
-			<!--
-				<b-button id="search-button" class="button-with-gradation" variant="primary" :disabled="loading" @click="doSearch">
-			-->
 			<b-button
 				id="search-button"
 				class="button-with-gradation"
@@ -154,22 +150,12 @@
 						<h3>
 							{{ getSentenceOfSearchResult() }}
 						</h3>
-						<!--
-						<h3>
-							検索結果:{{ rows }} 件のデータを取得しました
-						</h3>
-						-->
 						<b-pagination
 							v-model="currentPage"
 							:total-rows="rows"
 							:per-page="perPageOfBootstrap"
 							aria-controls="my-table"
 						/>
-						<!--
-						<p class="mt-3">
-							現在のページ:{{ currentPage }}
-						</p>
-						-->
 						<b-table
 							id="my-table"
 							:items="allArticlesOfSearchResult"
@@ -179,11 +165,6 @@
 							responsive="sm"
 							:sort-compare="mySortCompare"
 						>
-							<!--
-							<template v-slot:cell(index)="data">
-								{{ (data.index+1)+(currentPage-1)*perPageOfBootstrap }}
-							</template>
-							-->
 							<template v-slot:cell(index)="data">
 								{{ getIndexOfTable(data) }}
 							</template>
@@ -257,11 +238,6 @@
 								全件表示
 							</b-button>
 						</div>
-						<!--
-						<p>
-							{{ perPageOfBootstrap }}
-						</p>
-						-->
 					</div>
 				</div>
 			</div>
@@ -286,7 +262,6 @@ export default {
 	},
 	data() {
 		return {
-			show: false,
 			fieldsOfQiitaSearch: [
 				{
 					key: "index",
@@ -304,7 +279,6 @@ export default {
 				},
 				{
 					key: "likes_count",
-					//key:'likesCount',
 					label: "いいね",
 					sortable: true,
 					sortDirection: "desc",
@@ -326,10 +300,8 @@ export default {
 				{
 					key: "stockButton",
 					label: "ストック",
-					//headerTitle:'ストック<b-icon icon="question-circle"></b-icon>',
 				},
 			],
-			//searchBoxOfBootstrap:"",
 			optionsOfDomain: [
 				{ value: "qiita", text: "qiita" },
 				{ value: "hatenablog", text: "hatenablog" },
@@ -348,17 +320,31 @@ export default {
 				{ text: "バックエンド", value: "バックエンド" },
 			],
 			isAPIError: false,
-			loading: false, //検索ボタンクリック時のアニメーションや結果表示タイミングの制御用
+			loading: false,
 			currentPage: 1,
 			perPageOfBootstrap: 10,
-			suggestKeywords: [], //キーワード候補の格納用
-			searchBox: "", //検索ボックスの内容
-			searchBoxContentArray: [], //検索ボックスの複合キーワードを分割して格納する配列
+
+			//チェックされたキーワードの格納用
+			suggestKeywords: [],
+
+			//検索ボックスの内容
+			searchBox: "",
+
+			//検索ボックスの複合キーワードを分割して格納する配列
+			searchBoxContentArray: [],
 			allArticlesOfSearchResult: [],
-			domain: "qiita", //検索対象のドメイン（googleのAPIを用いない場合は不要）
-			isOtherDomainSearchResultDisplay: false, //検索結果の表示切り替え用。qiita以外のドメインを対象に検索した場合にtrueになる
-			isQiitaSearchResultDisplay: false, //検索結果の表示切り替え用。qiitaで検索したときにtrueとなり、qiitaの検索結果を表示するためのHTMLが表示される
-			storedSearchKeywords: [], //検索ボックスの内容を一時保存する配列
+
+			//検索対象のドメイン
+			domain: "qiita",
+
+			//検索結果の表示切り替え用。ドメインがqiita以外でtrue
+			isOtherDomainSearchResultDisplay: false,
+
+			//検索結果の表示切り替え用。ドメインがqiitaでtrue
+			isQiitaSearchResultDisplay: false,
+
+			//検索ボックスの内容を一時保存する配列
+			storedSearchKeywords: [],
 			stockedArticles: [],
 			isSearchResultZero: false,
 			isStockTableDisplay: false,
@@ -366,10 +352,6 @@ export default {
 	},
 	computed: {
 		rows() {
-			console.log("enter rows");
-			console.log("this.allArticlesOfSearchResult.length");
-			console.log(this.allArticlesOfSearchResult.length);
-			//return this.allArticleDataSorted.length;
 			return this.allArticlesOfSearchResult.length;
 		},
 		perPageOfUserInput: {
@@ -383,26 +365,21 @@ export default {
 	},
 	watch: {
 		suggestKeywords: function () {
-			//検索ヒント配列suggestKeywords[]が変化したら、それを検索ボックスsearchBoxに反映させる
+			//ここでは、suggestKeywords[]が変化したとき、
+			//チェックが入ったキーワードを検索ボックスsearchBoxに反映させる
 
 			//ここで、searchBoxの中身は、suggestKeywords[]とstoredSearchKeywords[]をあわせたものとなる
-			//storedSearchKeywords[]は、検索ボックスからカーソルが外れたときの検索ボックスの中身
+			//storedSearchKeywords[]は、検索ボックスにカーソルがあたったときの検索ボックスの中身
 
 			//storedSearchKeywords[]の役割
-			//ユーザが検索ヒントの選択と検索ボックスへの直接入力を繰り返すことを想定し、検索ボックスからカーソルが外れた際に、検索ヒントの再選択に備えて、直前の検索ボックスの内容を保持しておく
+			//ユーザが検索ヒント(チェックボックス)の選択と、検索ボックスへの直接入力を繰り返すことを想定し、
+			//検索ボックスにカーソルがあたった際に、検索ヒントの再選択に備えて、
+			//直前の検索ボックスの内容を保持しておく
 
 			//suggestKeywords[]が空
 			if (this.suggestKeywords.length === 0 && this.storedSearchKeywords.length !== 0) {
 				//検索ボックスの中身は、直前の検索ボックス配列の要素を連結させたもの
 				this.searchBox = this.storedSearchKeywords.join(" ");
-				/*
-				console.log("suggestKeywords.length === 0");
-				console.log("this.storedSearchKeywords");
-				console.log(this.storedSearchKeywords);
-				console.log("this.searchBox");
-				console.log(this.searchBox);
-				console.log("------------------------------");
-				*/
 
 				//storedSearchKeywords[]が空
 			} else if (
@@ -411,14 +388,6 @@ export default {
 			) {
 				//検索ボックスの中身は、検索ヒント配列の要素を連結させたもの
 				this.searchBox = this.suggestKeywords.join(" ");
-				/*
-				console.log("storedSearchKeywords.length === 0");
-				console.log("this.suggestKeywords");
-				console.log(this.suggestKeywords);
-				console.log("this.searchBox");
-				console.log(this.searchBox);
-				console.log("------------------------------");
-				*/
 
 				//suggestKeywords[]が空でなく、storedSearchKeywords[]も空でない
 			} else if (
@@ -428,46 +397,27 @@ export default {
 				//検索ボックスの中身は、2つの配列の要素を連結させたもの
 				this.searchBox =
 					this.storedSearchKeywords.join(" ") + " " + this.suggestKeywords.join(" ");
-				/*
-				console.log("suggestKeywords.length !== 0 && storedSearchKeywords.length !== 0");
-				console.log("this.storedSearchKeywords");
-				console.log(this.storedSearchKeywords);
-				console.log("this.suggestKeywords");
-				console.log(this.suggestKeywords);
-				console.log("this.searchBox");
-				console.log(this.searchBox);
-				console.log("------------------------------");
-				*/
+
 				//検索ボックス配列と検索ヒント配列が両方空の場合
 			} else {
 				//検索ボックスの中身は、空
 				this.searchBox = "";
-				//console.log("suggestKeywords.length === 0 && storedSearchKeywords.length === 0");
 			}
 		},
 		searchBox(val) {
-			//検索ボックスの内容確認
-			//console.log("val in searchBox");
-			//console.log(val);
+			//検索ボックスの中身が変化したとき、
+			//検索ワードをsearchBoxContentArrayに保存して、検索実行に備える
 			//検索ボックスが空でない場合
 			if (val !== "") {
 				//検索ボックスの内容を半角空白で区切って、検索ワードを配列に格納する
 				this.searchBoxContentArray = val.split(/\s+/);
-				//console.log("this.searchBoxContentArray in searchBox");
-				//console.log(this.searchBoxContentArray);
-
 				//検索ボックスが空のとき
 			} else {
-				//console.log("this.searchBoxContentArray before");
-				//console.log(this.searchBoxContentArray);
-
 				//検索ボックスが空のときは、検索ボックス配列も空にする
-				//これを実行しないと、検索ボックスの文字列を手動で全消去しても、searchBoxContentArrayに1文字だけ残ってしまう
+				//これを実行しないと、検索ボックスの文字列を手動で全消去しても、
+				//searchBoxContentArrayに1文字だけ残ってしまう
 				this.searchBoxContentArray = [];
-				//console.log("this.searchBoxContentArray after");
-				//console.log(this.searchBoxContentArray);
 			}
-			//console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 		},
 	},
 	methods: {
@@ -477,30 +427,17 @@ export default {
 		getSentenceOfSearchResult() {
 			return `検索結果：${this.rows}件のデータを取得しました`;
 		},
-		changeShow() {
-			console.log("enter changeShow()");
-			this.show = false;
-		},
 		getUpdatedAt(data) {
-			//console.log("data.item.updated_at.charAt(1)");
-			//console.log(data.item.updated_at.charAt(1));//0
-			console.log("data.item.updated_at");
-			console.log(data.item.updated_at);
-
-			console.log("data.item.updated_at.slice(0,10)");
-			console.log(data.item.updated_at.slice(0, 10));
 			return data.item.updated_at.slice(0, 10);
 		},
 		deleteSearchBoxContent() {
 			//検索ボックス内の文字列を全消去
 			this.storedSearchKeywords.splice(-this.storedSearchKeywords.length);
 			this.suggestKeywords.splice(-this.suggestKeywords.length);
-			//上記２処理の後、watchのsuggestKeywordsにて、this.searchBox = "";が実行される
+			//これらの処理の後、watchのsuggestKeywordsにて、this.searchBox = "";が実行される
 			//これにより、watchのsearchBoxにて、this.searchBoxContentArray=[];が実行される
 		},
-		//mySortCompare(a, b, key, sortDesc) {
 		mySortCompare(a, b, key) {
-			console.log("enter mySortCompare");
 			if (key === "updated") {
 				return a.updated_at < b.updated_at ? 1 : -1;
 			}
@@ -508,12 +445,11 @@ export default {
 		displayAllArticles() {
 			//全件表示ボタンがクリックされたとき、１ページ目に全データを表示させる
 			//1ページあたりの表示数をqiita取得の全データ数とする
-			//this.perPageOfBootstrap = this.allArticleDataSorted.length;
 			this.perPageOfBootstrap = this.allArticlesOfSearchResult.length;
 		},
 		doOnFocus() {
-			console.log("enter doOnFocus");
-			//一時保存配列を初期化
+			//検索ボックスにカーソルがあたったら、ユーザによるチェックボックスの選択は終了したと判断
+			//検索ボックスの内容を保存し、チェックボックスの再選択に備える
 			this.storedSearchKeywords.splice(-this.storedSearchKeywords.length);
 
 			//検索ボックスの内容を保存
@@ -521,43 +457,28 @@ export default {
 				this.storedSearchKeywords.push(this.searchBoxContentArray[j]);
 			}
 
-			//検索ヒント配列を初期化
 			this.suggestKeywords.splice(-this.suggestKeywords.length);
 		},
 		doOnBlur() {
-			//検索ボックスからフォーカスが外れたときに実行される
-			//console.log("enter doOnBlur method");
-
-			//検索ボックスの内容を一時保存するための配列を初期化する
+			//検索ボックスからフォーカスが外れたとき、ユーザによる直接入力は終了したと判断
+			//検索ボックスの内容を保存し、チェックボックスの再選択に備える
 			this.storedSearchKeywords.splice(-this.storedSearchKeywords.length);
-
-			//フォーカスが外れる直前の検索ボックスの内容を確認
-			//console.log("this.searchBoxContentArray");
-			//console.log(this.searchBoxContentArray);
 
 			//フォーカスが外れる直前の検索ボックスの内容を一時保存用の配列に格納する
 			for (let j = 0; j < this.searchBoxContentArray.length; j++) {
 				this.storedSearchKeywords.push(this.searchBoxContentArray[j]);
 			}
-			//console.log("this.storedSearchKeywords");
-			//console.log(this.storedSearchKeywords);
 
 			//検索ボックスの内容を退避させたら、ヒントキーワードを格納する配列を空にする
 			this.suggestKeywords.splice(-this.suggestKeywords.length);
 		},
 		addStockArrayInGoogleSearch(element) {
-			console.log("enter addStockArrayInGoogleSearch");
-
+			//google検索結果の記事のストックボタンが押されたとき
+			//記事データをブラウザに保存
 			for (let i = 0; i < this.allArticlesOfSearchResult.length; i++) {
 				if (this.allArticlesOfSearchResult[i].cacheId === element.cacheId) {
 					//押下された要素のディープコピーをとる
-					//let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
 					let changeData = _cloneDeep(this.allArticlesOfSearchResult[i]);
-
-					console.log(`
-						this.allArticlesOfSearchResult[${i}] in addStockArrayInGoogleSearch
-					`);
-					console.log(this.allArticlesOfSearchResult[i]);
 
 					this.$store.commit(
 						"persistedParameter/changeStockedArticlesInGoogleSearch",
@@ -567,35 +488,22 @@ export default {
 			}
 		},
 		addStockArray(element) {
-			//記事をブラウザに保存して永続化させる
-			//後で読みたい記事をストックしておける
-
-			//Qiitaの記事をストックする
-			//押下された要素を特定する
-			console.log("enter addStockArray");
-
+			//Qiita検索結果のストックボタンが押されたとき
+			//記事データをブラウザに保存して永続化させる
 			for (let i = 0; i < this.allArticlesOfSearchResult.length; i++) {
 				if (this.allArticlesOfSearchResult[i].id === element.id) {
-					//押下された要素のディープコピーをとる
-					//let changeData = _.cloneDeep(this.allArticleDataSorted[i]);
 					let changeData = _cloneDeep(this.allArticlesOfSearchResult[i]);
-
-					console.log(`this.allArticlesOfSearchResult[${i}] in addStockArray`);
-					console.log(this.allArticlesOfSearchResult[i]);
-
 					this.$store.commit("persistedParameter/changeStockedArticles", changeData);
 				}
 			}
 		},
 		async doSearch() {
-			console.log("enter doSearch");
-
 			//検索ボックスが空の場合はアラートを出す
 			if (this.searchBoxContentArray.length === 0) {
 				alert("キーワードを入力してください");
 				return;
 			}
-			//loadingアニメーションの実行
+
 			this.loading = true;
 
 			//APIによるデータ取得時の結果を受けて、検索結果の表示を切り替える変数を初期化
@@ -603,7 +511,6 @@ export default {
 
 			//APIによるデータ取得時の結果を格納する変数を初期化
 			let isAPIError = false;
-			//this.$store.dispatch('APIErrorSetAction',false);
 
 			this.isSearchResultZero = false;
 			this.allArticlesOfSearchResult.splice(-this.allArticlesOfSearchResult.length);
@@ -612,63 +519,33 @@ export default {
 			this.isQiitaSearchResultDisplay = false;
 			this.isOtherDomainSearchResultDisplay = false;
 
-			//let urlParameter ='';
-			//let url ='';
-
-			//APIから取得したデータの格納用
-			//let result=[];
-
-			//resultのコピー用
-			//let resultAddedIsStock_3=[];
-
-			//配列の初期化
-			//this.allArticleDataSorted.splice(-this.allArticleDataSorted.length);
-
-			//配列の初期化
-			//連続での検索に対応
+			//連続での検索に対応するため、配列を初期化
 			this.$store.commit("allExperienceArticlesInit");
 
 			//検索キーワードをサニタイズする
 			for (let i = 0; i < this.searchBoxContentArray.length; i++) {
 				this.searchBoxContentArray[i] = sanitizeHTML(this.searchBoxContentArray[i]);
 			}
-			console.log("this.searchBoxContentArray in doSearch");
-			console.log(this.searchBoxContentArray);
 
 			//検索対象ドメインがqiitaの場合
 			if (this.domain === "qiita") {
-				console.log("enter this.domain === qiita");
 				this.isQiitaSearchResultDisplay = true;
 
 				//qiitaのAPIを利用することをaxios.jsに伝える
-				//axios.jsでは、このusedAPIフラグにてどのAPIとやり取りをしているのかを判断し、
+				//axios.jsでは、このusedAPIフラグをチェックすることで、どのAPIとやり取りをしているのかを判断し、
 				//ヘッダーにトークン情報を付加して通信する
-
 				this.$store.commit("changeUsedAPI", "qiita");
 
-				//QiitaAPIを利用して検索を行い、結果を取得
-				//let isError = await this.$store.dispatch('doSearchInQiitaAction', _cloneDeep(this.searchBoxContentArray) );
-
+				//QiitaAPIを利用して検索を行い、結果を取得し、storeに格納する
+				//データ取得が正常に完了した場合は、isAPIError=falseとなる
 				//this.isAPIErrorを切り替えるのは、this.allArticlesOfSearchResultにデータを格納した後で
-				//this.isAPIError= await this.$store.dispatch('doSearchInQiitaAction', _cloneDeep(this.searchBoxContentArray) );
-
 				isAPIError = await this.$store.dispatch(
 					"doSearchInQiitaAction",
 					_cloneDeep(this.searchBoxContentArray)
 				);
 
-				//console.log("this.isAPIError after this.isAPIError= await this.$store in qiita");
-				//console.log(this.isAPIError);
-				console.log("isAPIError after isAPIError= await this.$store in qiita");
-				console.log(isAPIError);
-
-				//this.allArticleDataSorted = _cloneDeep( this.$store.getters['getAllExperienceArticles'];
-
-				///////////////////////////////////////////////
-
 				//検索対象のドメインがqiita以外の場合
 			} else {
-				console.log("enter else");
 				//doSearchInGoogleActionに渡すデータ
 				let dataForGoogle = {
 					domain: "",
@@ -679,7 +556,6 @@ export default {
 				//今後機能を削除する可能性あり
 				this.isOtherDomainSearchResultDisplay = true;
 
-				//this.$store.commit("persistedParameter/changeUsedAPI","google");
 				this.$store.commit("changeUsedAPI", "google");
 
 				dataForGoogle.domain = this.domain;
@@ -688,55 +564,26 @@ export default {
 					dataForGoogle.searchBoxContentArray.push(this.searchBoxContentArray[i]);
 				}
 
-				//let isError = await this.$store.dispatch('doSearchInGoogleAction', _cloneDeep(dataForGoogle) );
-				//this.isAPIError= await this.$store.dispatch('doSearchInGoogleAction', _cloneDeep(dataForGoogle) );
-
 				isAPIError = await this.$store.dispatch(
 					"doSearchInGoogleAction",
 					_cloneDeep(dataForGoogle)
 				);
-				//this.allArticleDataSorted = _cloneDeep( this.$store.getters['getAllExperienceArticles'];
-
-				console.log("isAPIError after isAPIError= await this.$store in google");
-				console.log(isAPIError);
-				///////////////////////////////////////////////
 			}
 
 			//APIの利用時にエラーが発生した場合
 			if (isAPIError) {
-				console.log("enter if isAPIError true");
 				this.isAPIError = true;
-
-				console.log("this.isAPIError ");
-				console.log(this.isAPIError);
 			} else {
-				//以下処理の順番に注意
-				console.log("enter else isAPIError false");
 				this.allArticlesOfSearchResult = _cloneDeep(
 					this.$store.getters["getAllExperienceArticles"]
 				);
-
-				console.log("this.allArticlesOfSearchResult");
-				console.log(this.allArticlesOfSearchResult);
-
-				console.log("this.$store.getters['getAllExperienceArticles']");
-				console.log(this.$store.getters["getAllExperienceArticles"]);
-
+				//検索結果が０件のときは専用のメッセージを表示するため
 				if (this.allArticlesOfSearchResult.length === 0) {
 					this.isSearchResultZero = true;
-					console.log("this.isSearchResultZero");
-					console.log(this.isSearchResultZero);
 				}
 
 				this.isAPIError = isAPIError;
-				console.log("this.isAPIError ");
-				console.log(this.isAPIError);
-
-				console.log("this.isSearchResultZero");
-				console.log(this.isSearchResultZero);
 			}
-
-			//アニメーションを停止
 			this.loading = false;
 		},
 	},
@@ -744,11 +591,9 @@ export default {
 </script>
 
 <style scoped>
-/* 素材
-*/
 .select-element {
-	width: 300px;
 	display: block;
+	width: 300px;
 }
 
 #search-box {
@@ -756,10 +601,10 @@ export default {
 }
 
 #x-button {
-	position: absolute;
-	top: 0;
-	right: 26%;
 	height: 38px;
+	position: absolute;
+	right: 26%;
+	top: 0;
 }
 
 #search-box-area {
@@ -768,20 +613,11 @@ export default {
 
 #search-button {
 	position: absolute;
-	top: 0;
 	right: 0;
+	top: 0;
 	width: 25%;
 }
-/*
-明るすぎ
-background: linear-gradient(to right, #0069d9, #8bc3ff);
-暗すぎ
-background: linear-gradient(to right, #0069d9, #278fff);
-left: 75%;
-width: 202.48px;
-right: 0;
-width: 25%;
-*/
+
 #display-number-paragraph {
 	display: inline-block;
 }
@@ -791,23 +627,23 @@ width: 25%;
 }
 
 #display-number-box {
-	width: 30%;
 	display: inline-block;
+	width: 30%;
 }
 
 #or-span {
-	width: 10%;
-	line-height: 38px;
-	text-align: center;
-	position: absolute;
 	left: 30%;
+	line-height: 38px;
+	position: absolute;
+	text-align: center;
+	width: 10%;
 }
 
 #display-number-all-button {
-	width: 22%;
+	left: 40%;
 	position: absolute;
 	top: 0;
-	left: 40%;
+	width: 22%;
 }
 
 #qiita-search-container {
@@ -823,37 +659,26 @@ width: 25%;
 }
 
 .search-steps-title {
-	font-size: 20px;
-	font-weight: 400;
 	color: #303133;
 	display: block;
+	font-size: 20px;
+	font-weight: 400;
 	padding-left: 15px;
 	padding-right: 15px;
 }
-/*
-font-weight: bold;
-color: #303133;
-color: #212529;
-*/
+
 .search-steps-number {
-	font-size: 20px;
+	background-color: #d97000;
+	border-radius: 50%;
 	color: white;
 	display: block;
+	font-size: 20px;
 	height: 30px;
-	width: 30px;
-	border-radius: 50%;
 	line-height: 30px;
 	text-align: center;
-	background-color: #d97000;
+	width: 30px;
 }
-/*
-color: #909399;
-color: #303133;
-border: 1px solid;
-border: 1px solid;
-width: 10px;
-text-align: center;
-*/
+
 .search-steps-title-area {
 	display: flex;
 	margin-bottom: 5px;

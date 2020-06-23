@@ -1,5 +1,5 @@
 <template>
-	<div id="article-list-container" class="section-container">
+	<div class="section-container">
 		<div class="h2title-area">
 			<h2 class="h2title">
 				転職成功者のデータ一覧表
@@ -103,7 +103,7 @@ export default {
 			totalRows: 1,
 			filter: null,
 			filterOn: [],
-			tableData: [], //表の描画用データ
+			tableData: [],
 			fields: [
 				"index",
 				{
@@ -134,72 +134,58 @@ export default {
 			],
 		};
 	},
-
-	//created:function(){
 	created() {
 		//DBから取得した全体験記をテーブル配列に挿入
 		this.tableData = this.$store.getters["getAllArticlesForGraph"];
-		console.log("this.tableData in article-list");
-		console.log(this.tableData);
-
 		this.totalRows = this.tableData.length;
-		console.log("this.totalRows in article-list");
-		console.log(this.totalRows);
 	},
 	methods: {
 		onFiltered(filteredItems) {
-			// Trigger pagination to update the number of buttons/pages due to filtering
 			this.totalRows = filteredItems.length;
-			//this.currentPage = 1
 		},
 		mySortCompare(a, b, key, sortDesc) {
+			//昇順、降順にソートさせつつ、空白データを最後に移動させる
 			if (key === "study_term") {
 				console.log(sortDesc);
 
 				//降順
 				if (sortDesc) {
+					//数字のソート
 					if (Number(a[key]) - Number(b[key]) > 0) {
-						//console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+						//aを前方に移動(a を b より小さい添字にソート)
 						return 1;
 					} else if (Number(a[key]) - Number(b[key]) < 0) {
-						//console.log(`a = ${a.study_term}, b= ${b.study_term} `);
+						//bを前方に移動
 						return -1;
 					}
-					//console.log(`a = ${a.study_term}, b= ${b.study_term} `);
 					return 0;
 
 					//昇順
 				} else {
 					//空要素のソート
 					if (a[key] === "" && b[key] === "") {
-						//console.log(`a = ${a.study_term}, b= ${b.study_term}  both empty`);
 						//a と b を並び替えしない
 						return 0;
 					}
 
 					if (a[key] === "") {
-						//console.log(`a = ${a.study_term}, b= ${b.study_term} a is empty`);
-						//bを前方へ移動させる(b を a より小さい添字にソート)
+						//bを前方へ移動させる
 						return 1;
 					}
 
 					if (b[key] === "") {
-						//console.log(`a = ${a.study_term}, b= ${b.study_term} b is empty`);
-						//aを前方へ移動させる (a を b より小さい添字にソート)
+						//aを前方へ移動させる
 						return -1;
 					}
 
 					//数字のソート
 					if (Number(a[key]) - Number(b[key]) > 0) {
-						//console.log(`a = ${a.study_term}, b= ${b.study_term} `);
-						//bを前方へ移動させる(b を a より小さい添字にソート)
+						//bを前方へ移動させる
 						return 1;
 					} else if (Number(a[key]) - Number(b[key]) < 0) {
-						//console.log(`a = ${a.study_term}, b= ${b.study_term} `);
-						//aを前方へ移動させる (a を b より小さい添字にソート)
+						//aを前方へ移動させる
 						return -1;
 					}
-					//console.log(`a = ${a.study_term}, b= ${b.study_term} `);
 					return 0;
 				}
 			} else {
@@ -209,11 +195,3 @@ export default {
 	},
 };
 </script>
-
-<style scoped>
-#article-list-container {
-}
-/* 素材
-width: 95%;
-*/
-</style>

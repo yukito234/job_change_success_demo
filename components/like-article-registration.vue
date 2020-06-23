@@ -100,11 +100,6 @@
 						<p>
 							{{ errorMessage }}
 						</p>
-						<!--
-						<p>
-							{{ getMessageAboutNumberOfLikeArticle }}
-						</p>
-						-->
 						<p>
 							<span>
 								現在
@@ -297,13 +292,15 @@ export default {
 					label: "削除ボタン",
 				},
 			],
-			editFlag: false, //お気に入り記事を追加・削除するのボタンがクリックされるとtrueになる
+			//editFlag: false, //お気に入り記事を追加・削除するのボタンがクリックされるとtrueになる
 			title: "",
 			url: "",
 			recommendation: "",
 			freeTextArea: "",
 			errorMessage: "",
-			likeArticlesData: [], //ログインユーザのお気に入りデータを格納
+
+			//ログインユーザのお気に入りデータを格納
+			likeArticlesData: [],
 			allUsersData: [],
 			isLikeModalDisplay: false,
 			loading: false,
@@ -315,47 +312,30 @@ export default {
 				.is_profile_registration;
 		},
 		getIsAddableLikeArticle() {
-			//const numberOfLikeArticles = this.$store.getters['sessionStorageParameter/getLoginUserData'].like_article_count;
-			//console.log("numberOfLikeArticles");
-			//console.log(numberOfLikeArticles);
+			//お気に入り記事の最大登録数は３
 			if (this.getNumberOfLikeArticle <= 2) {
-				console.log("this.getNumberOfLikeArticle in getIsAddableLikeArticle");
-				console.log(this.getNumberOfLikeArticle);
 				return true;
 			} else {
 				return false;
 			}
 		},
 		getNumberOfAddableLikeArticle() {
-			console.log("3 - this.getNumberOfLikeArticle in getNumberOfAddableLikeArticle");
-			console.log(3 - this.getNumberOfLikeArticle);
+			//あと何記事登録できるか数字を返す
 			return 3 - this.getNumberOfLikeArticle;
 		},
 		getNumberOfLikeArticle() {
 			const numberOfLikeArticles = this.$store.getters[
 				"sessionStorageParameter/getLoginUserData"
 			].like_article_count;
-
-			console.log("numberOfLikeArticles in getNumberOfLikeArticle");
-			console.log(numberOfLikeArticles);
 			return numberOfLikeArticles;
 		},
-		/*
-		getMessageAboutNumberOfLikeArticle() {
-			return `現在${this.numberOfLikeArticle}記事が登録されています。（上限３記事）`;
-		},
-		*/
 		obtainLikeArticles() {
-			//console.log("this.$store.getters['sessionStorageParameter/getLikeArticlesDataOfLoginUser'] in obtainLikeArticles");
-			//console.log(this.$store.getters["sessionStorageParameter/getLikeArticlesDataOfLoginUser"]);
 			return _cloneDeep(
 				this.$store.getters["sessionStorageParameter/getLikeArticlesDataOfLoginUser"]
 			);
-			//return this.likeArticlesData;
 		},
 		getIsEditAndDeleteSectionDisplay() {
-			console.log("this.obtainLikeArticles.length");
-			console.log(this.obtainLikeArticles.length);
+			//お気に入り記事が登録されているかどうかでメッセージを変えるため
 			if (this.obtainLikeArticles.length >= 1) {
 				return true;
 			}
@@ -371,20 +351,14 @@ export default {
 			}
 		},
 		confirm(item) {
-			console.log("enter confirm");
-			console.log("item");
-			console.log(item);
+			//お気に入り記事の編集を行う
 			this.$store.dispatch("editLikeArticleAction", _cloneDeep(item));
 		},
 		deleteLikeArticles(item) {
-			console.log("enter deleteLikeArticles");
-			console.log("item");
-			console.log(item);
 			this.$store.dispatch("deleteLikeArticleAction", item);
 		},
 		async registerLikeArticle() {
 			this.loading = true;
-			console.log("enter registerLikeArticle");
 
 			this.url = sanitizeHTML(this.url);
 			this.title = sanitizeHTML(this.title);
@@ -403,24 +377,13 @@ export default {
 				this.loading = false;
 				return;
 			}
-			//let urlResult = this.url.match(/^(http|https):\/\//i);
-			//console.log("urlResult");
-			//console.log(urlResult);
 
 			const allLikeArticles = this.$store.getters["getAllLikeArticles"];
 
 			const userId = this.$store.getters["sessionStorageParameter/getLoginUserData"].uid;
 
-			console.log("allLikeArticles");
-			console.log(allLikeArticles);
-
-			console.log("userId");
-			console.log(userId);
-
 			for (let i = 0; i < allLikeArticles.length; i++) {
 				if (allLikeArticles[i].url === this.url) {
-					console.log("allLikeArticles[i]");
-					console.log(allLikeArticles[i]);
 					alert("すでに同じ記事が登録されています");
 					this.loading = false;
 					return;
@@ -434,9 +397,6 @@ export default {
 				free_text_area: this.freeTextArea,
 				user_id: userId,
 			};
-
-			console.log("data");
-			console.log(data);
 
 			await this.$store.dispatch("registerLikeArticleAction", _cloneDeep(data));
 			this.url = "";

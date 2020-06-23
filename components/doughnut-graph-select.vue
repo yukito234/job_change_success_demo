@@ -12,8 +12,6 @@
 </template>
 
 <script>
-// prettier-ignore
-/* eslint-disable */
 export default {
 	data() {
 		return {
@@ -29,14 +27,11 @@ export default {
 	},
 	watch: {
 		graphSelection: function () {
-			console.log("graphSelection in watch");
-			console.log(this.graphSelection);
+			//グラフタイプの変更を親ファイルに伝えて、再描画を行う
 			this.$emit("graphChangeNoticeToDoughnutGraphSection", this.graphSelection);
 		},
 	},
 	created() {
-		console.log("created in doughnut-graph-select");
-		console.log(this.graphSelection);
 		this.$emit("graphChangeNoticeToDoughnutGraphSection", this.graphSelection);
 	},
 };

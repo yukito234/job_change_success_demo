@@ -22,19 +22,6 @@
 						label-class="font-weight-bold pt-0"
 						class="mb-0"
 					>
-						<!--
-						<p>
-							<span>
-								すべて
-							</span>
-							<span id="text-input-required">
-								入力必須
-							</span>
-							<span>
-								です。
-							</span>
-						</p>
-						-->
 						<b-form-group
 							label-cols-sm="3"
 							label="ニックネーム(必須):"
@@ -202,11 +189,9 @@ export default {
 		return {
 			loading: false,
 			file: null,
-			//file: "",//左のように空で初期化すると、エラーが出るInvalid prop: type check failed for prop "value". Expected File, Array, got String with value ""
 			uploadedImage: "",
 			nickName: "",
 			selfIntroduction: "",
-			editFlag: false,
 			documentId: "",
 			isProfileModalDisplay: false,
 			isExperienceModalDisplay: false,
@@ -219,67 +204,43 @@ export default {
 		},
 		getAndSetNickName: {
 			get() {
-				//プロフィール未登録の場合
-				//getIsProfileRegistrationはtrueだが、DBからのプロフィール情報のダウンロードに失敗することもある
-				//この場合、DBにプロフィールは登録されている
-				//Object.keys:指定されたオブジェクトが持つプロパティの名前の配列を返す
+				//Object.keysで指定されたオブジェクトが持つプロパティの名前の配列を取得できる
+				//そこで、ログインユーザのプロフィール配列を取得し、
 				//この配列のlengthが０のとき、プロフィールデータが存在しないと判断する
-				//console.log("Object.keys( this.$store.getters['sessionStorageParameter/getLoginUserProfile'] )");
-				//console.log(Object.keys( this.$store.getters['sessionStorageParameter/getLoginUserProfile'] ));
-
 				if (
 					Object.keys(this.$store.getters["sessionStorageParameter/getLoginUserProfile"])
 						.length === 0
 				) {
-					console.log("ログインユーザのプロフィール情報はありません");
 					return "";
 				}
 
 				const nickName = this.$store.getters["sessionStorageParameter/getLoginUserProfile"]
 					.nick_name;
 
-				//nickName = sanitizeHTML(nickName);
-				console.log("nickName");
-				console.log(nickName);
-				//eslintのside effectsエラーにかかるので以下を削除
-				//this.nickName = nickName;
 				this.setNickName(nickName);
 				return nickName;
 			},
 			set(newValue) {
-				console.log("enter getAndSetNickName");
-				console.log(newValue);
 				this.nickName = sanitizeHTML(newValue);
 			},
 		},
 		getAndSetSelfIntroduction: {
 			get() {
-				//共通の処理はミックスインに切り出す
-				//プロフィール未登録の場合
 				if (
 					Object.keys(this.$store.getters["sessionStorageParameter/getLoginUserProfile"])
 						.length === 0
 				) {
-					console.log("ログインユーザのプロフィール情報はありません");
 					return "";
 				}
-				//const selfIntroduction = _cloneDeep( this.$store.getters['sessionStorageParameter/getLoginUserProfile'].self_introduction );
 
 				const selfIntroduction = this.$store.getters[
 					"sessionStorageParameter/getLoginUserProfile"
 				].self_introduction;
 
-				//selfIntroduction = sanitizeHTML(selfIntroduction);
-				console.log("selfIntroduction");
-				console.log(selfIntroduction);
-				//eslintのside effectsエラーにかかるので以下を削除
-				//this.selfIntroduction = selfIntroduction;
 				this.setSelfIntroduction(selfIntroduction);
 				return selfIntroduction;
 			},
 			set(newValue) {
-				console.log("enter getAndSetSelfIntroduction");
-				console.log(newValue);
 				this.selfIntroduction = sanitizeHTML(newValue);
 			},
 		},
@@ -298,50 +259,28 @@ export default {
 				this.isProfileModalDisplay = true;
 			}
 		},
-		editProfile() {
-			this.editFlag = true;
-		},
 		async updateProfile() {
-			console.log("enter updateProfile");
 			this.loading = true;
 			let data = {};
 			data.profile = {};
-			//console.log("this.nickName.length:");
-			//console.log(this.nickName.length);
-			console.log("this.nickName");
-			console.log(this.nickName);
-
-			console.log("this.selfIntroduction:");
-			console.log(this.selfIntroduction);
 
 			this.nickName = sanitizeHTML(this.nickName);
 			this.selfIntroduction = sanitizeHTML(this.selfIntroduction);
 
 			//ニックネームと自己紹介文は1文字以上が入力されていること
-			//v-modelのtrimを使っているので空白の入力は防げるはず
 			if (this.nickName === "" || this.selfIntroduction === "") {
 				alert("ニックネームと自己紹介文が空のままでは更新できません");
 				this.loading = false;
 				return;
 			}
-			//すべての項目に変更がない場合は、DBの更新は行わないようにしたい
-			//更新ボタンもdisabledにしておく
-			//プロフィール画像については、URLの情報しかないので、アップロードされたものがsessionのものと同一か判定できない
-
-			console.log("this.$store.getters['sessionStorageParameter/getLoginUserProfile']");
-			console.log(this.$store.getters["sessionStorageParameter/getLoginUserProfile"]);
 
 			//uploadedImageが空の場合は、session画像のURLをプロフィール画像のURLとする
 			//空の場合はプロフィール画像を変更しないと判断する
 			//ニックネームと自己紹介文のみを更新する
 			if (this.uploadedImage === "") {
-				console.log("this.uploadedImageが空です");
 				this.uploadedImage = this.$store.getters[
 					"sessionStorageParameter/getLoginUserProfile"
 				].image_url;
-				console.log(this.uploadedImage);
-				//alert("プロフィール画像が選択されていません");
-				//return;
 			}
 
 			if (
@@ -370,35 +309,23 @@ export default {
 				this.$store.getters["sessionStorageParameter/getLoginUserProfile"].documentId
 			);
 
-			console.log("data in profile-registration");
-			console.log(data);
-
 			await this.$store.dispatch("updateProfileAction", data);
 
 			this.$store.dispatch("allProfilesInitAction");
 
 			//DBから最新の全プロフィールを取得
-			//全プロフィールはmemberページに反映されるので、更新後に最新のものをダウンロードする必要がある
+			//全プロフィールはmembersページに反映されるので、更新後に最新のものをダウンロードする必要がある
 			await this.$store.dispatch("allProfilesGetAction");
-
-			//console.log("this.$store.getters['getAllProfiles'] after await this.$store.dispatch('allProfilesGetAction')");
-			//console.log(this.$store.getters["getAllProfiles"]);
 
 			//その中からログインユーザーの最新プロフィールをsessionに保存
 			this.$store.dispatch("loginUserProfileGetAction");
 
-			console.log("this.$store.getters['sessionStorageParameter/getLoginUserProfile']");
-			console.log(this.$store.getters["sessionStorageParameter/getLoginUserProfile"]);
-
 			this.loading = false;
-			this.editFlag = false;
-
 			alert("プロフィールの更新完了");
 		},
 
 		async registerProfile() {
 			this.loading = true;
-
 			this.nickName = sanitizeHTML(this.nickName);
 			this.selfIntroduction = sanitizeHTML(this.selfIntroduction);
 
@@ -409,29 +336,22 @@ export default {
 				return;
 			}
 
+			//firebaseへの登録に必要なデータを用意する
 			let data = {};
 			data.profile = {};
 			data.profile.nick_name = this.nickName;
 			data.profile.self_introduction = this.selfIntroduction;
 			data.file = this.file;
 
-			//プロフィール未登録なので以下では取得できない
-			//usersテーブルのログインユーザのデータをsessionに保存する際に、ドキュメントIDも保存しておく
-
-			//data.userId = _cloneDeep( this.$store.getters['sessionStorageParameter/getLoginUserProfile'].user_id );
-
-			//プロフィールはまだ存在しないので、getLoginUserDataを使う
-			//updateとは式が異なるので注意
+			//ログインユーザのユーザIDは、user_profileコレクションで主キーの役割を果たす
 			data.profile.user_id = _cloneDeep(
 				this.$store.getters["sessionStorageParameter/getLoginUserData"].uid
 			);
 
-			//getUsersCollectionActionを参照
+			//ドキュメントIDは、usersコレクションのis_profile_registrationを更新する際に必要となる
 			data.documentId = _cloneDeep(
 				this.$store.getters["sessionStorageParameter/getLoginUserData"].documentId
 			);
-			console.log("data");
-			console.log(data);
 
 			await this.$store.dispatch("registerProfileAction", data);
 
@@ -441,29 +361,14 @@ export default {
 			//全プロフィールはmemberページに反映されるので、更新後に最新のものをダウンロードする必要がある
 			await this.$store.dispatch("allProfilesGetAction");
 
-			//console.log("this.$store.getters['getAllProfiles'] after await this.$store.dispatch('allProfilesGetAction')");
-			//console.log(this.$store.getters["getAllProfiles"]);
-
 			//その中からログインユーザーの最新プロフィールをsessionに保存
 			this.$store.dispatch("loginUserProfileGetAction");
 
-			console.log("this.$store.getters['sessionStorageParameter/getLoginUserProfile']");
-			console.log(this.$store.getters["sessionStorageParameter/getLoginUserProfile"]);
-
 			this.loading = false;
-
 			alert("プロフィールの登録完了");
 		},
-		//onFileChangeの後に呼ばれる
 		onFileInput() {
-			console.log("this.file onFileInput");
-			console.log(this.file);
-
 			if (this.file) {
-				//this.storedFile = this.file;
-				console.log("in if");
-				//console.log("this.storedFile");
-				//console.log(this.storedFile);
 				this.createImage(this.file);
 			} else {
 				this.uploadedImage = "";
@@ -473,8 +378,6 @@ export default {
 			let reader = new FileReader();
 			reader.onload = (e) => {
 				this.uploadedImage = e.target.result;
-				//console.log("this.uploadedImage in createImage");
-				//console.log(this.uploadedImage);
 			};
 			reader.readAsDataURL(file);
 		},
