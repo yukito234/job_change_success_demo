@@ -87,6 +87,7 @@ export default {
 			//コメント一覧に即表示させるため
 			await this.$store.dispatch("commentsGetAction");
 
+			//最新のコメントを取得したことを親コンポーネントのindex.vueに伝える
 			this.$emit("commentRegisteredNotice");
 			this.userComment = "";
 			this.loading = false;

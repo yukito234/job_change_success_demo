@@ -25,5 +25,17 @@ export default {
 			store.dispatch("changeIsExperienceArticlesAction", true);
 		}
 	},
+	head() {
+		return {
+			title: "成功者グラフページ",
+			meta: [
+				{
+					hid: "description",
+					name: "description",
+					content: "未経験から転職に成功した人のデータをグラフや表で把握できます。",
+				},
+			],
+		};
+	},
 };
 </script>

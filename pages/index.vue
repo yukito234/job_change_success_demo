@@ -17,5 +17,18 @@ export default {
 		"stock-articles": StockArticles,
 		"how-to-use": HowToUse,
 	},
+	head() {
+		return {
+			title: "トップページ",
+			meta: [
+				{
+					hid: "description",
+					name: "description",
+					content:
+						"Qiitaやhatena、noteなどのドメインで、未経験からwebエンジニアに転職した人のお役立ち体験記を効率よく検索できます。また、記事情報はローカルストレージに保存できます。",
+				},
+			],
+		};
+	},
 };
 </script>

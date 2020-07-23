@@ -79,6 +79,18 @@ export default {
 			}
 		},
 	},
+	head() {
+		return {
+			title: "コメントページ",
+			meta: [
+				{
+					hid: "description",
+					name: "description",
+					content: "他の会員にコメントを残すことでコミュニケーションをとれます。",
+				},
+			],
+		};
+	},
 };
 </script>
 

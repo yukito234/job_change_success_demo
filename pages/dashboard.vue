@@ -54,6 +54,19 @@ export default {
 			store.dispatch("changeIsAllLikeArticlesAction", true);
 		}
 	},
+	head() {
+		return {
+			title: "ダッシュボードページ",
+			meta: [
+				{
+					hid: "description",
+					name: "description",
+					content:
+						"プロフィールを作成する機能、お役立ち記事を他のユーザに紹介する機能、転職成功者データを登録する機能を利用できます。",
+				},
+			],
+		};
+	},
 };
 </script>
 

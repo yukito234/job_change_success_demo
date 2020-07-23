@@ -86,7 +86,15 @@ export default {
 	},
 	head() {
 		return {
-			title: "会員ページ",
+			title: "会員一覧ページ",
+			meta: [
+				{
+					hid: "description",
+					name: "description",
+					content:
+						"ダッシュボードページでプロフィール登録をしている会員のニックネームや自己紹介文を閲覧できます。",
+				},
+			],
 		};
 	},
 };

@@ -10,7 +10,11 @@
 			<do-comment @commentRegisteredNotice="changeIsCallGetComments" />
 		</div>
 		<div class="individual-section">
-			<comment-list :is-call-get-comments="obtainIsCallGetComments" />
+			<!--<comment-list :is-call-get-comments="obtainIsCallGetComments" />-->
+			<comment-list
+				:is-call-get-comments="obtainIsCallGetComments"
+				@newCommentsObtainedNotice="initIsCallGetComments"
+			/>
 		</div>
 	</div>
 </template>
@@ -55,6 +59,8 @@ export default {
 	},
 	data() {
 		return {
+			//do-comment.vueにてユーザがコメントを投稿したときtrueに変わり
+			//comment-list.vueに最新のコメントをDBから取得するよう促す役割がある
 			isCallGetComments: false,
 			show: false,
 			loading: true,
@@ -83,8 +89,29 @@ export default {
 	},
 	methods: {
 		changeIsCallGetComments() {
+			//子のdo-comment.vueにてユーザがコメントを投稿すると発動するメソッド
+			//isCallGetCommentsをtrueに切り替えることで
+			//comment-list.vueに最新のコメント取得を促す
 			this.isCallGetComments = true;
 		},
+		initIsCallGetComments() {
+			//comment-list.vueにて最新コメントの表示が完了したら、isCallGetCommentsを初期化
+			//この処理を行わないと、２回目以降のコメントをリアクティブに表示できない
+			this.isCallGetComments = false;
+		},
+	},
+	head() {
+		return {
+			title: "プロフィールページ",
+			meta: [
+				{
+					hid: "description",
+					name: "description",
+					content:
+						"あなたがプロフィール登録済みであれば、このページの会員にコメントを残せます。また、お気に入り記事やコメントのやり取りを閲覧できます。",
+				},
+			],
+		};
 	},
 };
 </script>

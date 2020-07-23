@@ -79,10 +79,14 @@ export default {
 	},
 	watch: {
 		isCallGetComments: function () {
-			//do-comment.vueでコメントが投稿された場合に
-			//このページに反映させる
+			//do-comment.vueでコメントが投稿された場合
+			//isCallGetComments=trueとなり
+			//最新のコメントを取得する
 			if (this.isCallGetComments) {
 				this.getComments();
+				//コメントの表示が完了したら、index.vueのisCallGetCommentsの
+				//初期化を促す
+				this.$emit("newCommentsObtainedNotice");
 			}
 		},
 	},
