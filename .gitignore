@@ -93,3 +93,6 @@ sw.*
 # trush files
 sozai/
 pages/test-page.vue
+
+#dist
+dist/
