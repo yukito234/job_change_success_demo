@@ -1,92 +1,99 @@
 <template>
-  <div class="signin-container">
-    <b-overlay :show="show" rounded="sm">
-      <b-card bg-variant="light">
-            
-        <b-form-group
-          label-cols-lg="3"
-          label="ログインはこちら"
-          label-size="lg"
-          label-class="font-weight-bold pt-0"
-          class="mb-0"
-        >
-          <b-form-group
-            label-cols-sm="3"
-            label="メールアドレス:"
-            label-align-sm="right"
-            label-for="nested-street"
-          >
-            <b-form-input id="nested-street" v-model="email"></b-form-input>
-          </b-form-group>
+	<div class="section-container">
+		<div>
+			<h2 class="h2title">
+				ログイン
+			</h2>
+		</div>
+		<div>
+			<b-card bg-variant="light">
+				<b-form-group
+					label-cols-lg="3"
+					label-size="lg"
+					label-class="font-weight-bold pt-0"
+					class="mb-0"
+				>
+					<b-form-group
+						label-cols-sm="3"
+						label="メールアドレス:"
+						label-align-sm="right"
+						label-for="email-signin"
+					>
+						<b-form-input id="email-signin" v-model="userData.email" />
+					</b-form-group>
 
-          <b-form-group
-            label-cols-sm="3"
-            label="パスワード:"
-            label-align-sm="right"
-            label-for="nested-street"
-          >
-            <b-form-input id="nested-street" v-model="password"></b-form-input>
-          </b-form-group>
-          <b-form-group
-            label-cols-sm="3"
-            label=""
-            label-align-sm="right"
-            label-for="nested-country"
-          >
-            <b-button v-on:click="signIn">ログイン</b-button>
-          </b-form-group>
-        </b-form-group>
-      </b-card>
-      
-    </b-overlay>
-  </div>
+					<b-form-group
+						label-cols-sm="3"
+						label="パスワード:"
+						label-align-sm="right"
+						label-for="password-signin"
+					>
+						<b-form-input
+							id="password-signin"
+							v-model="userData.password"
+							type="password"
+						/>
+					</b-form-group>
+					<b-form-group label-cols-sm="3" label="" label-align-sm="right">
+						<div>
+							<b-button
+								id="signin-button"
+								class="button-with-gradation"
+								variant="primary"
+								:disabled="loading"
+								@click="signIn"
+							>
+								<b-spinner v-show="loading" small />
+								<span v-show="loading">
+									ログイン処理中...
+								</span>
+								<span v-show="!loading">
+									ログイン
+								</span>
+							</b-button>
+						</div>
+					</b-form-group>
+				</b-form-group>
+			</b-card>
+		</div>
+	</div>
 </template>
 
 <script>
-/* eslint-disable */
-import firebase from 'firebase'
-import db from '../plugins/firebase_config'
-
 export default {
-  name: 'Signin',
-  data () {
-    return {     
-      email: '',
-      password: '',
-      show:false,
-    }
-  },  
-  methods: {
-    signIn() {
-      this.show=true;
+	data() {
+		return {
+			userData: {
+				email: "",
+				password: "",
+			},
+			loading: false,
+		};
+	},
+	methods: {
+		async signIn() {
+			this.loading = true;
 
-      firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-      .then(() => {        
-        this.$store.dispatch('nameSetAction', firebase.auth().currentUser.displayName);
+			const data = {
+				email: this.userData.email,
+				password: this.userData.password,
+			};
 
-        this.$store.dispatch('persistedParameter/namePersistedSetAction', firebase.auth().currentUser.displayName);
-                           
-        this.$store.dispatch('persistedParameter/changeUserIdPersistedAction', firebase.auth().currentUser.uid);             
+			for (let key in this.userData) {
+				this.userData[key] = "";
+			}
 
-        this.$store.dispatch('persistedParameter/changeIsLoginUserAction', true);        
-
-        
-
-        this.show=false;        
-        //alert('ログイン成功');        
-        this.$router.push('/member');
-        //this.$router.go({path: this.$router.currentRoute.path, force: true});        
-      })
-      .catch(error => {
-        alert(error.message);
-      })
-    }
-  }
-}
+			await this.$store.dispatch("signInAction", data);
+			this.$router.push("/members");
+			this.loading = false;
+		},
+	},
+};
 </script>
 
 <style>
-.signin-container {
-  margin: 20px;  
+#signin-button {
+	display: block;
+	margin-left: auto;
 }
 </style>

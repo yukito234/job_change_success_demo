@@ -2,6 +2,7 @@ import createPersistedState from "vuex-persistedstate";
 
 export default ({ store }) => {
 	createPersistedState({
-		paths: ["persistedParameter"], //localStorageに保存したいstoreを入れる
+		paths: ["sessionStorageParameter"], //sessionStorageに保存したいstoreを入れる
+		storage: window.sessionStorage,
 	})(store);
 };

@@ -1,0 +1,38 @@
+.page-container {
+	background-color: #ececec;
+}
+
+.section-container {
+	background-color: white;
+	margin-bottom: 2%;
+	padding: 2%;
+}
+
+h2 {
+	border-left: solid 5px #7db4e6;
+	color: #494949;
+	padding: 0.4em 0.5em;
+}
+
+.h2title {
+	display: inline-block;
+}
+
+.h2title-area {
+	margin-bottom: 30px;
+}
+
+h3 {
+	background: transparent;
+	border-bottom: solid 2px #7db4e6;
+	color: #494949;
+	display: inline-block;
+	line-height: 33px;
+	margin-bottom: 15px;
+	padding-bottom: 0.25em;
+	padding-top: 0.25em;
+}
+
+.button-with-gradation {
+	background: linear-gradient(to right, #0069d9, #50a5ff);
+}

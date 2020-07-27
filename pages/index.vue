@@ -1,64 +1,34 @@
 <template>
-  <div >
-    <global-navi></global-navi>
-    <experience-search></experience-search>                  
-  </div>
+	<div class="page-container">
+		<experience-search />
+		<stock-articles />
+		<how-to-use />
+	</div>
 </template>
 
 <script>
-import ExperienceSearch from '~/components/experience-search.vue'
-import globalNavi from '~/components/global-navi.vue';
+import ExperienceSearch from "~/components/experience-search.vue";
+import StockArticles from "~/components/stock-articles.vue";
+import HowToUse from "~/components/how-to-use.vue";
 
 export default {
-  components: {          
-    'experience-search': ExperienceSearch,
-    "global-navi": globalNavi,
-
-  },
-  data () {
-    return {      
-      
-    }
-  },     
-}
+	components: {
+		"experience-search": ExperienceSearch,
+		"stock-articles": StockArticles,
+		"how-to-use": HowToUse,
+	},
+	head() {
+		return {
+			title: "トップページ",
+			meta: [
+				{
+					hid: "description",
+					name: "description",
+					content:
+						"Qiitaやhatena、noteなどのドメインで、未経験からwebエンジニアに転職した人のお役立ち体験記を効率よく検索できます。また、記事情報はローカルストレージに保存できます。",
+				},
+			],
+		};
+	},
+};
 </script>
-
-<style>
-
-.small {
-    max-width: 300px;
-    margin:  20px 10px auto;
-    border:1px solid;
-  }
-
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
-}
-</style>

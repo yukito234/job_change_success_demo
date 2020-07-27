@@ -69,7 +69,8 @@ typings/
 .nuxt
 
 # Nuxt generate
-dist
+#dist
+
 
 # vuepress build output
 .vuepress/dist
@@ -92,3 +93,6 @@ sw.*
 # trush files
 sozai/
 pages/test-page.vue
+
+#dist
+dist/

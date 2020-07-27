@@ -1,285 +1,402 @@
 <template>
-  <div>	   	     
-    <p>{{$store.state.persistedParameter.isEmpty}}</p>
-  	<div v-if="$store.state.persistedParameter.isEmpty">
-      <b-button v-b-toggle.collapse-11 variant="primary">プロフィールを登録する</b-button>
-      <b-collapse id="collapse-11" class="mt-2">
-        <b-card bg-variant="light">
-          <b-form-group
-            label-cols-lg="3"
-            label="プロフィールの作成"
-            label-size="lg"
-            label-class="font-weight-bold pt-0"
-            class="mb-0"
-          >
-            <b-form-group
-              label-cols-sm="3"
-              label="ニックネーム:"
-              label-align-sm="right"
-              
-            >
-              <b-form-input  v-model="nickName"></b-form-input>
-            </b-form-group>
+	<div>
+		<div v-if="!getIsProfileRegistration">
+			<b-button
+				id="profile-open-close-button"
+				class="button-with-gradation"
+				v-b-toggle.collapse-profile
+				variant="primary"
+				@click="changeIsProfileModalDisplay"
+			>
+				プロフィールを登録
+				<b-icon v-if="!isProfileModalDisplay" icon="chevron-down" />
+				<b-icon v-if="isProfileModalDisplay" icon="chevron-up" />
+			</b-button>
 
-            <b-form-group
-              label-cols-sm="3"
-              label="プロフィール画像:"
-              label-align-sm="right"
-              
-            >
-              <b-form-file
-                v-model="file"
-                :state="Boolean(file)"
-                placeholder="Choose a file or drop it here..."
-                drop-placeholder="Drop file here..."
-                accept="image/*"
-                @change="onFileChange"
-              ></b-form-file>
-              <img :src="uploadedImage">
-              
-            </b-form-group>
+			<b-collapse id="collapse-profile" class="mt-2">
+				<b-card bg-variant="light">
+					<b-form-group
+						label-cols-lg="3"
+						label="プロフィールの作成"
+						label-size="lg"
+						label-class="font-weight-bold pt-0"
+						class="mb-0"
+					>
+						<b-form-group
+							label-cols-sm="3"
+							label="ニックネーム(必須):"
+							label-align-sm="right"
+						>
+							<b-form-input v-model.trim="getAndSetNickName" />
+						</b-form-group>
 
-            <b-form-group
-              label-cols-sm="3"
-              label="自己紹介文:"
-              label-align-sm="right"
-              
-            >
-              <b-form-textarea
-                id="textarea"
-                v-model="selfIntroduction"
-                placeholder="Enter something..."
-                rows="3"
-                max-rows="6"
-              ></b-form-textarea>
-            </b-form-group>
+						<b-form-group
+							label-cols-sm="3"
+							label="プロフィール画像(必須):"
+							label-align-sm="right"
+						>
+							<b-form-file
+								v-model="file"
+								:state="Boolean(file)"
+								browse-text="選択"
+								placeholder="Choose a file or drop it here..."
+								drop-placeholder="Drop file here..."
+								accept="image/*"
+								@input="onFileInput"
+							/>
+							<img :src="uploadedImage" />
+						</b-form-group>
 
-            <b-form-group
-              label-cols-sm="3"
-              label=""
-              label-align-sm="right"
-              
-            >
-              <b-button v-on:click="registerProfile">プロフィールを新規登録する</b-button>
-            </b-form-group>
-          </b-form-group>
-        </b-card>
-      </b-collapse>
-          	    
-  	</div>
-  	<div v-else>    
-      <!--
-        以下ボタンを押してもドロップダウンのコンテンツが表示されないことがある
-        いったんユーザ一覧のボタンをクリックして、再度このページに戻ると表示される
-        firefoxでは、上のif内のb-buttonとb-collapseのidをid="collapse-11"で統一させることで解決した
-        ただし、chromeでは解決せず
-      -->
-      <b-button v-b-toggle.collapse-11 variant="primary">プロフィールを編集する</b-button>
-      <b-collapse id="collapse-11" class="mt-2">
-        <b-card bg-variant="light">
-          <b-form-group
-            label-cols-lg="3"
-            label="プロフィールの編集"
-            label-size="lg"
-            label-class="font-weight-bold pt-0"
-            class="mb-0"
-          >
-            <b-form-group
-              label-cols-sm="3"
-              label="ニックネーム:"
-              label-align-sm="right"
-              
-            >
-              <b-form-input  v-model="nickName"></b-form-input>
-            </b-form-group>
+						<b-form-group
+							label-cols-sm="3"
+							label="自己紹介文(必須):"
+							label-align-sm="right"
+						>
+							<b-form-textarea
+								id="textarea"
+								v-model.trim="getAndSetSelfIntroduction"
+								placeholder="Enter something..."
+								rows="3"
+								max-rows="6"
+							/>
+						</b-form-group>
 
-            <b-form-group
-              label-cols-sm="3"
-              label="プロフィール画像:"
-              label-align-sm="right"
-              
-            >
-              <b-form-file
-                v-model="file"
-                :state="Boolean(file)"
-                placeholder="Choose a file or drop it here..."
-                drop-placeholder="Drop file here..."
-                accept="image/*"
-                @change="onFileChange"
-              ></b-form-file>
-              <img :src="uploadedImage">
-              
-            </b-form-group>
+						<b-form-group label-cols-sm="3" label="" label-align-sm="right">
+							<div>
+								<b-button
+									id="profile-registration-button"
+									variant="primary"
+									:disabled="loading"
+									@click="registerProfile"
+								>
+									<b-spinner v-show="loading" small />
+									<span v-show="loading">
+										登録中...
+									</span>
+									<span v-show="!loading">
+										プロフィールを新規登録
+									</span>
+								</b-button>
+							</div>
+						</b-form-group>
+					</b-form-group>
+				</b-card>
+			</b-collapse>
+		</div>
 
-            <b-form-group
-              label-cols-sm="3"
-              label="自己紹介文:"
-              label-align-sm="right"
-              
-            >
-              <b-form-textarea
-                id="textarea"
-                v-model="selfIntroduction"
-                placeholder="Enter something..."
-                rows="3"
-                max-rows="6"
-              ></b-form-textarea>
-            </b-form-group>
+		<div v-else>
+			<b-button
+				id="profile-open-close-button"
+				v-b-toggle.collapse-profile
+				variant="primary"
+				@click="changeIsProfileModalDisplay"
+			>
+				プロフィールを編集
+				<b-icon v-if="!isProfileModalDisplay" icon="chevron-down" />
+				<b-icon v-if="isProfileModalDisplay" icon="chevron-up" />
+			</b-button>
 
-            <b-form-group
-              label-cols-sm="3"
-              label=""
-              label-align-sm="right"
-              
-            >
-              <b-button v-on:click="registerEditedProfile">プロフィールを更新する</b-button>
-            </b-form-group>
-          </b-form-group>
-        </b-card>
-      </b-collapse>
-        		    		    
-  		
-  	</div>
-  </div>
+			<b-collapse id="collapse-profile" class="mt-2">
+				<b-card bg-variant="light">
+					<b-form-group
+						label-cols-lg="3"
+						label="プロフィールの編集"
+						label-size="lg"
+						label-class="font-weight-bold pt-0"
+						class="mb-0"
+					>
+						<b-form-group
+							label-cols-sm="3"
+							label="ニックネーム:"
+							label-align-sm="right"
+						>
+							<b-form-input v-model.trim="getAndSetNickName" />
+						</b-form-group>
+
+						<b-form-group
+							label-cols-sm="3"
+							label="プロフィール画像:"
+							label-align-sm="right"
+						>
+							<b-form-file
+								v-model="file"
+								:state="Boolean(file)"
+								browse-text="選択"
+								placeholder="Choose a file or drop it here..."
+								drop-placeholder="Drop file here..."
+								accept="image/*"
+								@input="onFileInput"
+							/>
+							<img :src="uploadedImage" />
+						</b-form-group>
+
+						<b-form-group label-cols-sm="3" label="自己紹介文:" label-align-sm="right">
+							<b-form-textarea
+								id="textarea"
+								v-model.trim="getAndSetSelfIntroduction"
+								placeholder="Enter something..."
+								rows="3"
+								max-rows="6"
+							/>
+						</b-form-group>
+
+						<b-form-group label-cols-sm="3" label="" label-align-sm="right">
+							<div>
+								<b-button
+									id="profile-update-button"
+									class="button-with-gradation"
+									variant="primary"
+									:disabled="loading"
+									@click="updateProfile"
+								>
+									<b-spinner v-show="loading" small />
+									<span v-show="loading">
+										更新中...
+									</span>
+									<span v-show="!loading">
+										プロフィールを更新
+									</span>
+								</b-button>
+							</div>
+						</b-form-group>
+					</b-form-group>
+				</b-card>
+			</b-collapse>
+		</div>
+	</div>
 </template>
 
 <script>
-/* eslint-disable */
-import firebase from 'firebase'
-import db from '../plugins/firebase_config'
+import _cloneDeep from "lodash/cloneDeep";
+import sanitizeHTML from "sanitize-html";
+import {
+	BIcon,
+	BIconX,
+	BIconQuestionCircle,
+	BIconChevronDown,
+	BIconChevronUp,
+} from "bootstrap-vue";
 
-export default {  
-  data () {
-    return {
-      file:null,
-    	uploadedImage:"",
-    	files:"",    	
-    	downloadedImage:"",
-    	nickName:"",
-    	selfIntroduction:"",
-    	isEmptyChange:true,
-    	editFlag:false,
-    	documentId:"", 
+export default {
+	components: {
+		BIcon,
+		BIconX,
+		BIconQuestionCircle,
+		BIconChevronDown,
+		BIconChevronUp,
+	},
+	data() {
+		return {
+			loading: false,
+			file: null,
+			uploadedImage: "",
+			nickName: "",
+			selfIntroduction: "",
+			documentId: "",
+			isProfileModalDisplay: false,
+			isExperienceModalDisplay: false,
+		};
+	},
+	computed: {
+		getIsProfileRegistration() {
+			return this.$store.getters["sessionStorageParameter/getLoginUserData"]
+				.is_profile_registration;
+		},
+		getAndSetNickName: {
+			get() {
+				//Object.keysで指定されたオブジェクトが持つプロパティの名前の配列を取得できる
+				//そこで、ログインユーザのプロフィール配列を取得し、
+				//この配列のlengthが０のとき、プロフィールデータが存在しないと判断する
+				if (
+					Object.keys(this.$store.getters["sessionStorageParameter/getLoginUserProfile"])
+						.length === 0
+				) {
+					return "";
+				}
 
-    }
-  },
-  mounted () {      	
-    //プロフィールの編集を効率よく行うために、
-    //すでにプロフィール情報がDBに登録されているなら取得して表示する
-    db.collection("user_profile").get()
-      .then((querySnapshot)=>{        
-        querySnapshot.forEach((doc)=>{
-          const data = doc.data();                              
-          //ログインユーザのユーザIDがDBのuser_profileに保存されている場合          
-          if(this.$store.state.persistedParameter.userIdPersisted === data.user_id){
-          	console.log("data.user_id");
-          	console.log(data.user_id);
-          	this.$store.commit('persistedParameter/changeIsEmpty',false);
-          	this.nickName=data.nick_name;
-          	this.downloadedImage=data.image_url;
-          	this.selfIntroduction=data.self_introduction;
-          	this.documentId =doc.id;          	
+				const nickName = this.$store.getters["sessionStorageParameter/getLoginUserProfile"]
+					.nick_name;
 
-          }                 
+				this.setNickName(nickName);
+				return nickName;
+			},
+			set(newValue) {
+				this.nickName = sanitizeHTML(newValue);
+			},
+		},
+		getAndSetSelfIntroduction: {
+			get() {
+				if (
+					Object.keys(this.$store.getters["sessionStorageParameter/getLoginUserProfile"])
+						.length === 0
+				) {
+					return "";
+				}
 
-        });                          
-         
-      })
-      .catch(function(error) {
-          alert(error.message)
-      });
-  },  
-  watch:{        
-    
-  },
-  computed:{
-     
-  },
-  methods: {     	
-  	editProfile(){
-  		this.editFlag = true;
+				const selfIntroduction = this.$store.getters[
+					"sessionStorageParameter/getLoginUserProfile"
+				].self_introduction;
 
-  	},
-  	registerEditedProfile(){  		  		  		
-  		//編集したプロフィールをDBに登録してアップデートする
-  		db.collection("user_profile").doc(this.documentId)
-        .update({                   
-        	nick_name: this.nickName,              
-        	image_url: this.downloadedImage,
-        	self_introduction: this.selfIntroduction,
-          user_name: this.$store.getters['persistedParameter/getNamePersisted']        	
+				this.setSelfIntroduction(selfIntroduction);
+				return selfIntroduction;
+			},
+			set(newValue) {
+				this.selfIntroduction = sanitizeHTML(newValue);
+			},
+		},
+	},
+	methods: {
+		setNickName(nickName) {
+			this.nickName = nickName;
+		},
+		setSelfIntroduction(selfIntroduction) {
+			this.selfIntroduction = selfIntroduction;
+		},
+		changeIsProfileModalDisplay() {
+			if (this.isProfileModalDisplay) {
+				this.isProfileModalDisplay = false;
+			} else {
+				this.isProfileModalDisplay = true;
+			}
+		},
+		async updateProfile() {
+			this.loading = true;
+			let data = {};
+			data.profile = {};
 
-        }).then(function() {
-           alert("プロフィールの編集が完了しました");            
+			this.nickName = sanitizeHTML(this.nickName);
+			this.selfIntroduction = sanitizeHTML(this.selfIntroduction);
 
-        })
-        .catch(function(error) {            
-            console.error("Error updating document: ", error);
-        });                
+			//ニックネームと自己紹介文は1文字以上が入力されていること
+			if (this.nickName === "" || this.selfIntroduction === "") {
+				alert("ニックネームと自己紹介文が空のままでは更新できません");
+				this.loading = false;
+				return;
+			}
 
-  		this.editFlag = false;
+			//uploadedImageが空の場合は、session画像のURLをプロフィール画像のURLとする
+			//空の場合はプロフィール画像を変更しないと判断する
+			//ニックネームと自己紹介文のみを更新する
+			if (this.uploadedImage === "") {
+				this.uploadedImage = this.$store.getters[
+					"sessionStorageParameter/getLoginUserProfile"
+				].image_url;
+			}
 
-  	},
-  	registerProfile(){
-  		//プロフィールの初回登録時の処理
+			if (
+				this.nickName !==
+				this.$store.getters["sessionStorageParameter/getLoginUserProfile"].nick_name
+			) {
+				data.profile.nick_name = this.nickName;
+			}
 
-  		const firestorage = firebase.storage();
-      //最初に画像をストレージに保存する
-      //ストレージへの保存に成功したら、DBに登録する
-  		const uploadTask = firestorage        
-        .ref(this.files[0].name)
-        .put(this.files[0])
-        .then(snapshot => {
-           
-           snapshot.ref.getDownloadURL().then(url => {           	            
-            this.downloadedImage = url;                        
-            db.collection("user_profile").add({
-	            nick_name: this.nickName,              
-	            image_url: this.downloadedImage,
-	            self_introduction: this.selfIntroduction,	            
-	            user_id: this.$store.state.persistedParameter.userIdPersisted,
-              user_name: this.$store.getters['persistedParameter/getNamePersisted']
-	        })
-	        .then(() => {
-	            alert("プロフィールの登録完了");	            
-	           
-	            //リロードして、プロフィール編集の画面に切り替える
-	            this.$router.go({path: this.$router.currentRoute.path, force: true});	            
-	                      
-	        })          
-	        .catch(function(error) {
-	            alert(error.message)
-	        });            
-           })           
-     	})    	    	      
-  	},
-  	onFileChange(e) {            
-      this.files = e.target.files || e.dataTransfer.files;            
-      console.log("this.files[0]");
-      console.log(this.files[0]);
-      //画像をアップロードせずにキャンセルした場合、以下のエラーが出る
-      //failed to execute 'readAsDataURL' on 'filereader': parameter 1 is not of type 'blob'
-      //さらに、this.files[0]=undefinedとなる
-      //そこでthis.files[0]が存在する場合のみ画像表示を実行する
-      if(this.files[0]){
-        this.createImage(this.files[0]);
-      } 
-      /**/
-      else{
-        //chromeの場合は、画像をアップロードせずにキャンセルした場合、以下の処理により画像が消える
-        //firefoxの場合は、そのまま画像が残る
-        this.uploadedImage ="";
-      }      
-      
-    },
+			if (
+				this.selfIntroduction !==
+				this.$store.getters["sessionStorageParameter/getLoginUserProfile"].self_introduction
+			) {
+				data.profile.self_introduction = this.selfIntroduction;
+			}
 
-    createImage(file) {
-      let reader = new FileReader();           
-      reader.onload = (e) => {            	
-        this.uploadedImage = e.target.result;       
-      };
-      reader.readAsDataURL(file);
-    },    
-  },   
-}
+			if (this.file !== null) {
+				data.file = this.file;
+			}
+
+			data.profile.user_id = _cloneDeep(
+				this.$store.getters["sessionStorageParameter/getLoginUserProfile"].user_id
+			);
+
+			data.documentId = _cloneDeep(
+				this.$store.getters["sessionStorageParameter/getLoginUserProfile"].documentId
+			);
+
+			await this.$store.dispatch("updateProfileAction", data);
+
+			this.$store.dispatch("allProfilesInitAction");
+
+			//DBから最新の全プロフィールを取得
+			//全プロフィールはmembersページに反映されるので、更新後に最新のものをダウンロードする必要がある
+			await this.$store.dispatch("allProfilesGetAction");
+
+			//その中からログインユーザーの最新プロフィールをsessionに保存
+			this.$store.dispatch("loginUserProfileGetAction");
+
+			this.loading = false;
+			alert("プロフィールの更新完了");
+		},
+
+		async registerProfile() {
+			this.loading = true;
+			this.nickName = sanitizeHTML(this.nickName);
+			this.selfIntroduction = sanitizeHTML(this.selfIntroduction);
+
+			//ニックネームと自己紹介文は1文字以上が入力されていること
+			if (this.nickName === "" || this.selfIntroduction === "" || this.file === null) {
+				alert("すべての項目が入力必須です");
+				this.loading = false;
+				return;
+			}
+
+			//firebaseへの登録に必要なデータを用意する
+			let data = {};
+			data.profile = {};
+			data.profile.nick_name = this.nickName;
+			data.profile.self_introduction = this.selfIntroduction;
+			data.file = this.file;
+
+			//ログインユーザのユーザIDは、user_profileコレクションで主キーの役割を果たす
+			data.profile.user_id = _cloneDeep(
+				this.$store.getters["sessionStorageParameter/getLoginUserData"].uid
+			);
+
+			//ドキュメントIDは、usersコレクションのis_profile_registrationを更新する際に必要となる
+			data.documentId = _cloneDeep(
+				this.$store.getters["sessionStorageParameter/getLoginUserData"].documentId
+			);
+
+			await this.$store.dispatch("registerProfileAction", data);
+
+			this.$store.dispatch("allProfilesInitAction");
+
+			//DBから最新の全プロフィールを取得
+			//全プロフィールはmemberページに反映されるので、更新後に最新のものをダウンロードする必要がある
+			await this.$store.dispatch("allProfilesGetAction");
+
+			//その中からログインユーザーの最新プロフィールをsessionに保存
+			this.$store.dispatch("loginUserProfileGetAction");
+
+			this.loading = false;
+			alert("プロフィールの登録完了");
+		},
+		onFileInput() {
+			if (this.file) {
+				this.createImage(this.file);
+			} else {
+				this.uploadedImage = "";
+			}
+		},
+		createImage(file) {
+			let reader = new FileReader();
+			reader.onload = (e) => {
+				this.uploadedImage = e.target.result;
+			};
+			reader.readAsDataURL(file);
+		},
+	},
+};
 </script>
+
+<style scoped>
+#profile-open-close-button {
+	width: 400px;
+}
+
+#profile-registration-button,
+#profile-update-button {
+	display: block;
+	margin-left: auto;
+}
+
+#text-input-required {
+	color: red;
+}
+</style>

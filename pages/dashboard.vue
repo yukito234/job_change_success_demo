@@ -1,100 +1,81 @@
 <template>
-  <div>    
-    <global-navi></global-navi>
-    <span>ここは、{{loginUserName}}さんのダッシュボードページです</span>            
-    <br>
-    <br>      
-    <profile-registration></profile-registration>
-    <br>
-    <br>
-    <like-article-registration></like-article-registration>
-    <br>
-    <br>
-    <article-registration></article-registration> 
-    
-  </div>
+	<div class="page-container">
+		<div class="section-container">
+			<div class="h2title-area">
+				<h2 class="h2title">
+					ダッシュボードの機能を使う
+				</h2>
+			</div>
+			<div class="dashboard-section">
+				<profile-registration />
+			</div>
+
+			<div class="dashboard-section">
+				<like-article-registration />
+			</div>
+
+			<div class="dashboard-section">
+				<article-registration />
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
-/* eslint-disable */
-import firebase from 'firebase'
-import db from '../plugins/firebase_config'
-import ArticleRegistration from '~/components/article-registration.vue'
-import ProfileRegistration from '~/components/profile-registration.vue'
-import globalNavi from '~/components/global-navi.vue';
-import LikeArticleRegistration from '~/components/like-article-registration.vue';
+import ArticleRegistration from "~/components/article-registration.vue";
+import ProfileRegistration from "~/components/profile-registration.vue";
+import LikeArticleRegistration from "~/components/like-article-registration.vue";
 
 export default {
-  middleware: 'authenticated',  
- 
-  components: {    
-     'article-registration': ArticleRegistration,    
-     'profile-registration': ProfileRegistration,
-     "global-navi": globalNavi,
-     "like-article-registration": LikeArticleRegistration,
+	middleware: "authenticated",
+	components: {
+		"article-registration": ArticleRegistration,
+		"profile-registration": ProfileRegistration,
+		"like-article-registration": LikeArticleRegistration,
+	},
+	async fetch({ store }) {
+		//メンバーページで全プロフィールデータを取得していない場合や
+		//リロード等により全プロフィールデータが消失している場合
+		//再度DBと通信してデータを取得する
+		if (!store.getters["getIsAllProfiles"]) {
+			store.dispatch("allProfilesInitAction");
 
-  },  
-  data () {
-    return {
-      //likeArticleCount:null,            
-    }
-  },
-  computed:{
-    loginUserName(){
-      return this.$store.state.currentUserName;       
-     
-    },
-  },
-  created:function(){
-    //ログインユーザのお気に入り記事の数を取得し、永続化させる
-    db.collection("users").get()
-      .then((querySnapshot)=>{        
-        querySnapshot.forEach((doc)=>{
-          const data = _.cloneDeep(doc.data());
-          //
-          if(data.name === this.$store.state.currentUserName){
-            console.log("data.name");
-            console.log(data.name);
-            console.log("data.like_article_count");
-            console.log(data.like_article_count);
-            console.log("doc.id");
-            console.log(doc.id);
-            //ログインユーザのお気に入り記事数をブラウザに保存する
-            //test4@t.com以前のユーザはDBにlike_article_countが設定されていないので注意
-            this.$store.dispatch('persistedParameter/likeArticleCountSetAction',data.like_article_count);
+			//全プロフィールデータを取得してindex.jsに保存する
+			await store.dispatch("allProfilesGetAction");
 
-            //ログインユーザのusersテーブルにおけるドキュメントIDをブラウザに保存する
-            //お気に入り記事数を更新する際に使う            
-            this.$store.dispatch('persistedParameter/docIdForUpdatelikeArticleCountSetAction',doc.id);
+			//取得が完了したら、フラグをtrueにして、2回目以降のアクセスではDBとのやり取りが発生しないようにする
+			store.dispatch("changeIsAllProfilesAction", true);
+		}
+		//全プロフィールデータの中からログインユーザのデータを見つけ出し、sessionに保存
+		store.dispatch("loginUserProfileGetAction");
 
-            //お気に入り記事数が３未満のとき、isAdditionOfLikeArticleがtrueとなる
-            //like-article-registration.vueにて、isAdditionOfLikeArticleの真偽値により、コンテンツの表示を切り替えている
-            this.$store.dispatch('persistedParameter/changeIsAdditionOfLikeArticleAction',data.like_article_count);
-
-            console.log("this.$store.getters['persistedParameter/getLikeArticleCount'] in dashboard");
-            console.log(this.$store.getters['persistedParameter/getLikeArticleCount']);
-
-            console.log("this.$store.getters['persistedParameter/getisAdditionOfLikeArticle'] in dashboard");
-            console.log(this.$store.getters['persistedParameter/getisAdditionOfLikeArticle']);
-
-          }
-
-        });
-
-      })
-      .catch(function(error) {
-          alert(error.message)
-      });
-    
-  },  
-  methods: {
-     
-  }
-}
+		if (!store.getters["getIsAllLikeArticles"]) {
+			await store.dispatch("likeArticlesGetAction");
+			store.dispatch("changeIsAllLikeArticlesAction", true);
+		}
+	},
+	head() {
+		return {
+			title: "ダッシュボードページ",
+			meta: [
+				{
+					hid: "description",
+					name: "description",
+					content:
+						"プロフィールを作成する機能、お役立ち記事を他のユーザに紹介する機能、転職成功者データを登録する機能を利用できます。",
+				},
+			],
+		};
+	},
+};
 </script>
 
-<style>
+<style scoped>
 .member-container {
-  margin: 20px;  
+	margin: 20px;
+}
+
+.dashboard-section {
+	margin-bottom: 30px;
 }
 </style>

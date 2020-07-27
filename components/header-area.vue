@@ -1,8 +1,17 @@
 <template>
-  <div>
-    <h1>未経験からwebエンジニアを目指す人のための<br>お役立ち体験記の検索・共有サイト</h1>
-  </div>
+	<div id="header-wrapper">
+		<img id="header-img" src="~/static/header3.png" />
+	</div>
 </template>
 
-<script>
-</script>
+<style scoped>
+#header-wrapper {
+	margin: 0 auto;
+}
+#header-img {
+	display: block;
+	margin: 0 auto;
+	max-width: 1000px;
+	width: 100%;
+}
+</style>
