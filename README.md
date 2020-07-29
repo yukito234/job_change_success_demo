@@ -1,22 +1,25 @@
-# job_change_success_demo
+# お役立ち体験記の検索・共有サイト
 
-> My legendary Nuxt.js project
+## 概要
+未経験からwebエンジニアにジョブチェンジした人の体験記を効率よく検索するためのアプリ。  
+未経験がコミュニケーションをとれるように、プロフィール登録・コメント投稿・良質記事の共有  
+といった機能も備えている。  
 
-## Build Setup
+## アプリのURL
+https://job-change-success-demo.web.app  
 
-``` bash
-# install dependencies
-$ npm install
+## 制作背景
+Qiitaにて体験記を検索していたとき、インタイトル検索がやりづらかったり、  
+検索結果の記事タイトル一覧から記事を即ストックできないなどの不便さを感じたので、  
+それらを改善したくて制作した。  
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+## 使用技術
+HTML/CSS/JavaScript/Nuxt.js/Firebase/Bootstrap Vue/Vue-chartjs  
 
-# build for production and launch server
-$ npm run build
-$ npm run start
-
-# generate static project
-$ npm run generate
-```
-
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+## 機能
+・QiitaとGoogleのAPIを利用した検索機能  
+・WebStorageによる記事のストック機能  
+・Vue-chartjsによる転職者データのグラフ表示  
+・Firestoreを使ったプロフィールや記事情報の登録・編集、コメントの投稿  
+・Firebase Authenticationによるログイン・ログアウト機能  
+・Bootstrap VueによるインタラクティブなUIコンポーネント  
